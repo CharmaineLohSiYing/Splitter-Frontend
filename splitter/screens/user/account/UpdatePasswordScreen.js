@@ -21,15 +21,63 @@ import * as authActions from "../../../store/actions/auth";
 
 const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
 
-const ChangePasswordScreen = (props) => {
+const formReducer = (state, action) => {
+  if (action.type === FORM_INPUT_UPDATE) {
+    const updatedValues = {
+      ...state.inputValues,
+      [action.input]: action.value,
+    };
+    const updatedValidities = {
+      ...state.inputValidities,
+      [action.input]: action.isValid,
+    };
+    let updatedFormIsValid = true;
+    for (const key in updatedValidities) {
+      updatedFormIsValid = updatedFormIsValid && updatedValidities[key];
+    }
+    return {
+      formIsValid: updatedFormIsValid,
+      inputValidities: updatedValidities,
+      inputValues: updatedValues,
+    };
+  }
+  return state;
+};
+
+
+const UpdatePasswordScreen = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
-  const [oldPassword, setOldPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [passwordRetype, setPasswordRetype] = useState("");
-  const dispatch = useDispatch();
 
   const userId = useSelector((state) => state.auth.userId);
+
+  const [formState, dispatchFormState] = useReducer(formReducer, {
+    inputValues: {
+      oldPassword: "",
+      newPassword:"",
+      passwordRetype:"",
+    },
+    inputValidities: {
+      oldPassword: false,
+      newPassword: false,
+      passwordRetype: false,
+    },
+    formIsValid: false,
+  });
+
+
+  const inputChangeHandler = useCallback(
+    (inputIdentifier, inputValue, inputValidity) => {
+      dispatchFormState({
+        type: FORM_INPUT_UPDATE,
+        value: inputValue,
+        isValid: inputValidity,
+        input: inputIdentifier,
+      });
+    },
+    [dispatchFormState]
+  );
+
 
   useEffect(() => {
     if (error) {
@@ -39,36 +87,34 @@ const ChangePasswordScreen = (props) => {
 
   const submitHandler = async () => {
 
-    if (passwordRetype !== newPassword){
+    if (formState.inputValues.newPassword !== formState.inputValues.passwordRetype){
       setError('New passwords do not match')
     } else {
-      setError(null)
-      setIsLoading(true)
+      setError(null);
+      setIsLoading(true);
       try {
         const response = await fetch("http://192.168.1.190:5000/auth/changePassword", {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userId,
-            oldPassword,
-            newPassword
-          }),
-        });
-        if (!response.ok){
-          setError(await response.json())
-          setIsLoading(false)
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              userId,
+              oldPassword: formState.inputValues.oldPassword,
+              newPassword: formState.inputValues.newPassword
+            }),
+          });
+        if (!response.ok) {
+          setError(await response.json());
+          setIsLoading(false);
         } else {
-          console.log('change password success!')
-          props.navigation.goBack()
+          props.navigation.goBack();
         }
-        
-        
       } catch (err) {
         setError(err.message);
       }
     }
+    
   };
 
   return (
@@ -79,20 +125,52 @@ const ChangePasswordScreen = (props) => {
     >
       <LinearGradient colors={["#ffedff", "#ffe3ff"]} style={styles.gradient}>
         <Card style={styles.authContainer}>
-          <Text>Enter current password: </Text>
-          <TextInput value={oldPassword} onChangeText={setOldPassword} />
-          <Text>Enter new password: </Text>
-          <TextInput value={newPassword} onChangeText={setNewPassword} />
-          <Text>Re-enter new password: </Text>
-          <TextInput value={passwordRetype} onChangeText={setPasswordRetype} />
+        <Input
+              id="oldPassword"
+              label="Current Password"
+              secureTextEntry
+              required
+              minLength={5}
+              autoCapitalize="none"
+              errorText="Please enter a valid password."
+              onInputChange={inputChangeHandler}
+              initialValue=""
+              initiallyValid={true}
+              
+            />
+        <Input
+              id="newPassword"
+              label="Password"
+              secureTextEntry
+              required
+              minLength={5}
+              autoCapitalize="none"
+              errorText="Please enter a valid password."
+              onInputChange={inputChangeHandler}
+              initialValue=""
+              initiallyValid={true}
+            />
+            <Input
+              id="passwordRetype"
+              label="Retype Password"
+              retypePassword
+              secureTextEntry
+              required
+              autoCapitalize="none"
+              errorText="Please enter a valid password"
+              onInputChange={inputChangeHandler}
+              initialValue=""
+              initiallyValid={true}
+            />
           <View style={styles.buttonContainer}>
             {isLoading ? (
               <ActivityIndicator size="small" color={Colors.primary} />
             ) : (
               <Button
-                title="Change Password"
+                title="Update"
                 color={Colors.primary}
                 onPress={submitHandler}
+                disabled={!formState.formIsValid}
               />
             )}
           </View>
@@ -102,7 +180,7 @@ const ChangePasswordScreen = (props) => {
   );
 };
 
-ChangePasswordScreen.navigationOptions = {
+UpdatePasswordScreen.navigationOptions = {
   headerTitle: "Authenticate",
 };
 
@@ -126,4 +204,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ChangePasswordScreen;
+export default UpdatePasswordScreen;

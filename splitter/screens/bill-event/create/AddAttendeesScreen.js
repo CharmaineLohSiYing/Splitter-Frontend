@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useReducer, useCallback } from "react";
-import { View, FlatList, Text, StyleSheet, Button } from "react-native";
+import { View, FlatList, Text, StyleSheet, Button, TextInput, TouchableOpacity } from "react-native";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import * as authActions from "../../../store/actions/auth";
@@ -7,10 +7,13 @@ import * as eventActions from "../../../store/actions/bill-event";
 import * as Contacts from "expo-contacts";
 import ContactDisplay from "../../../components/ContactDisplay";
 import {matchUsersWithContacts} from '../../../utils/initialiseContacts'
+import Colors from '../../../constants/Colors'
 
 const AddAttendeesScreen = (props) => {
-  const [contacts, setContacts] = useState({});
+  const [contacts, setContacts] = useState([]);
+  const [contactsArr, setContactsArr] = useState([]);
   const [selectedContacts, setSelectedContacts] = useState({});
+  const [query, setQuery] = useState('')
 
   const dispatch = useDispatch();
 
@@ -20,13 +23,16 @@ const AddAttendeesScreen = (props) => {
   useEffect(() => {
     const attendeesFromStoreArr = Object.keys(attendeesFromStore)
     if (attendeesFromStoreArr.length != 0){
+      const tempArr = []
       setSelectedContacts(attendeesFromStore)
       if (contactsFromStore){
         for (const mobileNumber of Object.keys(contactsFromStore)) { 
           contactsFromStore[mobileNumber]["selected"] =
             mobileNumber in attendeesFromStore;
+            tempArr.push(contactsFromStore[mobileNumber])
         }
-        setContacts(contactsFromStore);
+        setContactsArr(tempArr);
+        setContact(contactsFromStore)
       }
     }
   }, [])
@@ -40,19 +46,22 @@ const AddAttendeesScreen = (props) => {
     }
 
     if (contactsFromStore) {
+      const tempArr = []
       const attendeesFromStoreArr = Object.keys(attendeesFromStore)
       if (attendeesFromStoreArr.length != 0){
         for (const mobileNumber of Object.keys(contactsFromStore)) { 
           contactsFromStore[mobileNumber]["selected"] =
             mobileNumber in attendeesFromStore;
+            tempArr.push(contactsFromStore[mobileNumber])
         }
       } else {
         for (const mobileNumber of Object.keys(contactsFromStore)) { 
           contactsFromStore[mobileNumber]["selected"] =
             mobileNumber in selectedContacts;
+            tempArr.push(contactsFromStore[mobileNumber])
         }
       }
-      
+      setContactsArr(tempArr);
       setContacts(contactsFromStore);
     } else {
       initialiseContacts()
@@ -65,27 +74,21 @@ const AddAttendeesScreen = (props) => {
   };
 
   const removeFromSelectedContacts = (mobileNumber) => {
-    if (mobileNumber in contacts) {
-      const originalContact = contacts[mobileNumber];
-      const updatedContact = {
-        ...originalContact,
-        selected: !originalContact.selected,
-      };
-      setContacts({ ...contacts, [mobileNumber]: updatedContact });
-      var selectedContactsTemp = { ...selectedContacts };
-      delete selectedContactsTemp[mobileNumber];
-      setSelectedContacts(selectedContactsTemp);
-    }
+
+    const objIndex = contactsArr.findIndex((obj => obj.mobileNumber == mobileNumber));
+    contactsArr[objIndex].selected = false
+  
+    var selectedContactsTemp = { ...selectedContacts };
+    delete selectedContactsTemp[mobileNumber];
+    setSelectedContacts(selectedContactsTemp);
   };
 
   const selectContactHandler = (name, mobileNumber) => {
-    const originalContact = contacts[mobileNumber];
-    const updatedContact = {
-      ...originalContact,
-      selected: !originalContact.selected,
-    };
-    setContacts({ ...contacts, [mobileNumber]: updatedContact });
 
+    const objIndex = contactsArr.findIndex((obj => obj.mobileNumber == mobileNumber));
+    
+    //Update object's name property.
+    contactsArr[objIndex].selected = !contactsArr[objIndex].selected
     if (mobileNumber in selectedContacts) {
       // de-select
       var selectedContactsTemp = { ...selectedContacts };
@@ -100,6 +103,10 @@ const AddAttendeesScreen = (props) => {
     }
   };
 
+  const searchContacts = () => {
+    
+  }
+
   return (
     <View
       style={{
@@ -108,9 +115,12 @@ const AddAttendeesScreen = (props) => {
         justifyContent: "center",
       }}
     >
-      <View style={styles.buttonContainer}>
-        <Button title="Proceed" onPress={proceedHandler} />
-      </View>
+      <View><TextInput style={styles.searchBar} placeholder="Search" onChangeText={searchContacts}/></View>
+      <TouchableOpacity
+        activeOpacity={0.7}
+        onPress={proceedHandler}
+        style={styles.floatingButton}
+      />
       <View style={styles.selectedContacts}>
         <FlatList
           keyExtractor={(item, index) => index.toString()}
@@ -118,7 +128,7 @@ const AddAttendeesScreen = (props) => {
           initialNumToRender={10}
           renderItem={({ item }) => (
             <View>
-              <Text onPress={() => removeFromSelectedContacts(item)}>
+              <Text onPress={() => removeFromSelectedContacts(selectedContacts[item].mobileNumber)}>
                 {selectedContacts[item].name}
               </Text>
             </View>
@@ -127,14 +137,14 @@ const AddAttendeesScreen = (props) => {
       </View>
       <FlatList
         keyExtractor={(item, index) => index.toString()}
-        data={Object.keys(contacts)}
+        data={contactsArr}
         initialNumToRender={10}
         renderItem={({ item }) => (
           <ContactDisplay
-            id={item}
-            selected={contacts[item].selected}
-            mobileNumber={contacts[item].mobileNumber.toString()}
-            name={contacts[item].name}
+            id={item.mobileNumber}
+            selected={item.selected}
+            mobileNumber={item.mobileNumber.toString()}
+            name={item.name}
             onSelect={selectContactHandler}
           />
         )}
@@ -155,5 +165,23 @@ const styles = StyleSheet.create({
   buttonContainer: {
     height: "10%",
   },
+  floatingButton: {
+    backgroundColor: Colors.primary,
+    position: "absolute",
+    width: 80,
+    height: 80,
+    alignItems: "center",
+    justifyContent: "center",
+    right: 30,
+    bottom: 30,
+    borderRadius: 40,
+    zIndex: 1,
+  },
+  searchBar:{
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.primary,
+    padding: 10,
+    height: 50
+  }
 });
 export default AddAttendeesScreen;

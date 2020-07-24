@@ -16,11 +16,26 @@ import { useSelector, useDispatch } from "react-redux";
 import * as Contacts from "expo-contacts";
 import moment from "moment";
 import Colors from "../../constants/Colors";
-import ViewEventDisplay from "../../components/ViewEventDisplay";
+import ViewUserEventDisplay from "../../components/ViewUserEventDisplay";
 import LogDisplay from "../../components/LogDisplay";
 import * as eventActions from "../../store/actions/bill-event";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import { Item, HeaderButtons } from "react-navigation-header-buttons";
+import CustomHeaderButton from "../../components/UI/CustomHeaderButton";
+import { MaterialIcons, Ionicons } from "@expo/vector-icons";
+
+const FlatListItemSeparator = () => {
+  return (
+    <View
+      style={{
+        height: 10,
+        width: "100%",
+        backgroundColor: "transparent",
+      }}
+    />
+  );
+}
 
 class ViewEventScreen extends React.Component {
   constructor(props) {
@@ -53,7 +68,6 @@ class ViewEventScreen extends React.Component {
         let matchedContact = contacts[mobileNum];
 
         if (matchedContact) {
-          console.log("MATCHED", matchedContact.name);
           // userEvent.user.name = matchedContact.name;
           await this.setState({
             matchedContacts: {
@@ -62,8 +76,6 @@ class ViewEventScreen extends React.Component {
             },
           });
         } else {
-          console.log("UNMATCHED", mobileNum);
-          // userEvent.user.name = mobileNum;
           await this.setState({
             matchedContacts: {
               ...this.state.matchedContacts,
@@ -72,12 +84,10 @@ class ViewEventScreen extends React.Component {
           });
         }
       } else {
-        console.log("curr user", userId);
-        // userEvent.user.name = "CURRENT_USER";
         await this.setState({
           matchedContacts: {
             ...this.state.matchedContacts,
-            [userId]: "CURRENT_USER",
+            [userId]: "You",
           },
         });
       }
@@ -101,6 +111,7 @@ class ViewEventScreen extends React.Component {
         const filteredLoans = resData.loans.filter((loan) => {
           return loan.isCancelled === false;
         });
+
         let promise1 = this.setState({
           userEvents: resData.userEvents,
           loans: filteredLoans,
@@ -128,22 +139,29 @@ class ViewEventScreen extends React.Component {
     if (this.state.event) {
       return (
         <View>
-          <Text>Event Name: {this.state.event.eventName}</Text>
-          <Text>
-            Event Date:{" "}
-            {moment(new Date(this.state.event.date)).format("D MMM YYYY")}
-          </Text>
-          <Text>
-            Created By: {this.state.matchedContacts[this.state.event.createdBy]}
-          </Text>
-          <Text>Net Bill: ${this.state.event.netBill}</Text>
-          <Button title="Edit Event" onPress={this.editEventHandler} />
-          <Button
-            title="Go Back"
-            onPress={() => {
-              this.props.navigation.goBack();
-            }}
-          />
+          <View style={styles.eventDetailsContainer}>
+            <Text style={styles.eventName}>
+              {this.state.event.eventName
+                ? this.state.event.eventName
+                : "Event"}
+            </Text>
+            <View style={styles.netBillContainer}>
+              <Text>${this.state.event.netBill.toFixed(2)}</Text>
+            </View>
+            <View style={styles.subtitle}>
+              <Text>
+                {moment(new Date(this.state.event.date)).format("D MMM YYYY")}
+              </Text>
+              <Text> | </Text>
+              <Text>
+                Created By{" "}
+                {this.state.matchedContacts[this.state.event.createdBy]}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.numAttendees}>
+              <Text style={styles.numAttendeesText}>{this.state.userEvents.length} Attendees</Text>
+          </View>
         </View>
       );
     } else {
@@ -157,33 +175,64 @@ class ViewEventScreen extends React.Component {
 
   renderFooter = () => {
     return (
-      <FlatList
-        keyExtractor={(item, index) => index.toString()}
-        data={this.state.logs}
-        renderItem={({ item }) => (
-          <LogDisplay
-            matchedName = {this.state.matchedContacts[item.updatedBy]}
-            updatedAt = {item.updatedAt}
-            details={item.details}
-          />
-        )}
-      />
+      <View style={styles.logsContainer}>
+        <View style={styles.numAttendees}>
+            <Text style={styles.numAttendeesText}>Logs</Text>
+        </View>
+        <FlatList
+          keyExtractor={(item, index) => index.toString()}
+          ItemSeparatorComponent = { FlatListItemSeparator }
+          data={this.state.logs}
+          renderItem={({ item }) => (
+            <LogDisplay
+              matchedName={this.state.matchedContacts[item.updatedBy]}
+              updatedAt={item.updatedAt}
+              details={item.details}
+            />
+          )}
+        />
+      </View>
     );
   };
 
   render() {
+    this.props.navigation.setOptions({
+      headerRight: () => (
+        <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+          <Item
+            iconName="edit"
+            onPress={this.editEventHandler}
+            color="white"
+            iconSize={28}
+            IconComponent={MaterialIcons}
+          />
+        </HeaderButtons>
+      ),
+      headerLeft: () => (
+        <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+          <Item
+            iconName="md-arrow-back"
+            onPress={() => this.props.navigation.goBack()}
+            color="white"
+            iconSize={28}
+            IconComponent={Ionicons}
+          />
+        </HeaderButtons>
+      ),
+    });
+
     return (
       <View>
-        {!this.state.isLoading ? (
+        {!this.state.isLoading && this.state.event ? (
           <View>
-            <View style={styles.userEvents}>
               <FlatList
                 keyExtractor={(item, index) => index.toString()}
                 data={this.state.userEvents}
                 ListHeaderComponent={this.renderHeader}
                 ListFooterComponent={this.renderFooter}
+                ItemSeparatorComponent = { FlatListItemSeparator }
                 renderItem={({ item }) => (
-                  <ViewEventDisplay
+                  <ViewUserEventDisplay
                     sharedOrders={item.sharedOrders}
                     editEvent={this.editEventHandler}
                     eventId={item.event._id}
@@ -195,7 +244,6 @@ class ViewEventScreen extends React.Component {
                   />
                 )}
               />
-            </View>
           </View>
         ) : (
           <ActivityIndicator size="small" color={Colors.primary} />
@@ -209,16 +257,33 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
   },
+  numAttendees:{
+    marginHorizontal: 20,
+    marginVertical:10
+  },  
+  numAttendeesText:{
+    fontWeight:'bold',
+    fontSize: 18,
+    color:'#008F85'
+  },  
   gradient: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
-  authContainer: {
-    width: "80%",
-    maxWidth: 400,
-    maxHeight: 400,
-    padding: 20,
+  eventDetailsContainer: {
+    marginVertical: 20,
+    alignItems: "center",
+  },
+  netBillContainer: {
+    height: 30,
+    justifyContent:'center',
+    borderWidth: 2,
+    width: "50%",
+    alignItems: "center",
+    paddingHorizontal: 10,
+    marginVertical: 3,
+    borderColor: '#008F85',
   },
   buttonContainer: {
     marginTop: 10,
@@ -226,6 +291,18 @@ const styles = StyleSheet.create({
   textHeader: {
     textAlign: "center",
   },
+  eventName: {
+    textTransform: "uppercase",
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#008F85",
+  },
+  subtitle: {
+    flexDirection: "row",
+  },
+  logsContainer: {
+    marginVertical:10
+  }
 });
 const mapStateToProps = (state) => {
   const { userId, contacts } = state.auth;
@@ -239,3 +316,4 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ViewEventScreen);
+3;

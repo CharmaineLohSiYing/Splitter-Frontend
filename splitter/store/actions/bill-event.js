@@ -16,8 +16,8 @@ export const addAttendees = (attendees) => {
     const currUser = getState().auth;
     attendees[currUser.userId] = {
       id: currUser.userId,
-      name: currUser.name,
-      mobileNumber: currUser.mobileNumber,
+      name: currUser.user.firstName,
+      mobileNumber: currUser.user.mobileNumber,
       currentUser: true,
     };
     dispatch(test(attendees));

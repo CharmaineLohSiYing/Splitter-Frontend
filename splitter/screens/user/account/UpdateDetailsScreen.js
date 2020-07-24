@@ -21,13 +21,63 @@ import * as authActions from "../../../store/actions/auth";
 
 const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
 
+const formReducer = (state, action) => {
+  if (action.type === FORM_INPUT_UPDATE) {
+    const updatedValues = {
+      ...state.inputValues,
+      [action.input]: action.value,
+    };
+    const updatedValidities = {
+      ...state.inputValidities,
+      [action.input]: action.isValid,
+    };
+    let updatedFormIsValid = true;
+    for (const key in updatedValidities) {
+      updatedFormIsValid = updatedFormIsValid && updatedValidities[key];
+    }
+    return {
+      formIsValid: updatedFormIsValid,
+      inputValidities: updatedValidities,
+      inputValues: updatedValues,
+    };
+  }
+  return state;
+};
+
+
 const UpdateDetailsScreen = (props) => {
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
-  const [firstName, setFirstName] = useState(props.route.params.firstName);
-  const [lastName, setLastName] = useState(props.route.params.lastName);
 
   const userId = useSelector((state) => state.auth.userId);
+  const dispatch = useDispatch()
+
+  const [formState, dispatchFormState] = useReducer(formReducer, {
+    inputValues: {
+      firstName: props.route.params.firstName,
+      lastName:props.route.params.lastName,
+    },
+    inputValidities: {
+      firstName: true,
+      lastName: true,
+    },
+    formIsValid: true,
+  });
+
+
+  const inputChangeHandler = useCallback(
+    (inputIdentifier, inputValue, inputValidity) => {
+      dispatchFormState({
+        type: FORM_INPUT_UPDATE,
+        value: inputValue,
+        isValid: inputValidity,
+        input: inputIdentifier,
+      });
+    },
+    [dispatchFormState]
+  );
+
 
   useEffect(() => {
     if (error) {
@@ -39,29 +89,15 @@ const UpdateDetailsScreen = (props) => {
     setError(null);
     setIsLoading(true);
     try {
-      const response = await fetch(
-        "http://192.168.1.190:5000/user/name/" + userId,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            firstName,
-            lastName,
-          }),
-        }
-      );
-      if (!response.ok) {
-        setError(await response.json());
-        setIsLoading(false);
-      } else {
-        props.navigation.goBack();
-      }
+      await dispatch(authActions.updateDetails(formState.inputValues.firstName, formState.inputValues.lastName))
+      setIsLoading(false)
+      props.navigation.goBack()
     } catch (err) {
+      setIsLoading(false)
       setError(err.message);
     }
-  };
+  }
+
 
   return (
     <KeyboardAvoidingView
@@ -71,18 +107,35 @@ const UpdateDetailsScreen = (props) => {
     >
       <LinearGradient colors={["#ffedff", "#ffe3ff"]} style={styles.gradient}>
         <Card style={styles.authContainer}>
-          <Text>Enter first name: </Text>
-          <TextInput value={firstName} onChangeText={setFirstName} />
-          <Text>Enter last name: </Text>
-          <TextInput value={lastName} onChangeText={setLastName} />
+          <Input
+              id="firstName"
+              label="First Name"
+              required
+              autoCapitalize="words"
+              errorText="Please enter a valid first name."
+              onInputChange={inputChangeHandler}
+              initialValue={props.route.params.firstName}
+              initiallyValid={true}
+            />
+          <Input
+              id="lastName"
+              label="Last Name"
+              required
+              autoCapitalize="words"
+              errorText="Please enter a valid last name."
+              onInputChange={inputChangeHandler}
+              initialValue={props.route.params.lastName}
+              initiallyValid={true}
+            />
           <View style={styles.buttonContainer}>
             {isLoading ? (
               <ActivityIndicator size="small" color={Colors.primary} />
             ) : (
               <Button
-                title="Change Password"
+                title="Update"
                 color={Colors.primary}
                 onPress={submitHandler}
+                disabled={!formState.formIsValid}
               />
             )}
           </View>

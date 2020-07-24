@@ -74,6 +74,8 @@ const AuthScreen = (props) => {
 
   const authHandler = () => {
 
+    console.log(formState.inputValues.retypePassword)
+
     if (formState.inputValues.password !== formState.inputValues.retypePassword){
       setError("Passwords do not match")
       return; 
@@ -93,6 +95,7 @@ const AuthScreen = (props) => {
     
     try {
       dispatch(action);
+      setIsLoading(false);
       props.navigation.navigate('OTP');
     } catch (err) {
       setError(err.message);

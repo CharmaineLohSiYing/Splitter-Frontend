@@ -20,9 +20,10 @@ const ViewLogDisplay = (props) => {
   const date = moment(new Date(props.updatedAt)).format("D MMM YYYY");
 
   return (
-    <View>
+    <View style={styles.container}>
+      <Text>{date}</Text>
       <Text>
-        {date} : {props.matchedName} - {props.details}
+        {props.matchedName} {props.details}
       </Text>
     </View>
   );
@@ -30,8 +31,14 @@ const ViewLogDisplay = (props) => {
 
 const styles = StyleSheet.create({
   container: {
-    margin: 10,
-    backgroundColor: "#ccc",
+    borderWidth: 1,
+    height: 30,
+    borderColor:'#ccc',
+    alignItems:'center',
+    marginHorizontal:10,
+    paddingHorizontal:10,
+    flexDirection:'row',
+    justifyContent:'space-between'
   },
 });
 

@@ -17,6 +17,7 @@ import { useDispatch } from "react-redux";
 import Input from "../../../components/UI/Input";
 import Card from "../../../components/UI/Card";
 import Colors from "../../../constants/Colors";
+import * as authActions from '../../../store/actions/auth'
 
 
 const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
@@ -35,33 +36,19 @@ const AccountOTPScreen = (props) => {
     }
   }, [error]);
 
-  const otpSubmitHandler = async () => {
 
-    if (props.route.params.changeMobileNumber){
-      try {
-        setError(null);
-        setIsLoading(true);
-        const response = await fetch("http://192.168.1.190:5000/auth/verifyotp", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userId,
-            otp: inputOTP,
-          }),
-        });
-        if (!response.ok){
-          setError(await response.json())
-          setIsLoading(false)
-        } else {
-          props.navigation.navigate('Settings')
-        }
-      } catch (err) {
-        setError(err.message);
-      }
-    } 
-  };
+  const otpSubmitHandler = async () => {
+    setError(null);
+    setIsLoading(true);
+    try {
+      await dispatch(authActions.updateMobileNumber(inputOTP))
+      setIsLoading(false)
+      props.navigation.navigate('Settings')
+    } catch (err) {
+      setIsLoading(false)
+      setError(err.message);
+    }
+  }
 
   return (
     <KeyboardAvoidingView

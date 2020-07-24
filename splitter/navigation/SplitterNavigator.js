@@ -9,6 +9,7 @@ import {
   DrawerItemList,
 } from "@react-navigation/drawer";
 import { Platform, SafeAreaView, Button, View } from "react-native";
+import {Item, HeaderButtons, HeaderButton} from 'react-navigation-header-buttons'
 import LoginScreen from "../screens/user/LoginScreen";
 import RegisterScreen from "../screens/user/RegisterScreen";
 import OTPScreen from "../screens/user/OTPScreen";
@@ -28,33 +29,49 @@ import ViewContactLoansScreen from "../screens/loan/ViewContactLoansScreen";
 import CreateTransactionScreen from "../screens/loan/CreateTransactionScreen";
 import CreateLoanScreen from "../screens/loan/CreateLoanScreen";
 
-import SettingsScreen from '../screens/user/account/SettingsScreen'
-import UpdateEmailScreen from '../screens/user/account/UpdateEmailScreen'
-import UpdateMobileNumberScreen from '../screens/user/account/UpdateMobileNumberScreen'
-import UpdatePasswordScreen from '../screens/user/account/UpdatePasswordScreen'
-import UpdateDetailsScreen from '../screens/user/account/UpdateDetailsScreen'
-import AccountOTPScreen from '../screens/user/account/AccountOTPScreen'
+import SettingsScreen from "../screens/user/account/SettingsScreen";
+import UpdateEmailScreen from "../screens/user/account/UpdateEmailScreen";
+import UpdateMobileNumberScreen from "../screens/user/account/UpdateMobileNumberScreen";
+import UpdatePasswordScreen from "../screens/user/account/UpdatePasswordScreen";
+import UpdateDetailsScreen from "../screens/user/account/UpdateDetailsScreen";
+import AccountOTPScreen from "../screens/user/account/AccountOTPScreen";
+import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
+import CustomHeaderButton from '../components/UI/CustomHeaderButton'
 
-
+const toggleHeaderButton = (navigation) => {
+  return (
+      <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+        <Item iconName="md-menu" onPress={navigation.toggleDrawer} color='white' iconSize={28} IconComponent={Ionicons}/>
+      </HeaderButtons>
+  );
+};
 
 const defaultNavOptions = {
   headerStyle: {
     backgroundColor: Platform.OS === "android" ? Colors.primary : "",
   },
+  headerTitleContainerStyle: {
+    left: 0, // THIS RIGHT HERE
+    right: 0
+  },
   headerTitleStyle: {
-    fontFamily: "open-sans-bold",
+    fontFamily: "roboto-regular",
+    flex: 1,
+    alignSelf:'center',
+    letterSpacing:2
   },
   headerBackTitleStyle: {
     fontFamily: "open-sans",
   },
   headerTintColor: Platform.OS === "android" ? "white" : Colors.primary,
+  headerTitle: 'SPLITTER'
 };
 
 const AuthStackNavigator = createStackNavigator();
 
-export const AuthNavigator = () => {
+export const AuthNavigator = ({navigation}) => {
   return (
-    <AuthStackNavigator.Navigator screenOptions={defaultNavOptions}>
+    <AuthStackNavigator.Navigator screenOptions={{ headerShown: false }}>
       <AuthStackNavigator.Screen name="Login" component={LoginScreen} />
       <AuthStackNavigator.Screen name="Register" component={RegisterScreen} />
       <AuthStackNavigator.Screen
@@ -68,10 +85,11 @@ export const AuthNavigator = () => {
 
 const EventsStackNavigator = createStackNavigator();
 
-export const EventsNavigator = () => {
+export const EventsNavigator = ({ navigation }) => {
   return (
-    <EventsStackNavigator.Navigator screenOptions={defaultNavOptions}>
-      <EventsStackNavigator.Screen name="Events" component={EventsScreen} />
+    <EventsStackNavigator.Navigator
+      screenOptions={defaultNavOptions}>
+      <EventsStackNavigator.Screen name="Events" component={EventsScreen} options={{headerLeft: () => toggleHeaderButton(navigation)}}/>
       <EventsStackNavigator.Screen
         name="ViewEvent"
         component={ViewEventScreen}
@@ -102,9 +120,14 @@ export const EventsNavigator = () => {
 
 const LoansStackNavigator = createStackNavigator();
 
-export const LoansNavigator = () => {
+export const LoansNavigator = ({navigation}) => {
   return (
-    <LoansStackNavigator.Navigator screenOptions={defaultNavOptions}>
+    <LoansStackNavigator.Navigator
+      screenOptions={{
+        ...defaultNavOptions,
+        headerLeft: () => toggleHeaderButton(navigation),
+      }}
+    >
       <LoansStackNavigator.Screen name="Loans" component={LoansScreen} />
       <LoansStackNavigator.Screen
         name="ViewContactLoans"
@@ -124,10 +147,18 @@ export const LoansNavigator = () => {
 
 const AccountStackNavigator = createStackNavigator();
 
-export const AccountNavigator = () => {
+export const AccountNavigator = ({navigation}) => {
   return (
-    <AccountStackNavigator.Navigator screenOptions={defaultNavOptions}>
-      <AccountStackNavigator.Screen name="Settings" component={SettingsScreen} />
+    <AccountStackNavigator.Navigator
+      screenOptions={{
+        ...defaultNavOptions,
+        headerLeft: () => toggleHeaderButton(navigation),
+      }}
+    >
+      <AccountStackNavigator.Screen
+        name="Settings"
+        component={SettingsScreen}
+      />
       <AccountStackNavigator.Screen
         name="UpdateEmail"
         component={UpdateEmailScreen}
@@ -155,26 +186,33 @@ export const AccountNavigator = () => {
 const SplitterDrawerNavigator = createDrawerNavigator();
 
 export const SplitterNavigator = () => {
-  // this dispatch line was brought out from drawerContent
+  // this dispatch line was brought out fr om drawerContent
   const dispatch = useDispatch();
 
   return (
     <SplitterDrawerNavigator.Navigator
       drawerContent={(props) => {
         return (
-          <View style={{ flex: 1, paddingTop: 20 }}>
-            <SafeAreaView forceInset={{ top: "always", horizontal: "never" }}>
+          <ScrollView
+            contentContainerStyle={{
+              flex: 1,
+              paddingTop: 20,
+              justifyContent: "space-between",
+            }}
+          >
+            <SafeAreaView forceInset={{ top:"always", horizontal: "never" }}>
               <DrawerItemList {...props} />
+            </SafeAreaView>
+            <SafeAreaView forceInset={{ top: "always", horizontal: "never" }}>
               <Button
                 title="Logout"
                 color={Colors.primary}
                 onPress={() => {
                   dispatch(authActions.logout());
-                  // props.navigation.navigate('Auth');
                 }}
               />
             </SafeAreaView>
-          </View>
+          </ScrollView>
         );
       }}
       drawerContentOptions={{
@@ -182,12 +220,12 @@ export const SplitterNavigator = () => {
       }}
     >
       <SplitterDrawerNavigator.Screen
-        name="Loans"
-        component={LoansNavigator}
+        name="Events"
+        component={EventsNavigator}
         screenOptions={{
           drawerIcon: (props) => (
             <Ionicons
-              name={Platform.OS === "android" ? "md-list" : "ios-list"}
+              name={Platform.OS === "android" ? "md-cart" : "ios-cart"}
               size={23}
               color={props.color}
             />
@@ -195,12 +233,12 @@ export const SplitterNavigator = () => {
         }}
       />
       <SplitterDrawerNavigator.Screen
-        name="Events"
-        component={EventsNavigator}
+        name="Loans"
+        component={LoansNavigator}
         screenOptions={{
           drawerIcon: (props) => (
             <Ionicons
-              name={Platform.OS === "android" ? "md-cart" : "ios-cart"}
+              name={Platform.OS === "android" ? "md-list" : "ios-list"}
               size={23}
               color={props.color}
             />

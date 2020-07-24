@@ -5,14 +5,16 @@ export const SET_DID_TRY_AUTOLOGIN = "SET_DID_TRY_AUTOLOGIN";
 export const SIGN_UP = "SIGN_UP";
 export const VERIFY_OTP = "VERIFY_OTP";
 export const SET_CONTACTS = "SET_CONTACTS";
+export const UPDATE_USER_ACCOUNT = "UPDATE_USER_ACCOUNT"
+
 
 export const setDidTryAutoLogin = () => {
   return { type: SET_DID_TRY_AUTOLOGIN };
 };
 
-export const authenticate = (userId, token, name, mobileNumber) => {
+export const authenticate = (userId, token, user) => {
   return (dispatch) => {
-    dispatch({ type: AUTHENTICATE, userId, token, name, mobileNumber });
+    dispatch({ type: AUTHENTICATE, userId, token, user});
   };
 };
 
@@ -57,6 +59,7 @@ export const signup = (firstName, lastName, email, password, mobileNumber) => {
 };
 
 export const login = (email, password) => {
+  const email1 = email
   return async (dispatch) => {
     const response = await fetch("http://192.168.1.190:5000/auth/login", {
       method: "POST",
@@ -64,8 +67,9 @@ export const login = (email, password) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        email: email,
         password: password,
+        email: email1
+        
       }),
     });
 
@@ -88,8 +92,16 @@ export const login = (email, password) => {
       dispatch(authenticate(resData.userId, null));
       throw new Error('NOT_VERIFIED');
     }
-    dispatch(authenticate(resData.userId, resData.accessToken, resData.name, resData.mobileNumber));
-    saveDataToStorage(resData.accessToken, resData.userId, resData.name, resData.mobileNumber);
+
+    const {userId, firstName, lastName, email, mobileNumber, accessToken} = resData
+    const user = {
+      firstName,
+      lastName,
+      email,
+      mobileNumber
+    }
+    dispatch(authenticate(userId, accessToken, user));
+    saveDataToStorage(accessToken, userId, firstName + " " + lastName);
   };
 };
 
@@ -117,8 +129,106 @@ export const verifyOTP = (otp, userId) => {
     }
 
     const resData = await response.json();
-    dispatch(authenticate(userId, resData.accessToken, resData.name, resData.mobileNumber));
-    saveDataToStorage(resData.accessToken, resData.userId, resData.name, resData.mobileNumber);
+    const {userId, firstName, lastName, email, mobileNumber, accessToken} = resData
+    const user = {
+      firstName,
+      lastName,
+      email,
+      mobileNumber
+    }
+    dispatch(authenticate(userId, accessToken, user));
+    saveDataToStorage(accessToken, userId, firstName + " " + lastName);
+  };
+};
+export const updateDetails = (inputFirstName, inputLastName) => {
+  return async (dispatch, getState) => {
+    const response = await fetch(
+      "http://192.168.1.190:5000/user/name/" + getState().auth.userId,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          firstName: inputFirstName,
+          lastName: inputLastName,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorResData = await response.json();
+     
+      let message = "Something went wrong!";
+      if (errorResData) {
+        message = errorResData;
+      }
+      throw new Error(message);
+    }
+
+    const originalUser = getState().auth.user;
+    const modifiedUser = {...originalUser, firstName: inputFirstName, lastName: inputLastName}
+    dispatch({ type: UPDATE_USER_ACCOUNT, user: modifiedUser });
+  };
+};
+export const updateEmail = (email) => {
+  return async (dispatch, getState) => {
+    const response = await fetch(
+      "http://192.168.1.190:5000/user/email/" + getState().auth.userId,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorResData = await response.json();
+     
+      let message = "Something went wrong!";
+      if (errorResData) {
+        message = errorResData;
+      }
+      throw new Error(message);
+    }
+
+    const originalUser = getState().auth.user;
+    const modifiedUser = {...originalUser, email}
+    dispatch({ type: UPDATE_USER_ACCOUNT, user: modifiedUser });
+  };
+};
+export const updateMobileNumber = (inputOTP) => {
+  return async (dispatch, getState) => {
+    const response = await fetch("http://192.168.1.190:5000/auth/verifyotp", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: getState().auth.userId,
+            otp: inputOTP,
+          }),
+    });
+
+    if (!response.ok) {
+      const errorResData = await response.json();
+     
+      let message = "Something went wrong!";
+      if (errorResData) {
+        message = errorResData;
+      }
+      throw new Error(message);
+    }
+    
+    const {mobileNumber} = await response.json();
+
+    const originalUser = getState().auth.user;
+    const modifiedUser = {...originalUser, mobileNumber}
+    dispatch({ type: UPDATE_USER_ACCOUNT, user: modifiedUser });
   };
 };
 
@@ -127,13 +237,12 @@ export const logout = () => {
   return { type: LOG_OUT };
 };
 
-const saveDataToStorage = (token, userId, name, mobileNumber) => {
-  console.log('savedatatostorage', name, mobileNumber, token, userId)
+const saveDataToStorage = (token, userId, name) => {
+  console.log('savedatatostorage', name, token, userId)
   AsyncStorage.setItem(
     "userData",
     JSON.stringify({
       name,
-      mobileNumber,
       token,
       userId,
     })

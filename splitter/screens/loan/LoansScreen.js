@@ -30,12 +30,10 @@ const LoansScreen = (props) => {
   const loans = useSelector(state => state.loan.loans);
   const dispatch = useDispatch();
 
-  console.log('------------loans screen---------')
   const loadLoans = useCallback(async () => {
     setError(null);
     setIsRefreshing(true);
     try {
-      console.log('fetching loans')
       await dispatch(loanActions.fetchLoans());
     } catch (err) {
       setError(err.message);

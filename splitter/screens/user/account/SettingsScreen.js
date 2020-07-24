@@ -13,77 +13,32 @@ import {
 } from "react-native";
 import { useSelector } from "react-redux";
 import { LinearGradient } from "expo-linear-gradient";
-import { useDispatch } from "react-redux";
 
-import Input from "../../../components/UI/Input";
 import Card from "../../../components/UI/Card";
-import Colors from "../../../constants/Colors";
-import * as authActions from "../../../store/actions/auth";
-
-const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
 
 const SettingsScreen = (props) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState();
-  const [inputOTP, setInputOTP] = useState("");
-  const [user, setUser] = useState({});
-  const dispatch = useDispatch();
-
-  const userId = useSelector((state) => state.auth.userId);
-
-  const loadUser = useCallback(async () => {
-    setError(null);
-    try {
-      console.log("fetching user");
-      const response = await fetch("http://192.168.1.190:5000/user/" + userId, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const resData = await response.json()
-      setUser(resData.user)
-    } catch (err) {
-      setError(err.message);
-    }
-  }, [dispatch, setIsLoading, setError]);
-
-  useEffect(() => {
-    const listenerCreated = props.navigation.addListener("focus", loadUser);
-
-    return () => {
-      // calling this function will remove the listener
-      listenerCreated();
-    };
-  }, [loadUser]);
-
-  useEffect(() => {
-    setIsLoading(true);
-    loadUser().then(() => {
-      setIsLoading(false);
-    });
-  }, [dispatch, loadUser]);
-
+  const user = useSelector((state) => state.auth.user)
   const options = (text, screenName) => {
-
-    var param = {}; 
+    var param = {};
     switch (screenName) {
-      case 'UpdateDetails':
-        param['firstName'] = user.firstName;
-        param['lastName'] = user.lastName
-        break;
-      case 'UpdateEmail':
+      case "UpdateDetails":
         param = {
-          email: user.email
+          firstName: user.firstName,
+          lastName: user.lastName
         }
         break;
-      case 'UpdateMobileNumber':
+      case "UpdateEmail":
         param = {
-          mobileNumber: user.mobileNumber
-        }
+          email: user.email,
+        };
+        break;
+      case "UpdateMobileNumber":
+        param = {
+          mobileNumber: user.mobileNumber,
+        };
         break;
       default:
-        param = {}
+        param = {};
         break;
     }
 

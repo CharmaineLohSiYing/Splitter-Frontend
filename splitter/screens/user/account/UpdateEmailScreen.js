@@ -21,12 +21,56 @@ import * as authActions from "../../../store/actions/auth";
 
 const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
 
+const formReducer = (state, action) => {
+  if (action.type === FORM_INPUT_UPDATE) {
+    const updatedValues = {
+      ...state.inputValues,
+      [action.input]: action.value,
+    };
+    const updatedValidities = {
+      ...state.inputValidities,
+      [action.input]: action.isValid,
+    };
+    let updatedFormIsValid = true;
+    for (const key in updatedValidities) {
+      updatedFormIsValid = updatedFormIsValid && updatedValidities[key];
+    }
+    return {
+      formIsValid: updatedFormIsValid,
+      inputValidities: updatedValidities,
+      inputValues: updatedValues,
+    };
+  }
+  return state;
+};
+
 const UpdateEmailScreen = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
-  const [email, setEmail] = useState(props.route.params.email);
-
+  const dispatch = useDispatch()
   const userId = useSelector((state) => state.auth.userId);
+
+  const [formState, dispatchFormState] = useReducer(formReducer, {
+    inputValues: {
+      email: props.route.params.email,
+    },
+    inputValidities: {
+      email: true,
+    },
+    formIsValid: true,
+  });
+
+  const inputChangeHandler = useCallback(
+    (inputIdentifier, inputValue, inputValidity) => {
+      dispatchFormState({
+        type: FORM_INPUT_UPDATE,
+        value: inputValue,
+        isValid: inputValidity,
+        input: inputIdentifier,
+      });
+    },
+    [dispatchFormState]
+  );
 
   useEffect(() => {
     if (error) {
@@ -38,29 +82,14 @@ const UpdateEmailScreen = (props) => {
     setError(null);
     setIsLoading(true);
     try {
-      const response = await fetch(
-        "http://192.168.1.190:5000/user/email/" + userId,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email,
-          }),
-        }
-      );
-      if (!response.ok) {
-        setError(await response.json());
-        setIsLoading(false)
-      } else {
-        console.log("change email success!");
-        props.navigation.goBack();
-      }
+      await dispatch(authActions.updateEmail(formState.inputValues.email))
+      setIsLoading(false)
+      props.navigation.goBack()
     } catch (err) {
+      setIsLoading(false)
       setError(err.message);
     }
-  };
+  }
 
   return (
     <KeyboardAvoidingView
@@ -70,16 +99,27 @@ const UpdateEmailScreen = (props) => {
     >
       <LinearGradient colors={["#ffedff", "#ffe3ff"]} style={styles.gradient}>
         <Card style={styles.authContainer}>
-          <Text>Enter email: </Text>
-          <TextInput value={email} onChangeText={setEmail} />
+          <Input
+            id="email"
+            label="E-Mail"
+            keyboardType="email-address"
+            required
+            email
+            autoCapitalize="none"
+            errorText="Please enter a valid email address."
+            onInputChange={inputChangeHandler}
+            initialValue={props.route.params.email}
+            initiallyValid={true}
+          />
           <View style={styles.buttonContainer}>
             {isLoading ? (
               <ActivityIndicator size="small" color={Colors.primary} />
             ) : (
               <Button
-                title="Change Email"
+                title="Update"
                 color={Colors.primary}
                 onPress={submitHandler}
+                disabled={!formState.formIsValid}
               />
             )}
           </View>

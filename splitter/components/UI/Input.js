@@ -1,5 +1,6 @@
 import React, { useReducer, useEffect } from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
+import MyAppText from '../../components/UI/MyAppText'
 
 const INPUT_CHANGE = 'INPUT_CHANGE';
 const INPUT_BLUR = 'INPUT_BLUR';
@@ -25,7 +26,7 @@ const inputReducer = (state, action) => {
 const Input = props => {
   const [inputState, dispatch] = useReducer(inputReducer, {
     value: props.initialValue ? props.initialValue : '',
-    isValid: props.initiallyValid,
+    isValid: true,
     touched: false
   });
 
@@ -69,13 +70,13 @@ const Input = props => {
 
   return (
     <View style={styles.formControl}>
-      <Text style={styles.label}>{props.label}</Text>
+      <MyAppText style={styles.label}>{props.label}</MyAppText>
       <TextInput
         {...props}
         style={styles.input}
         value={inputState.value}
         onChangeText={textChangeHandler}
-        onBlur={lostFocusHandler}
+        onFocus={lostFocusHandler}
       />
       {!inputState.isValid && inputState.touched && (
         <View style={styles.errorContainer}>
@@ -91,7 +92,6 @@ const styles = StyleSheet.create({
     width: '100%'
   },
   label: {
-    fontFamily: 'open-sans-bold',
     marginVertical: 8
   },
   input: {

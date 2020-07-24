@@ -21,13 +21,60 @@ import * as authActions from "../../../store/actions/auth";
 
 const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
 
-const ChangeMobileNumberScreen = (props) => {
+const formReducer = (state, action) => {
+  if (action.type === FORM_INPUT_UPDATE) {
+    const updatedValues = {
+      ...state.inputValues,
+      [action.input]: action.value,
+    };
+    const updatedValidities = {
+      ...state.inputValidities,
+      [action.input]: action.isValid,
+    };
+    let updatedFormIsValid = true;
+    for (const key in updatedValidities) {
+      updatedFormIsValid = updatedFormIsValid && updatedValidities[key];
+    }
+    return {
+      formIsValid: updatedFormIsValid,
+      inputValidities: updatedValidities,
+      inputValues: updatedValues,
+    };
+  }
+  return state;
+};
+
+
+const UpdateMobileNumberScreen = (props) => {
+  const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
-  const [mobileNumber, setMobileNumber] = useState("");
-  const dispatch = useDispatch();
 
   const userId = useSelector((state) => state.auth.userId);
+
+  const [formState, dispatchFormState] = useReducer(formReducer, {
+    inputValues: {
+      mobileNumber: props.route.params.mobileNumber,
+    },
+    inputValidities: {
+      mobileNumber: true,
+    },
+    formIsValid: true,
+  });
+
+
+  const inputChangeHandler = useCallback(
+    (inputIdentifier, inputValue, inputValidity) => {
+      dispatchFormState({
+        type: FORM_INPUT_UPDATE,
+        value: inputValue,
+        isValid: inputValidity,
+        input: inputIdentifier,
+      });
+    },
+    [dispatchFormState]
+  );
+
 
   useEffect(() => {
     if (error) {
@@ -36,10 +83,10 @@ const ChangeMobileNumberScreen = (props) => {
   }, [error]);
 
   const submitHandler = async () => {
-    
+    console.log('request otp')
+    setError(null);
+    setIsLoading(true);
     try {
-      setError(null);
-      setIsLoading(true);
       const response = await fetch(
         "http://192.168.1.190:5000/auth/requestOTP",
         {
@@ -49,22 +96,25 @@ const ChangeMobileNumberScreen = (props) => {
           },
           body: JSON.stringify({
             userId,
-            mobileNumber
+            mobileNumber: formState.inputValues.mobileNumber
           }),
         }
       );
-      if (!response.ok) {
-        setError(await response.json());
+      
+      if (!response.ok){
+        setIsLoading(false)
+        setError(await response.json())
       } else {
-        console.log('generated otp')
+        setIsLoading(false)
         props.navigation.navigate('AccountOTP', {changeMobileNumber: true})
-      }
-
-      setIsLoading(false);
+      } 
+    
     } catch (err) {
+      setIsLoading(false)
       setError(err.message);
     }
-  };
+  }
+
 
   return (
     <KeyboardAvoidingView
@@ -74,16 +124,28 @@ const ChangeMobileNumberScreen = (props) => {
     >
       <LinearGradient colors={["#ffedff", "#ffe3ff"]} style={styles.gradient}>
         <Card style={styles.authContainer}>
-          <Text>Enter new mobile number: </Text>
-          <TextInput value={mobileNumber} onChangeText={setMobileNumber} />
+        <Input
+              id="mobileNumber"
+              label="Mobile Number"
+              keyboardType="number-pad"
+              required
+              numbers
+              minLength={8}
+              maxLength={8}
+              errorText="Please enter a valid mobile number."
+              onInputChange={inputChangeHandler}
+              initialValue={props.route.params.mobileNumber.toString()}
+              initiallyValid={true}
+            />
           <View style={styles.buttonContainer}>
             {isLoading ? (
               <ActivityIndicator size="small" color={Colors.primary} />
             ) : (
               <Button
-                title="Change Password"
+                title="Update"
                 color={Colors.primary}
                 onPress={submitHandler}
+                disabled={!formState.formIsValid}
               />
             )}
           </View>
@@ -93,7 +155,7 @@ const ChangeMobileNumberScreen = (props) => {
   );
 };
 
-ChangeMobileNumberScreen.navigationOptions = {
+UpdateMobileNumberScreen.navigationOptions = {
   headerTitle: "Authenticate",
 };
 
@@ -117,4 +179,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ChangeMobileNumberScreen;
+export default UpdateMobileNumberScreen;

@@ -1,12 +1,11 @@
-import { AUTHENTICATE, LOG_OUT, SIGN_UP, VERIFY_OTP, SET_CONTACTS, SET_DID_TRY_AUTOLOGIN } from '../actions/auth';
+import { AUTHENTICATE, LOG_OUT, SIGN_UP, VERIFY_OTP, SET_CONTACTS, SET_DID_TRY_AUTOLOGIN, UPDATE_USER_ACCOUNT } from '../actions/auth';
 
 const initialState = {
   token: null,
   userId: null,
-  name: null, 
-  mobileNumber: null,
   didTryAutoLogin: false,
-  contacts: {}
+  contacts: {},
+  user: {}
 };
 
 export default (state = initialState, action) => {
@@ -16,8 +15,7 @@ export default (state = initialState, action) => {
       return {
         token: action.token,
         userId: action.userId,
-        name: action.name, 
-        mobileNumber: action.mobileNumber,
+        user: action.user,
         didTryAutoLogin: true
       };
     case LOG_OUT:
@@ -36,6 +34,11 @@ export default (state = initialState, action) => {
       return{
         ...state,
         contacts: action.contacts
+      }
+    case UPDATE_USER_ACCOUNT:
+      return {
+        ...state,
+        user: action.user
       }
     default:
       return state;

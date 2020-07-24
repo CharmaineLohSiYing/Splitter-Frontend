@@ -41,7 +41,7 @@ const formReducer = (state, action) => {
   return state;
 };
 
-const AuthScreen = props => {
+const LoginScreen = props => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
   const dispatch = useDispatch();
@@ -76,13 +76,15 @@ const AuthScreen = props => {
     setIsLoading(true);
     try {
       await dispatch(action);
-      // props.navigation.navigate('Shop');
     } catch (err) {
+      console.log('catch error', err)
       setIsLoading(false);
       if (err.message === 'NOT_VERIFIED'){
         return props.navigation.navigate('Verify')
+      } else {
+        setError(err.message);
       }
-      setError(err.message);
+      
     }
   };
 
@@ -104,7 +106,7 @@ const AuthScreen = props => {
       keyboardVerticalOffset={0}
       style={styles.screen}
     >
-      <LinearGradient colors={['#ffedff', '#ffe3ff']} style={styles.gradient}>
+      <LinearGradient colors={['#007A74', 'white']} style={styles.gradient}>
         <Card style={styles.authContainer}>
           <ScrollView>
             <Input
@@ -157,7 +159,7 @@ const AuthScreen = props => {
   );
 };
 
-AuthScreen.navigationOptions = {
+LoginScreen.navigationOptions = {
   headerTitle: 'Authenticate'
 };
 
@@ -173,7 +175,7 @@ const styles = StyleSheet.create({
   authContainer: {
     width: '80%',
     maxWidth: 400,
-    maxHeight: 400,
+    maxHeight: 600,
     padding: 20
   },
   buttonContainer: {
@@ -181,4 +183,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default AuthScreen;
+export default LoginScreen;

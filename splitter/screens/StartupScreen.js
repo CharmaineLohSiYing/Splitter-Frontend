@@ -3,7 +3,8 @@ import {
   View,
   ActivityIndicator,
   StyleSheet,
-  AsyncStorage
+  AsyncStorage,
+  Text
 } from 'react-native';
 import { useDispatch } from 'react-redux';
 
@@ -15,45 +16,10 @@ import {matchUsersWithContacts} from '../utils/initialiseContacts'
 const StartupScreen = props => {
   const dispatch = useDispatch();
   console.log('startup screen')
-  // matchUsersWithContacts = async () => {
-  //   const { status } = await Contacts.requestPermissionsAsync();
-  //   if (status === "granted") {
-  //     const { data } = await Contacts.getContactsAsync({
-  //       fields: [Contacts.Fields.PhoneNumbers],
-  //     });
-
-  //     const filteredData = data.filter((contact) => {
-  //       return contact.phoneNumbers !== undefined;
-  //     });
-
-  //     var contactsObj = {};
-  //       filteredData.forEach((contactData) => {
-  //         contactData.phoneNumbers.forEach(phoneNumber => {
-  //           if (phoneNumber.label === 'mobile'){
-  //             var number = phoneNumber.number
-  //             if (number.startsWith("+65")){
-  //               number = number.substr(3)
-  //             }
-  //             number = number.replace(/ /g, "");
-  //             if ((number.startsWith("8") || number.startsWith("9")) && number.length == 8){
-  //               const newContactData = {
-  //                 mobileNumber: number,
-  //                 name: contactData.name,
-  //               };
-  //               contactsObj[number] = newContactData;
-  //             }
-              
-  //           }
-            
-  //         })
-  //       });
-  //       dispatch(authActions.setContacts(contactsObj))
-
-  //   }
-  // };
 
   useEffect(() => {
     const tryLogin = async () => {
+      
       const userData = await AsyncStorage.getItem('userData');
       if (!userData) {
         dispatch(authActions.setDidTryAutoLogin())
@@ -73,13 +39,15 @@ const StartupScreen = props => {
       dispatch(authActions.setContacts(matchedContacts));
       dispatch(authActions.authenticate(userId, token, name, mobileNumber));
     };
-
-    tryLogin();
+    setTimeout(() => {
+      tryLogin()
+    }, 2000)
+   //  tryLogin();
   }, [dispatch]);
 
   return (
     <View style={styles.screen}>
-      <ActivityIndicator size="large" color={Colors.primary} />
+      <Text style={styles.text}>SPLITTER</Text>
     </View>
   );
 };
@@ -88,7 +56,13 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    backgroundColor:'#2C2B2B'
+  },
+  text:{
+    letterSpacing: 5,
+    fontSize: 25,
+    color:'#00B8AB'
   }
 });
 
