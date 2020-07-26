@@ -9,12 +9,16 @@ import {
   ActivityIndicator,
   Alert,
   TextInput,
-  FlatList
+  FlatList,
+  TouchableOpacity
 } from "react-native";
 import { useSelector } from "react-redux";
 import { LinearGradient } from "expo-linear-gradient";
 import { useDispatch } from "react-redux";
-import IndividualOrderDisplay from "./IndividualOrderDisplay";
+import OrderDisplay from "./OrderDisplay";
+import AddOrdersSubSectionHeader from "./AddOrdersSubSectionHeader";
+import { MaterialIcons, Ionicons } from "@expo/vector-icons";
+import Colors from '../constants/Colors'
 
 const IndividualOrders = (props) => {
 
@@ -44,13 +48,13 @@ const IndividualOrders = (props) => {
 
   return (
     <View style={styles.container}>
-      {displayPayers ? <Text>Payment Distribution</Text> : <Text>Individual Orders</Text>}
-      <View>
+      <View style={{width:'100%'}}>
+        <AddOrdersSubSectionHeader header="Individual Orders"/>
         <FlatList
           keyExtractor={(item, index) => index.toString()}
           data={Object.keys(attendees)}
           renderItem={({ item }) => (
-            <IndividualOrderDisplay
+            <OrderDisplay
               onSelect={displayPayers ? updatePaidAmountHandler : updateIndividualOrderHandler}
               id={item}
               name={attendees[item].name}
@@ -66,12 +70,11 @@ const IndividualOrders = (props) => {
 const styles = StyleSheet.create({
   container: {
     marginVertical: 20,
-    width: "90%",
-    backgroundColor: "#ccc",
+    width: "100%",
     alignSelf: "center",
     alignItems: "center",
-    maxHeight:100
   },
+  
 });
 
 export default IndividualOrders;

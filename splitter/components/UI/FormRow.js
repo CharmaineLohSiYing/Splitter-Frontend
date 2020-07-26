@@ -1,5 +1,6 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
+import Colors from '../../constants/Colors'
 
 const FormRow = (props) => {
   return (
@@ -11,6 +12,10 @@ const styles = StyleSheet.create({
   formRow: {
     flexDirection: "row",
     justifyContent: "space-between",
+    borderBottomWidth: 1,
+    borderColor: Colors.lightBlue,
+    height: 50,
+    alignItems:'center'
   },
 });
 

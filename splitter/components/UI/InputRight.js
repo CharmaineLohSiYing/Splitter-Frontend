@@ -11,7 +11,9 @@ const styles = StyleSheet.create({
     inputRight: {
       flex: 1,
       flexDirection:'row',
-      alignItems:'center'
+      alignItems:'center',
+      padding: 5,
+      justifyContent:'flex-end'
     },
   });
 export default InputRight;

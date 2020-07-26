@@ -11,7 +11,6 @@ const initialState = {
 export default (state = initialState, action) => {
   switch (action.type) {
     case AUTHENTICATE:
-      console.log('authenticate', action)
       return {
         token: action.token,
         userId: action.userId,

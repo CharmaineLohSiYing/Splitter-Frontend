@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { View, StyleSheet, TextInput } from "react-native";
 
 const CurrencyInput = (props) => {
-  // const [value, setValue] = useState(props.value);
 
   const textChangeHandler = (text) => {
     // allows commas and decimals
@@ -10,11 +9,11 @@ const CurrencyInput = (props) => {
     if(currencyRegex.test(text) || text === ''){
         props.onChangeValue(text)
     }
-    return;
   };
 
   return (
-    <TextInput
+    <TextInput 
+      {...props}
       style={{ ...styles.currency, ...props.style }}
       keyboardType="decimal-pad"
       value={props.value}
@@ -26,8 +25,6 @@ const CurrencyInput = (props) => {
 const styles = StyleSheet.create({
   currency: {
     flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
   },
 });
 export default CurrencyInput;

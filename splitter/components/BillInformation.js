@@ -21,217 +21,195 @@ import DatePicker from "../components/UI/DatePicker";
 import moment from "moment";
 import { Ionicons } from "@expo/vector-icons";
 import CurrencyInput from "../components/UI/CurrencyInput";
+import AddOrdersHeader from "./AddOrdersSubSectionHeader";
+import Colors from "../constants/Colors";
+import { Layout, Radio, CheckBox } from "@ui-kitten/components";
 
 import * as eventActions from "../store/actions/bill-event";
 
 const BillInformation = (props) => {
-  const [isEdit, setIsEdit] = useState(false) 
-  const dispatch = useDispatch();
-  
-  var billDetails = null;
-  useEffect(() => {
-    if (props.edit){
-      console.log('isEdit - billInformation', true)
-      setIsEdit(true)
-    }
-  }, [props])
-  billDetails = useSelector((state) => state.billEvent.billDetails);
-  if (Object.keys(billDetails).length === 0){
-    billDetails = null
-  }
-
-  const currentFullDate = new Date();
-  const currentFormattedDate = moment().format("D MMM YYYY");
-
-  const [eventName, setEventName] = useState(
-    billDetails ? billDetails.eventName : ""
-  );
-  const [formattedDate, setFormattedDate] = useState(
-    billDetails ? moment(billDetails.formattedDate).format("D MMM YYYY"): currentFormattedDate
-  );
-  const [eventDate, setEventDate] = useState(
-    billDetails ? billDetails.eventDate : currentFullDate
-  );
-  const [totalBill, setTotalBill] = useState(
-    billDetails ? billDetails.totalBill : 0
-  );
-  const [addGST, setAddGST] = useState(
-    billDetails ? billDetails.addGST : false
-  );
-  const [addServiceCharge, setAddServiceCharge] = useState(
-    billDetails ? billDetails.addServiceCharge : false
-  );
-  const [discountType, setDiscountType] = useState(
-    billDetails ? billDetails.discountType : "NONE"
-  );
-  const [discountAmount, setDiscountAmount] = useState(
-    billDetails ? billDetails.discountAmount : 0
-  );
-  const [netBill, setNetBill] = useState(billDetails ? billDetails.netBill : 0);
-
-
-  // const [eventName, setEventName] = useState("");
-  // const [formattedDate, setFormattedDate] = useState(currentFormattedDate);
-  // const [eventDate, setEventDate] = useState(currentFullDate);
-  // const [totalBill, setTotalBill] = useState(0);
-  // const [addGST, setAddGST] = useState(false);
-  // const [addServiceCharge, setAddServiceCharge] = useState(false);
-  // const [discountType, setDiscountType] = useState("NONE");
-  // const [discountAmount, setDiscountAmount] = useState(0);
-  // const [netBill, setNetBill] = useState(0);
-
-  const proceedHandler = () => {
-    dispatch(
-      eventActions.updateBillDetails(
-        eventName,
-        formattedDate,
-        addGST,
-        addServiceCharge,
-        discountType,
-        discountAmount,
-        netBill
-      )
-    );
-    props.navigation.navigate("AddPayers", {isEdit, netBill});
+  console.log('billinformation')
+  const selectDateHandler = (date) => {
+    props.selectDateHandler(date);
   };
 
   const discountAmountHandler = (amount) => {
-    setDiscountAmount(amount);
+    var currencyRegex = /(?=.*?\d)^\$?(([1-9]\d{0,2}(,\d{3})*)|\d+)?(\.\d{1,2})?$/;
+    if (currencyRegex.test(amount) || amount === "") {
+      props.onChangeDiscountAmount(amount);
+      console.log('amount', amount)
+    } else {
+      console.log('else', amount)
+    }
   };
-
-  const selectDateHandler = (date) => {
-    setFormattedDate(moment(new Date(date)).format("D MMM YYYY"));
-  };
-
-  const totalBillFromStore = useSelector((state) => state.billEvent.totalBill);
-
-  useEffect(() => {
-    var multiplier = 1;
-    if (addGST) {
-      multiplier += 0.07;
-    }
-    if (addServiceCharge) {
-      multiplier += 0.1;
-    }
-
-    var calculatedDiscount = 0;
-
-    var newTotal = multiplier * totalBillFromStore;
-    if (discountType === "PERCENTAGE") {
-      calculatedDiscount = discountAmount * 0.01 * newTotal;
-    } else if (discountType === "ABSOLUTE") {
-      calculatedDiscount = discountAmount;
-    }
-
-    var newTotal = multiplier * totalBillFromStore - calculatedDiscount;
-
-    setTotalBill(totalBillFromStore.toFixed(2));
-    setNetBill(newTotal.toFixed(2));
-  }, [
-    totalBillFromStore,
-    addGST,
-    addServiceCharge,
-    discountType,
-    discountAmount,
-  ]);
 
   return (
-    <View style={styles.container}>
-      <Text>Bill Information</Text>
-      <FormRow>
-        <LabelLeft label="Event Name (Optional): " />
-        <InputRight>
-          <TextInput></TextInput>
-        </InputRight>
-      </FormRow>
-      <FormRow>
-        <LabelLeft label="Event Date: " />
-        <InputRight>
-          <DatePicker date={eventDate} onSelectDate={selectDateHandler} />
-          <Text>{formattedDate}</Text>
-        </InputRight>
-      </FormRow>
-      <FormRow>
-        <LabelLeft label="Total Bill: " />
-        <InputRight>
-          <Text>$ {totalBill}</Text>
-        </InputRight>
-      </FormRow>
-      <FormRow>
-        <LabelLeft label="Add GST: " />
-        <InputRight>
-          <TouchableOpacity onPress={() => setAddGST((state) => !state)}>
-            {addGST ? (
-              <Ionicons name="ios-checkbox" size={24} color="black" />
-            ) : (
-              <Ionicons name="ios-square-outline" size={24} color="black" />
-            )}
-          </TouchableOpacity>
-        </InputRight>
-      </FormRow>
-      <FormRow>
-        <LabelLeft label="Add Service Charge: " />
-        <InputRight>
-          <TouchableOpacity
-            onPress={() => setAddServiceCharge((state) => !state)}
-          >
-            {addServiceCharge ? (
-              <Ionicons name="ios-checkbox" size={24} color="black" />
-            ) : (
-              <Ionicons name="ios-square-outline" size={24} color="black" />
-            )}
-          </TouchableOpacity>
-        </InputRight>
-      </FormRow>
-      <FormRow>
-        <LabelLeft label="Discount: " />
-        <InputRight>
-          <Picker
-            selectedValue={discountType}
-            style={{ flex: 1 }}
-            onValueChange={(itemValue, itemIndex) => setDiscountType(itemValue)}
-          >
-            <Picker.Item label="None" value="NONE" />
-            <Picker.Item label="Percentage" value="PERCENTAGE" />
-            <Picker.Item label="Absolute Value" value="ABSOLUTE" />
-          </Picker>
-        </InputRight>
-      </FormRow>
-      {discountType != "NONE" && (
+    <ScrollView contentContainerStyle={styles.container}>
+      <AddOrdersHeader
+        header="Bill Information"
+        subtitle={props.totalBill}
+        style={{ backgroundColor: Colors.lightBlue, alignItems: "center" }}
+      />
+      <View style={styles.contentContainer}>
         <FormRow>
-          <LabelLeft label="Discount Amount: " />
+          <LabelLeft label="Event Name" />
           <InputRight>
-            {discountType == "ABSOLUTE" && <Text>$</Text>}
-            <CurrencyInput
-              value={discountAmount}
-              onChangeValue={discountAmountHandler}
+            <TextInput
+              style={{ textAlign: "right" }}
+              value={props.eventName}
+              onChangeText={() => props.onChangeEventName()}
+              placeholder="Optional"
             />
-            {discountType == "PERCENTAGE" && <Text>%</Text>}
           </InputRight>
         </FormRow>
-      )}
-
-      <FormRow>
-        <LabelLeft label="Net Bill: " />
-        <InputRight>
-          <Text>$ {netBill}</Text>
-        </InputRight>
-      </FormRow>
-      <Button title="Next" onPress={proceedHandler} />
-    </View>
+        <FormRow>
+          <LabelLeft label="Event Date" />
+          <InputRight>
+            <DatePicker
+              date={props.eventDate}
+              onSelectDate={selectDateHandler}
+              formattedDate={props.formattedDate}
+            />
+          </InputRight>
+        </FormRow>
+        <FormRow style={{ backgroundColor: Colors.lightBlue, height: 40 }}>
+          <LabelLeft
+            label={"Add calculations to total bill ($" + props.totalBill + ")"}
+            style={{ alignItems: "center" }}
+          />
+        </FormRow>
+        <FormRow
+          style={{
+            flexDirection: "column",
+            height: 60,
+            justifyContent: "center",
+          }}
+        >
+          <LabelLeft label="Extra Charges" />
+          <InputRight>
+            <Layout style={styles.layoutContainer}>
+              <CheckBox
+                style={styles.radio}
+                checked={props.addGST}
+                onChange={props.onChangeGST}
+              >
+                GST
+              </CheckBox>
+              <CheckBox
+                style={styles.radio}
+                checked={props.addServiceCharge}
+                onChange={props.onChangeServiceCharge}
+              >
+                Service Charge
+              </CheckBox>
+            </Layout>
+          </InputRight>
+        </FormRow>
+        <FormRow
+          style={{
+            flexDirection: "column",
+            height: 60,
+            justifyContent: "center",
+          }}
+        >
+          <LabelLeft label="Discount" />
+          <InputRight>
+            <Layout style={styles.layoutContainer}>
+              <Radio
+                style={styles.radio}
+                checked={props.discountType === "NONE"}
+                onChange={() => props.onChangeDiscountType("NONE")}
+              >
+                None
+              </Radio>
+              <Radio
+                style={styles.radio}
+                checked={props.discountType === "PERCENTAGE"}
+                onChange={() => props.onChangeDiscountType("PERCENTAGE")}
+              >
+                Percentage
+              </Radio>
+              <Radio
+                style={styles.radio}
+                checked={props.discountType === "ABSOLUTE"}
+                onChange={() => props.onChangeDiscountType("ABSOLUTE")}
+              >
+                Absolute Value
+              </Radio>
+            </Layout>
+          </InputRight>
+        </FormRow>
+        {props.discountType != "NONE" && (
+          <FormRow>
+            <LabelLeft
+              label={
+                props.discountType == "ABSOLUTE"
+                  ? "Discount Amount ($)"
+                  : "Discount Amount (%)"
+              }
+            />
+            <InputRight>
+              {/* <CurrencyInput
+                placeholder="0.00"
+                style={{ textAlign: "right" }}
+                value={props.discountAmount}
+                onChangeValue={discountAmountHandler}
+              /> */}
+              <TextInput
+                placeholder="0.00"
+                style={{ textAlign: "right", flex: 1 }}
+                keyboardType="decimal-pad"
+                value={props.discountAmount}
+                onChangeText={() => props.onChangeDiscountAmount()}
+              ></TextInput>
+            </InputRight>
+          </FormRow>
+        )}
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    marginVertical: 20,
-    width: "90%",
-    backgroundColor: "#ccc",
+  contentContainer: {
+    marginVertical: 10,
+    borderColor: Colors.lightBlue,
+    borderWidth: 1,
     alignSelf: "center",
     alignItems: "center",
   },
   input: {
     flex: 1,
+  },
+  container: {
+    marginVertical: 20,
+    width: "100%",
+    alignSelf: "center",
+    alignItems: "center",
+  },
+  layoutContainer: {
+    left: 5,
+    justifyContent: "center",
+    width: "100%",
+    flexDirection: "row",
+    backgroundColor: "transparent",
+    paddingBottom: 5,
+  },
+  radio: {
+    margin: 1,
+  },
+  floatingButton: {
+    backgroundColor: Colors.primary,
+    position: "absolute",
+    width: 70,
+    height: 70,
+    alignItems: "center",
+    justifyContent: "center",
+    right: 30,
+    bottom: 30,
+    borderRadius: 35,
+    zIndex: 1,
+    flexDirection: "row",
   },
 });
 

@@ -29,10 +29,10 @@ export async function matchUsersWithContacts() {
             number.length == 8
           ) {
             const newContactData = {
-              mobileNumber: number,
+              mobileNumber: number.toString(),
               name: contactData.name,
             };
-            contactsObj[number] = newContactData;
+            contactsObj[number.toString()] = newContactData;
           }
         }
       });

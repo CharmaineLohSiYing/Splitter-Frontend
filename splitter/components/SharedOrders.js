@@ -6,55 +6,84 @@ import {
   StyleSheet,
   FlatList,
   Text,
+  TouchableOpacity,
 } from "react-native";
 import { useSelector } from "react-redux";
 import { LinearGradient } from "expo-linear-gradient";
 import { useDispatch } from "react-redux";
-import SharedOrderDisplay from "./SharedOrderDisplay";
-import * as eventActions from '../store/actions/bill-event'
-
+import OrderDisplay from "./OrderDisplay";
+import * as eventActions from "../store/actions/bill-event";
+import AddOrdersSubSectionHeader from "./AddOrdersSubSectionHeader";
+import Colors from "../constants/Colors";
+import IndividualOrders from "./IndividualOrders";
+import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 
 const SharedOrders = (props) => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const sharedOrders = useSelector((state) => state.billEvent.sharedOrders);
+  const attendees = useSelector((state) => state.billEvent.attendees);
   const [orders, setOrders] = useState(sharedOrders);
 
-  
   useEffect(() => {
-    setOrders(sharedOrders)
-
+    setOrders(sharedOrders);
   }, [sharedOrders]);
 
-  const editHandler = (id, sharers) => {
-    props.onUpdate(id, sharers)
-  }
+  const editSharedOrderHandler = (id, sharers) => {
+    props.onUpdate(id, sharers);
+  };
 
-  const deleteHandler = (id) => {
-    dispatch(eventActions.removeSharedOrder(id))
+  const deleteSharedOrderHandler = (id) => {
+    dispatch(eventActions.removeSharedOrder(id));
+  };
 
-  }
+  const emptyListComponent = () => {
+    return (
+      <View style={styles.emptyFlatlist}>
+        <Text style={styles.noOrdersText}>No shared orders added yet</Text>
+        <TouchableOpacity
+          onPress={props.addSharedOrder}
+          style={styles.emptyAddButton}
+        >
+          <Text>Add a shared order</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
 
   return (
     <View style={styles.container}>
-      <Text>Shared Orders</Text><Button title="Add" onPress={props.addSharedOrder} />
-      {orders.length === 0 && <Text>No shared orders added yet</Text>}
-      {orders.length > 0 && (
-          <FlatList
-            keyExtractor={(item, index) => index.toString()}
-            data={orders}
-            initialNumToRender={5}
-            renderItem={({ item }) => (
-              <SharedOrderDisplay
-                id={item.id}
-                sharers={item.users}
-                amount={item.amount}
-                edit={editHandler}
-                delete={deleteHandler}
-              />
-            )}
-          />
-      )}
-      
+      <View style={{ flexDirection: "row", paddingRight: 10 }}>
+        <AddOrdersSubSectionHeader
+          header="Shared Orders"
+          style={{ paddingVertical: 5, flex: 1 }}
+        />
+        <Ionicons name="md-add-circle-outline" size={28} color="black" />
+      </View>
+      <View>
+        {/* <View style={styles.flatlist}> */}
+        <FlatList
+          ListFooterComponent={
+            <IndividualOrders
+              updateIndividualOrder={props.updateIndividualOrder}
+            />
+          }
+          keyExtractor={(item, index) => index.toString()}
+          data={orders}
+          ListEmptyComponent={emptyListComponent}
+          initialNumToRender={5}
+          renderItem={({ item }) => (
+            <OrderDisplay
+              id={item.id}
+              sharers={item.users}
+              amount={item.amount}
+              attendees={attendees}
+              edit={editSharedOrderHandler}
+              delete={deleteSharedOrderHandler}
+            />
+          )}
+        />
+      </View>
     </View>
   );
 };
@@ -63,13 +92,29 @@ const styles = StyleSheet.create({
   container: {
     marginVertical: 20,
     width: "90%",
-    backgroundColor: "#ccc",
     alignSelf: "center",
-    alignItems: "center",
   },
   input: {
     flex: 1,
   },
+  emptyAddButton: {
+    alignSelf: "center",
+    marginVertical: 5,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "80%",
+    height: 40,
+    backgroundColor: Colors.lightBlue,
+  },
+  emptyFlatlist: {
+    borderWidth: 1,
+    borderColor: Colors.lightBlue,
+    height: 90,
+    padding: 10,
+  },
+  noOrdersText: {
+    alignSelf: "center",
+  },
 });
 
-export default SharedOrders;
+export default React.memo(SharedOrders);

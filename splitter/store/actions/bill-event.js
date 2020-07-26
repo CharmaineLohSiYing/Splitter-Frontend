@@ -11,16 +11,23 @@ export const SET_USEREVENTS = "SET_USEREVENTS";
 export const INITIALISE_EVENT_DETAILS = "INITIALISE_EVENT_DETAILS";
 
 export const addAttendees = (attendees) => {
-
+  // convert attendees arr to obj
+  const attendeesObj = {}
+  attendees.forEach((attendee) => {
+    attendeesObj[attendee.mobileNumber] = {
+      name: attendee.name,
+      mobileNumber: attendee.mobileNumber
+    }
+  })
   return (dispatch, getState) => {
     const currUser = getState().auth;
-    attendees[currUser.userId] = {
+    attendeesObj[currUser.userId] = {
       id: currUser.userId,
-      name: currUser.user.firstName,
-      mobileNumber: currUser.user.mobileNumber,
+      name: 'You',
+      mobileNumber: currUser.user.mobileNumber.toString(),
       currentUser: true,
     };
-    dispatch(test(attendees));
+    dispatch(test(attendeesObj));
   };
 };
 
@@ -29,6 +36,7 @@ const test = (attendees) => {
 };
 
 export const addSharedOrder = (amount, sharers) => {
+  amount = parseFloat(amount).toFixed(2).toString()
   return { type: ADD_SHARED_ORDER, amount, sharers };
 };
 

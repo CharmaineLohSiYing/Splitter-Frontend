@@ -26,7 +26,7 @@ const StartupScreen = props => {
         return;
       }
       const transformedData = JSON.parse(userData);
-      const { token, userId, expiryDate, name, mobileNumber } = transformedData;
+      const { token, userId, expiryDate, firstName, lastName, email, mobileNumber } = transformedData;
       const expirationDate = new Date(expiryDate);
 
       if (expirationDate <= new Date() || !token || !userId) {
@@ -36,8 +36,14 @@ const StartupScreen = props => {
 
       const expirationTime = expirationDate.getTime() - new Date().getTime();
       const matchedContacts = matchUsersWithContacts();
+      const user = {
+      firstName,
+      lastName,
+      email,
+      mobileNumber
+    }
+      dispatch(authActions.authenticate(userId,token, user));
       dispatch(authActions.setContacts(matchedContacts));
-      dispatch(authActions.authenticate(userId, token, name, mobileNumber));
     };
     setTimeout(() => {
       tryLogin()

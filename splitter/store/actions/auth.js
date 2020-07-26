@@ -101,7 +101,7 @@ export const login = (email, password) => {
       mobileNumber
     }
     dispatch(authenticate(userId, accessToken, user));
-    saveDataToStorage(accessToken, userId, firstName + " " + lastName);
+    saveDataToStorage(accessToken, userId, firstName, lastName, mobileNumber, email);
   };
 };
 
@@ -137,7 +137,7 @@ export const verifyOTP = (otp, userId) => {
       mobileNumber
     }
     dispatch(authenticate(userId, accessToken, user));
-    saveDataToStorage(accessToken, userId, firstName + " " + lastName);
+    saveDataToStorage(accessToken, userId, firstName, lastName, mobileNumber, email);
   };
 };
 export const updateDetails = (inputFirstName, inputLastName) => {
@@ -237,14 +237,16 @@ export const logout = () => {
   return { type: LOG_OUT };
 };
 
-const saveDataToStorage = (token, userId, name) => {
-  console.log('savedatatostorage', name, token, userId)
+const saveDataToStorage = (token, userId, firstName, lastName, mobileNumber, email) => {
   AsyncStorage.setItem(
     "userData",
     JSON.stringify({
-      name,
+      firstName,
+      lastName,
       token,
       userId,
+      mobileNumber,
+      email
     })
   );
 };
