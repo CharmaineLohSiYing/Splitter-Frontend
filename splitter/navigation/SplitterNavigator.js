@@ -23,11 +23,13 @@ import AddOrdersScreen from "../screens/bill-event/create/AddOrdersScreen";
 import SelectSharersScreen from "../screens/bill-event/create/SelectSharersScreen";
 import AddPayersScreen from "../screens/bill-event/create/AddPayersScreen";
 import CalculatorScreen from "../screens/bill-event/create/CalculatorScreen";
+import EnterBillDetailsScreen from '../screens/bill-event/create/EnterBillDetailsScreen'
 
 import LoansScreen from "../screens/loan/LoansScreen";
 import ViewContactLoansScreen from "../screens/loan/ViewContactLoansScreen";
 import CreateTransactionScreen from "../screens/loan/CreateTransactionScreen";
 import CreateLoanScreen from "../screens/loan/CreateLoanScreen";
+
 
 import SettingsScreen from "../screens/user/account/SettingsScreen";
 import UpdateEmailScreen from "../screens/user/account/UpdateEmailScreen";
@@ -89,6 +91,7 @@ export const EventsNavigator = ({ navigation }) => {
   return (
     <EventsStackNavigator.Navigator
       screenOptions={defaultNavOptions}>
+       
       <EventsStackNavigator.Screen name="Events" component={EventsScreen} options={{headerLeft: () => toggleHeaderButton(navigation)}}/>
       <EventsStackNavigator.Screen
         name="ViewEvent"
@@ -101,6 +104,10 @@ export const EventsNavigator = ({ navigation }) => {
       <EventsStackNavigator.Screen
         name="AddOrders"
         component={AddOrdersScreen}
+      />
+       <EventsStackNavigator.Screen
+        name="BillDetails"
+        component={EnterBillDetailsScreen}
       />
       <EventsStackNavigator.Screen
         name="SelectSharers"

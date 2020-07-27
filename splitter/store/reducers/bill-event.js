@@ -158,20 +158,33 @@ export default (state = initialState, action) => {
         attendees: updatedAttendees,
       };
     case UPDATE_SHARED_ORDER:
-      var targetOrder = state.sharedOrders.filter(
-        (order) => order.id == action.orderId
-      )[0];
-      targetOrder.amount = action.amount;
-      targetOrder.users = action.sharers;
-      var newArray = state.sharedOrders
-        .filter((order) => order.id != action.orderId)
-        .concat(targetOrder);
+
+      // let targetIdx = state.sharedOrders.findIndex((obj) => {return obj.id == action.orderId})
+      // let targetOrder = state.sharedOrders[targetIdx]
+      // targetOrder.amount = action.amount
+      // targetOrder.users = action.sharers
+      let newArr = state.sharedOrders.map(el => el.id == action.orderId ? {...el, amount: action.amount, users: action.sharers} : el);
       var totalBill = updateTotalBill();
       return {
-        ...state,
-        sharedOrders: newArray,
-        totalBill,
+          ...state,
+          sharedOrders: newArr,
+          totalBill,
       };
+      
+      // var targetOrder = state.sharedOrders.filter(
+      //   (order) => order.id == action.orderId
+      // )[0];
+      // targetOrder.amount = action.amount;
+      // targetOrder.users = action.sharers;
+      // var newArray = state.sharedOrders
+      //   .filter((order) => order.id != action.orderId)
+      //   .concat(targetOrder);
+      // var totalBill = updateTotalBill();
+      // return {
+      //   ...state,
+      //   sharedOrders: newArray,
+      //   totalBill,
+      // };
 
     case CREATE_EVENT:
       console.log('reducer - create event')

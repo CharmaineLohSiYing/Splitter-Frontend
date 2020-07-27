@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useReducer, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useReducer,
+  useCallback,
+  useMemo,
+} from "react";
 import {
   ScrollView,
   SafeAreaView,
@@ -10,13 +16,9 @@ import {
   Text,
   ActivityIndicator,
   TouchableOpacity,
-  Alert,
-  TextInput,
-  Share,
-  TouchableWithoutFeedback,
+  SectionList,
 } from "react-native";
 
-import BillInformation from "../../../components/BillInformation";
 import IndividualOrders from "../../../components/IndividualOrders";
 import SharedOrders from "../../../components/SharedOrders";
 
@@ -27,109 +29,77 @@ import moment from "moment";
 import AddOrdersSubSectionHeader from "../../../components/AddOrdersSubSectionHeader";
 import OrderDisplay from "../../../components/OrderDisplay";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
+import ProceedBottomButton from "../../../components/UI/ProceedBottomButton";
 
+const Test = () => {
+  console.log("BOO");
+  return (
+    <View>
+      <Text>Boo</Text>
+    </View>
+  );
+};
 const AddOrdersScreen = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [error, setError] = useState(null);
   const sharedOrders = useSelector((state) => state.billEvent.sharedOrders);
-  const attendees = useSelector((state) => state.billEvent.attendees);
   const [orders, setOrders] = useState(sharedOrders);
   const dispatch = useDispatch();
 
-  var billDetails = null;
-  billDetails = useSelector((state) => state.billEvent.billDetails);
-  if (Object.keys(billDetails).length === 0) {
-    billDetails = null;
-  }
-console.log('add orders')
-  const currentFullDate = new Date();
-  const currentFormattedDate = moment().format("D MMM YYYY");
+  const { navigation } = props;
 
-  const [eventName, setEventName] = useState(
-    billDetails ? billDetails.eventName : ""
-  );
-  const [formattedDate, setFormattedDate] = useState(
-    billDetails
-      ? moment(new Date(billDetails.formattedDate)).format("D MMM YYYY")
-      : currentFormattedDate
-  );
-  const [eventDate, setEventDate] = useState(
-    billDetails ? billDetails.eventDate : currentFullDate
-  );
-  const [totalBill, setTotalBill] = useState(
-    billDetails ? billDetails.totalBill : 0
-  );
-  const [addGST, setAddGST] = useState(
-    billDetails ? billDetails.addGST : false
-  );
-  const [addServiceCharge, setAddServiceCharge] = useState(
-    billDetails ? billDetails.addServiceCharge : false
-  );
-  const [discountType, setDiscountType] = useState(
-    billDetails ? billDetails.discountType : "NONE"
-  );
-  const [discountAmount, setDiscountAmount] = useState(
-    billDetails ? billDetails.discountAmount : null
-  );
-  const [netBill, setNetBill] = useState(billDetails ? billDetails.netBill : 0);
+  console.log("add orders");
+  props.navigation.setOptions({
+    headerTitle: "Add Orders",
+    headerTitleStyle: {
+      fontFamily: "roboto-regular",
+      flex: 1,
+      alignSelf: "center",
+    },
+  });
 
-  const proceedHandler = () => {
-    dispatch(
-      eventActions.updateBillDetails(
-        eventName,
-        formattedDate,
-        addGST,
-        addServiceCharge,
-        discountType,
-        discountAmount,
-        netBill
-      )
-    );
-    props.navigation.navigate("AddPayers", { isEdit, netBill });
-  };
-
-
-  const discountAmountHandler = (amount) => {
-    console.log(amount)
-    setDiscountAmount(amount);
-  };
-
-  const selectDateHandler = (date) => {
-    setFormattedDate(date);
-  };
-
-  const totalBillFromStore = useSelector((state) => state.billEvent.totalBill);
-
-  useEffect(() => {
-    var multiplier = 1;
-    if (addGST) {
-      multiplier += 0.07;
+  const Products = [
+    {
+      id: 1,
+      name: 'Product 1'
+    },
+    {
+      id: 2,
+      name: 'Product 2'
+    },
+    {
+      id: 3,
+      name: 'Product 3'
+    },
+    {
+      id: 4,
+      name: 'Product 4'
+    },
+  ];
+  
+  const Supervisors = [
+    {
+      belongsToPruduct: 1,
+      name: 'SuperVisor 1' 
+    },
+    {
+      belongsToPruduct: 3,
+      name: 'SuperVisor 2' 
+    },
+    {
+      belongsToPruduct: 2,
+      name: 'SuperVisor 3' 
+    },
+    {
+      belongsToPruduct: 4,
+      name: 'SuperVisor 4' 
     }
-    if (addServiceCharge) {
-      multiplier += 0.1;
-    }
+  ];
 
-    var calculatedDiscount = 0;
-
-    var newTotal = multiplier * totalBillFromStore;
-    if (discountType === "PERCENTAGE") {
-      calculatedDiscount = discountAmount * 0.01 * newTotal;
-    } else if (discountType === "ABSOLUTE") {
-      calculatedDiscount = discountAmount;
-    }
-
-    var newTotal = multiplier * totalBillFromStore - calculatedDiscount;
-
-    setTotalBill(totalBillFromStore.toFixed(2));
-    setNetBill(newTotal.toFixed(2));
-  }, [
-    totalBillFromStore,
-    addGST,
-    addServiceCharge,
-    discountType,
-    discountAmount,
-  ]);
+  const proceedHandler = useCallback(() => {
+    navigation.navigate("BillDetails", { isEdit });
+  }, []);
 
   useEffect(() => {
     if (props.route.params && props.route.params.isEdit) {
@@ -164,60 +134,41 @@ console.log('add orders')
     );
   };
 
-  const updateSharedOrderHandler = (id, sharers) => {
-    props.navigation.navigate("SelectSharers", {
+  const updateSharedOrderHandler = useCallback((id, sharers) => {
+    navigation.navigate("SelectSharers", {
       updateSharedOrder: true,
       orderId: id,
       sharers: sharers,
     });
-  };
-  const updateIndividualOrderHandler = (id) => {
-    const user = attendees[id];
-    props.navigation.navigate("Calculator", {
-      sharers: [user],
+  }, []);
+
+  const updateIndividualOrderHandler = useCallback((id) => {
+    navigation.navigate("Calculator", {
       updateIndividualOrder: true,
       userId: id,
     });
-  };
+  }, []);
 
-  const footerComponent = () => {
+  function footerComponent() {
     return (
       <>
+        <AddOrdersSubSectionHeader header="Individual Orders" />
         <IndividualOrders
           updateIndividualOrder={updateIndividualOrderHandler}
         />
-        <TouchableOpacity
-          onPress={proceedHandler}
-          style={styles.proceedButton}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.proceedText}>Proceed</Text>
-        </TouchableOpacity>
+        <ProceedBottomButton
+          proceedHandler={proceedHandler}
+          style={{ marginBottom: 20 }}
+        />
+        <ProceedBottomButton text="heloo" />
+        <Test />
       </>
     );
-  };
+  }
 
   const headerComponent = () => {
     return (
       <>
-        <BillInformation
-          formattedDate={formattedDate}
-          eventName={eventName}
-          eventDate={eventDate}
-          totalBill={totalBill}
-          addGST={addGST}
-          addServiceCharge={addServiceCharge}
-          discountType={discountType}
-          discountAmount={discountAmount}
-          netBill={netBill}
-          totalBill={totalBill}
-          onChangeDiscountAmount={discountAmountHandler}
-          selectDateHandler={selectDateHandler}
-          onChangeEventName={setEventName}
-          onChangeGST={() => setAddGST((prev) => !prev)}
-          onChangeServiceCharge={() => setAddServiceCharge((prev) => !prev)}
-          onChangeDiscountType={setDiscountType}
-        />
         <View style={{ flexDirection: "row", paddingRight: 10 }}>
           <AddOrdersSubSectionHeader
             header="Shared Orders"
@@ -251,10 +202,10 @@ console.log('add orders')
   }
 
   return (
-    <View style={{ alignItems: "center" }}>
+    <View style={{ alignItems: "center", justifyContent: "center", flex: 1 }}>
       <View style={{ width: "90%" }}>
-        <FlatList
-          ListFooterComponent={footerComponent}
+        {/* <FlatList
+          // ListFooterComponent={footerComponent}
           ListHeaderComponent={headerComponent}
           keyExtractor={(item, index) => index.toString()}
           data={orders}
@@ -265,11 +216,32 @@ console.log('add orders')
               id={item.id}
               sharers={item.users}
               amount={item.amount}
-              attendees={attendees}
-              edit={updateSharedOrderHandler}
+              onSelect={updateSharedOrderHandler}
               delete={deleteSharedOrderHandler}
             />
           )}
+        /> */}
+        <SectionList
+          renderSectionHeader={({ section: { title } }) => (
+            <Text style={{ fontWeight: "bold" }}>{title}</Text>
+          )}
+          sections={[
+            {
+              title: "Products",
+              data: Products,
+              renderItem: ({ item, index, section: { title, data } }) => (
+                <Text>{item.name}</Text>
+              ),
+            },
+            {
+              title: "Supervisors",
+              data: Supervisors,
+              renderItem: ({ item, index, section: { title, data } }) => (
+                <Text>{item.name}</Text>
+              ),
+            },
+          ]}
+          keyExtractor={(item, index) => item.name + index}
         />
       </View>
     </View>
@@ -301,18 +273,6 @@ const styles = StyleSheet.create({
   },
   noOrdersText: {
     alignSelf: "center",
-  },
-  proceedButton: {
-    width: "100%",
-    height: 40,
-    marginBottom: 20,
-    backgroundColor: Colors.primary,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  proceedText: {
-    color: "white",
-    fontSize: 16,
   },
 });
 

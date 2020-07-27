@@ -1,26 +1,77 @@
-import React, { PureComponent } from "react";
+import React, { PureComponent, Component } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import Colors from "../constants/Colors";
+import { connect } from "react-redux";
 
-class OrderDisplay extends React.Component {
-
-
-  handleSelect = ()  => {
-    if (this.props.sharers){
-      this.props.edit(this.props.id, this.props.sharers)
-    } else {
-      this.props.onSelect(this.props.id)
-    }
-    
+class OrderDisplay extends Component {
+  constructor(props) {
+    super(props);
   }
+
+  shouldComponentUpdate(nextProps, nextState) {
+      const { contacts, amount, dispatch, id, name, onSelect, sharers } = nextProps;
+      const curr = this.props;
+      
+    
+      if (contacts !== curr.contacts) {
+        console.log("contacts not equal!!!");
+      }
+      if (sharers !== curr.sharers) {
+        console.log("contacts not equal!!!");
+      }
+
+      if (dispatch !== curr.dispatch) {
+        console.log("dispatch not equal", dispatch, curr.dispatch);
+      }
+      if (id !== curr.id) {
+        console.log("id not equal", id, curr.id);
+      }
+      if (name !== curr.name) {
+        console.log("name not equal", name, curr.name);
+      }
+      if (onSelect !== curr.onSelect) {
+        console.log("onSelect not equal", onSelect, curr.onSelect);
+      }
+    
+   
+    if (
+      this.props.amount === nextProps.amount &&
+      this.props.contacts === nextProps.contacts && this.props.id === nextProps.id
+    ) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  componentDidUpdate(){
+    console.log('componentDidUpdate', this.props.amount)
+  }
+
+  componentDidMount(){
+    console.log('componentDidMOUNT', this.props.amount)
+  }
+  componentDidUpdate(){
+    console.log('componentDidUpdate', this.props.amount)
+  }
+
+  handleSelect = () => {
+    if (this.props.sharers) {
+      this.props.onSelect(this.props.id, this.props.sharers);
+    } else {
+      this.props.onSelect(this.props.id);
+    }
+  };
+
   render() {
-    let sharersNames = []
+    let sharersNames = [];
+    
     if (this.props.sharers) {
       const sharers = this.props.sharers;
-      if (this.props.attendees) {
+      if (this.props.contacts) {
         sharers.forEach((key) => {
-          if (key in this.props.attendees) {
-            sharersNames = sharersNames.concat(this.props.attendees[key].name);
+          if (key in this.props.contacts) {
+            sharersNames = sharersNames.concat(this.props.contacts[key].name);
           }
         });
       }
@@ -29,14 +80,14 @@ class OrderDisplay extends React.Component {
       <TouchableOpacity
         style={styles.container}
         activeOpacity={0.8}
-        onPress={() => {
-          this.props.onSelect(this.props.id);
-        }}
+        onPress={this.handleSelect}
       >
         {!this.props.sharers && <Text>{this.props.name}</Text>}
-        {!!this.props.sharers && (<Text>
-          {sharersNames[0]} and {sharersNames.length - 1} other(s)
-        </Text>)}
+        {!!this.props.sharers && (
+          <Text>
+            {sharersNames[0]} and {sharersNames.length - 1} other(s)
+          </Text>
+        )}
         <View style={styles.amountContainer}>
           <Text>${this.props.amount}</Text>
         </View>
@@ -54,7 +105,7 @@ const styles = StyleSheet.create({
     height: 50,
     alignItems: "center",
     paddingHorizontal: 10,
-    marginVertical:10.
+    marginVertical: 10,
   },
   amountContainer: {
     backgroundColor: "white",
@@ -66,4 +117,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
-export default OrderDisplay;
+const mapStateToProps = (state) => {
+  const { contacts } = state.auth;
+  return { contacts };
+};
+
+export default connect(mapStateToProps)(OrderDisplay);

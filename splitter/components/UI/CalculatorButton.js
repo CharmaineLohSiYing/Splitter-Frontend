@@ -1,6 +1,7 @@
 import React from "react";
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { FontAwesome5, Entypo, Feather, MaterialCommunityIcons } from "@expo/vector-icons";
+import Colors from '../../constants/Colors'
 
 const CalculatorButton = (props) => {
   let iconName;
@@ -52,7 +53,7 @@ const CalculatorButton = (props) => {
       activeOpacity={0.8}
       style={[
         { ...styles.button, ...props.style },
-        { backgroundColor: props.grey ? "#ccc" : "orange" },
+        { backgroundColor: props.grey ? "#ccc" : Colors.lightBlue },
       ]}
     >
       {!props.digit && iconType == "Entypo" && (

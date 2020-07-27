@@ -18,6 +18,8 @@ import CalculatorButton from "../../../components/UI/CalculatorButton";
 import * as eventActions from "../../../store/actions/bill-event";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import ProceedBottomButton from '../../../components/UI/ProceedBottomButton'
+import Colors from '../../../constants/Colors'
 
 class CalculatorScreen extends React.Component {
   constructor(props) {
@@ -64,7 +66,6 @@ class CalculatorScreen extends React.Component {
     this.setState({ previousOperandDisplay: "" });
   };
 
-
   pressClearHandler = (value) => {
     this.setState({
       operation: "",
@@ -75,9 +76,9 @@ class CalculatorScreen extends React.Component {
   };
 
   pressDeleteHandler = (value) => {
-    const length = this.state.currentOperand.toString().length
+    const length = this.state.currentOperand.toString().length;
     if (length > 0) {
-      if (length === 1){
+      if (length === 1) {
         this.pressClearHandler();
       } else {
         this.setState({
@@ -183,18 +184,19 @@ class CalculatorScreen extends React.Component {
           sharers: routeParams.sharers,
         });
       } else if (routeParams.updateIndividualOrder) {
+
         currentOrderAmount = this.props.attendees[routeParams.userId].amount;
         this.setState({
           currentOperand: currentOrderAmount.toString(),
           attendeeIdToUpdate: routeParams.orderId,
-          sharers: routeParams.sharers,
+          sharers: [this.props.attendees[routeParams.userId]],
         });
       } else if (routeParams.updatePaidAmount) {
         currentPaidAmount = this.props.attendees[routeParams.userId].paidAmount;
-        var defaultValue = currentPaidAmount
-        if (currentPaidAmount == 0){
-          defaultValue = routeParams.unpaidAmount
-        } 
+        var defaultValue = currentPaidAmount;
+        if (currentPaidAmount == 0) {
+          defaultValue = routeParams.unpaidAmount;
+        }
 
         this.setState({
           currentOperand: defaultValue.toString(),
@@ -212,7 +214,8 @@ class CalculatorScreen extends React.Component {
   }
 
   submitOrder = async () => {
-    await this.compute(); 
+    console.log('=====================submit===============')
+    await this.compute();
 
     const {
       addSharedOrder,
@@ -255,24 +258,22 @@ class CalculatorScreen extends React.Component {
   render() {
     return (
       <View style={styles.screen}>
-        <View>
-          {this.state.combinedOrder && (
-            <Text>
-              Shared between {this.state.sharers.length} people
+        <View style={styles.aboveCalculator}>
+          <View style={styles.calculatedValueContainer}>
+            <Text style={styles.calculation}>
+              {this.state.previousOperandDisplay}
             </Text>
-          )}
+          </View>
+          <View style={styles.calculatedValueContainer}>
+            <Text style={styles.calculation}>{this.state.currentOperand}</Text>
+          </View>
+          <View>
+            <ProceedBottomButton proceedHandler={this.submitOrder}/>
+          </View>
+            
         </View>
-        <Text>Calculator Screen</Text>
-        <View style={styles.calculatedValueContainer}>
-          <Text style={styles.calculation}>
-            {this.state.previousOperandDisplay}
-          </Text>
-        </View>
-        <View style={styles.calculatedValueContainer}>
-          <Text style={styles.calculation}>{this.state.currentOperand}</Text>
-        </View>
-        <Button title="Confirm" onPress={this.submitOrder} />
-        <View style={styles.buttonsContainer}>
+
+        <View style={styles.calculator}>
           <CalculatorColumn>
             <CalculatorButton value="Clear" onPress={this.pressClearHandler} />
             <CalculatorButton
@@ -383,13 +384,13 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
   },
-  buttonsContainer: {
+  calculator: {
     height: "60%",
     width: "100%",
     flexDirection: "row",
   },
   delete: {
-    backgroundColor: "orange",
+    backgroundColor: Colors.lightBlue,
     height: "12%",
     width: "25%",
     alignSelf: "flex-end",
@@ -404,8 +405,11 @@ const styles = StyleSheet.create({
   },
   calculation: {
     fontSize: 30,
-    color: "blue",
   },
+  aboveCalculator:{
+    flex: 1,
+    justifyContent:'flex-end'
+  }
 });
 
 const mapStateToProps = (state) => {
