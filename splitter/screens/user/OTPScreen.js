@@ -36,7 +36,6 @@ const OTPScreen = (props) => {
   }, [error]);
 
   const otpSubmitHandler = async () => {
-    console.log('PEEP')
     if (!props.route.params){
       let action = authActions.verifyOTP(inputOTP, userId);
       setError(null);

@@ -28,6 +28,7 @@ import SelectedContactDisplay from "../../../components/SelectedContactDisplay";
 import { Item, HeaderButtons } from "react-navigation-header-buttons";
 import CustomHeaderButton from "../../../components/UI/CustomHeaderButton";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
+import AddBillProgress from "../../../components/AddBillProgress"
 
 // height of each contact container + flatlist separator
 const ITEM_HEIGHT = 61
@@ -196,7 +197,8 @@ const AddAttendeesScreen = (props) => {
         backgroundColor: "#fff",
         justifyContent: "center",
       }}
-    >
+    > 
+      <AddBillProgress progress={3}/>
       <View>
         <TextInput
           style={styles.searchBar}

@@ -62,7 +62,7 @@ const toggleHeaderButton = (navigation) => {
 
 const defaultNavOptions = {
   headerStyle: {
-    backgroundColor: Platform.OS === "android" ? Colors.primary : "",
+    backgroundColor: Platform.OS === "android" ? Colors.blue : "",
   },
   headerTitleContainerStyle: {
     left: 0, // THIS RIGHT HERE
@@ -72,12 +72,11 @@ const defaultNavOptions = {
     fontFamily: "roboto-regular",
     flex: 1,
     alignSelf: "center",
-    letterSpacing: 2,
   },
   headerBackTitleStyle: {
     fontFamily: "open-sans",
   },
-  headerTintColor: Platform.OS === "android" ? "white" : Colors.primary,
+  headerTintColor: Colors.gray,
   headerTitle: "SPLITTER",
 };
 
@@ -113,34 +112,44 @@ export const BillsNavigator = ({ navigation }) => {
       <BillsStackNavigator.Screen
         name="AddAttendees"
         component={AddAttendeesScreen}
+        options={{
+          headerTitle: "New Bill"
+        }}
       />
       <BillsStackNavigator.Screen
         name="AddOrders"
         component={AddOrdersScreen}
         options={{
-          headerTitle: "Add Orders",
-          headerTitleStyle: styles.headerTitle,
+          headerTitle: "New Bill",
         }}
       />
       <BillsStackNavigator.Screen
         name="BillDetails"
         component={EnterBillDetailsScreen}
         options={{
-          headerTitle: "Enter Bill Details",
-          headerTitleStyle: styles.headerTitle,
+          headerTitle: "New Bill"
         }}
       />
       <BillsStackNavigator.Screen
         name="SelectSharers"
         component={SelectSharersScreen}
+        options={{
+          headerTitle: "New Bill"
+        }}
       />
       <BillsStackNavigator.Screen
         name="Calculator"
         component={CalculatorScreen}
+        options={{
+          headerTitle: "New Bill"
+        }}
       />
       <BillsStackNavigator.Screen
         name="AddPayers"
         component={AddPayersScreen}
+        options={{
+          headerTitle: "New Bill"
+        }}
       />
       <BillsStackNavigator.Screen name="Test" component={TestScreen} />
     </BillsStackNavigator.Navigator>
