@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
   headerContainer:{
     textAlign:'center',
     alignItems:'center',
-    backgroundColor: Colors.accent
+    backgroundColor: Colors.lightBlue
   },
   loanContainer:{
     backgroundColor:'#ccc',
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
     alignItems:'center'
   },
   headerButtons:{
-    backgroundColor: Colors.accent,
+    backgroundColor: Colors.lightBlue,
     flexDirection:'row',
     justifyContent:'space-evenly'
   }

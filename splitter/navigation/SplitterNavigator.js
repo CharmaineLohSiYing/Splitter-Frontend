@@ -4,6 +4,8 @@ import Colors from "../constants/Colors";
 import * as authActions from "../store/actions/auth";
 import { Ionicons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+
 import {
   createDrawerNavigator,
   DrawerItemList,
@@ -103,7 +105,6 @@ export const EventsNavigator = ({ navigation }) => {
       <EventsStackNavigator.Screen
         name="Events"
         component={EventsScreen}
-        options={{ headerLeft: () => toggleHeaderButton(navigation) }}
       />
       <EventsStackNavigator.Screen
         name="ViewEvent"
@@ -141,10 +142,7 @@ export const EventsNavigator = ({ navigation }) => {
         name="AddPayers"
         component={AddPayersScreen}
       />
-      <EventsStackNavigator.Screen
-        name="Test"
-        component={TestScreen}
-      />
+      <EventsStackNavigator.Screen name="Test" component={TestScreen} />
     </EventsStackNavigator.Navigator>
   );
 };
@@ -153,10 +151,11 @@ const LoansStackNavigator = createStackNavigator();
 
 export const LoansNavigator = ({ navigation }) => {
   return (
-    <LoansStackNavigator.Navigator
-      screenOptions={defaultNavOptions}
-    >
-      <LoansStackNavigator.Screen name="Loans" component={LoansScreen} options={{ headerLeft: () => toggleHeaderButton(navigation) }}/>
+    <LoansStackNavigator.Navigator screenOptions={defaultNavOptions}>
+      <LoansStackNavigator.Screen
+        name="Loans"
+        component={LoansScreen}
+      />
       <LoansStackNavigator.Screen
         name="ViewContactLoans"
         component={ViewContactLoansScreen}
@@ -178,10 +177,7 @@ const AccountStackNavigator = createStackNavigator();
 export const AccountNavigator = ({ navigation }) => {
   return (
     <AccountStackNavigator.Navigator
-      screenOptions={{
-        ...defaultNavOptions,
-        headerLeft: () => toggleHeaderButton(navigation),
-      }}
+      screenOptions={defaultNavOptions}
     >
       <AccountStackNavigator.Screen
         name="Settings"
@@ -211,85 +207,119 @@ export const AccountNavigator = ({ navigation }) => {
   );
 };
 
-const SplitterDrawerNavigator = createDrawerNavigator();
+const TabNavigator = createBottomTabNavigator();
 
 export const SplitterNavigator = () => {
-  // this dispatch line was brought out fr om drawerContent
-  const dispatch = useDispatch();
-
   return (
-    <SplitterDrawerNavigator.Navigator
-      drawerContent={(props) => {
-        return (
-          <ScrollView
-            contentContainerStyle={{
-              flex: 1,
-              paddingTop: 20,
-              justifyContent: "space-between",
-            }}
-          >
-            <SafeAreaView forceInset={{ top: "always", horizontal: "never" }}>
-              <DrawerItemList {...props} />
-            </SafeAreaView>
-            <SafeAreaView forceInset={{ top: "always", horizontal: "never" }}>
-              <Button
-                title="Logout"
-                color={Colors.primary}
-                onPress={() => {
-                  dispatch(authActions.logout());
-                }}
-              />
-            </SafeAreaView>
-          </ScrollView>
-        );
-      }}
-      drawerContentOptions={{
+    <TabNavigator.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName;
+
+          if (route.name === "Track Loans") {
+            iconName = "md-cash";
+          } else if (route.name === "My Bills") {
+            iconName = "ios-list-box";
+          } else if (route.name === "Settings") {
+            iconName = "md-settings";
+          } 
+
+          // You can return any component that you like here!
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
+      })}
+      tabBarOptions={{
         activeTintColor: Colors.primary,
+        inactiveTintColor: Colors.gray,
       }}
     >
-       <SplitterDrawerNavigator.Screen
-        name="Loans"
-        component={LoansNavigator}
-        screenOptions={{
-          drawerIcon: (props) => (
-            <Ionicons
-              name={Platform.OS === "android" ? "md-list" : "ios-list"}
-              size={23}
-              color={props.color}
-            />
-          ),
-        }}
-      />
-      <SplitterDrawerNavigator.Screen
-        name="Events"
-        component={EventsNavigator}
-        screenOptions={{
-          drawerIcon: (props) => (
-            <Ionicons
-              name={Platform.OS === "android" ? "md-cart" : "ios-cart"}
-              size={23}
-              color={props.color}
-            />
-          ),
-        }}
-      />
-     
-      <SplitterDrawerNavigator.Screen
-        name="Account"
-        component={AccountNavigator}
-        screenOptions={{
-          drawerIcon: (props) => (
-            <Ionicons
-              name={Platform.OS === "android" ? "md-cart" : "ios-cart"}
-              size={23}
-              color={props.color}
-            />
-          ),
-        }}
-      />
-    </SplitterDrawerNavigator.Navigator>
+      <TabNavigator.Screen name="Track Loans" component={LoansNavigator} />
+      <TabNavigator.Screen name="My Bills" component={EventsNavigator} />
+
+      <TabNavigator.Screen name="Settings" component={AccountNavigator} />
+    </TabNavigator.Navigator>
   );
 };
+
+// const SplitterDrawerNavigator = createDrawerNavigator();
+
+// export const SplitterNavigator = () => {
+//   // this dispatch line was brought out fr om drawerContent
+//   const dispatch = useDispatch();
+
+//   return (
+//     <SplitterDrawerNavigator.Navigator
+//       drawerContent={(props) => {
+//         return (
+//           <ScrollView
+//             contentContainerStyle={{
+//               flex: 1,
+//               paddingTop: 20,
+//               justifyContent: "space-between",
+//             }}
+//           >
+//             <SafeAreaView forceInset={{ top: "always", horizontal: "never" }}>
+//               <DrawerItemList {...props} />
+//             </SafeAreaView>
+//             <SafeAreaView forceInset={{ top: "always", horizontal: "never" }}>
+//               <Button
+//                 title="Logout"
+//                 color={Colors.primary}
+//                 onPress={() => {
+//                   dispatch(authActions.logout());
+//                 }}
+//               />
+//             </SafeAreaView>
+//           </ScrollView>
+//         );
+//       }}
+//       drawerContentOptions={{
+//         activeTintColor: Colors.primary,
+//       }}
+//     >
+//        <SplitterDrawerNavigator.Screen
+//         name="Loans"
+//         component={LoansNavigator}
+//         screenOptions={{
+//           drawerIcon: (props) => (
+//             <Ionicons
+//               name={Platform.OS === "android" ? "md-list" : "ios-list"}
+//               size={23}
+//               color={props.color}
+//             />
+//           ),
+//         }}
+//       />
+//       <SplitterDrawerNavigator.Screen
+//         name="Events"
+//         component={EventsNavigator}
+//         screenOptions={{
+//           drawerIcon: (props) => (
+//             <Ionicons
+//               name={Platform.OS === "android" ? "md-cart" : "ios-cart"}
+//               size={23}
+//               color={props.color}
+//             />
+//           ),
+//         }}
+//       />
+
+//       <SplitterDrawerNavigator.Screen
+//         name="Account"
+//         component={AccountNavigator}
+//         screenOptions={{
+//           drawerIcon: (props) => (
+//             <Ionicons
+//               name={Platform.OS === "android" ? "md-cart" : "ios-cart"}
+//               size={23}
+//               color={props.color}
+//             />
+//           ),
+//         }}
+//       />
+//     </SplitterDrawerNavigator.Navigator>
+//   );
+// };
 
 const styles = StyleSheet.create({
   headerTitle: {

@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     minWidth: 100,
     height: 30,
-    backgroundColor: Colors.accent,
+    backgroundColor: Colors.lightBlue,
   },
 });
 

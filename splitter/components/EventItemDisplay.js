@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
   netBillContainer:{
     minWidth: 100,
     padding:5,
-    backgroundColor: Colors.accent,
+    backgroundColor: Colors.lightBlue,
     alignItems:'center'
   }
 });
