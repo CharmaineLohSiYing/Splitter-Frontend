@@ -83,7 +83,7 @@ const UpdateMobileNumberScreen = (props) => {
   }, [error]);
 
   const submitHandler = async () => {
-    console.log('request otp')
+    // console.log('request otp')
     setError(null);
     setIsLoading(true);
     try {

@@ -29,10 +29,10 @@ const EventsScreen = (props) => {
 
   var contactsFromStore = useSelector((state) => state.auth.contacts);
 
-  console.log('-----------events screen----------')
+  // console.log('-----------events screen----------')
 
   const loadUserEvents = useCallback(async () => {
-    console.log('set error(null), setIsRefreshing(true)')
+    // console.log('set error(null), setIsRefreshing(true)')
     setError(null);
     setIsRefreshing(true);
     try {
@@ -40,7 +40,7 @@ const EventsScreen = (props) => {
     } catch (err) {
       setError(err.message);
     }
-    console.log('setIsRefreshing(false)')
+    // console.log('setIsRefreshing(false)')
     setIsRefreshing(false);
   }, [dispatch, setIsLoading, setError]);
 
@@ -60,7 +60,7 @@ const EventsScreen = (props) => {
 
     async function initialiseContacts() {
       var matched = await matchUsersWithContacts()
-      console.log('auth actions set contacts')
+      // console.log('auth actions set contacts')
       dispatch(authActions.setContacts(matched));
     }
 
@@ -71,16 +71,16 @@ const EventsScreen = (props) => {
 
   useEffect(() => {
     if (retrievedUserEvents){
-      console.log('set user events')
+      // console.log('set user events')
       setUserEvents(retrievedUserEvents)
     }
   }, [retrievedUserEvents]);
 
   useEffect(() => {
-    console.log('useeffect set Isloading(true)')
+    // console.log('useeffect set Isloading(true)')
     setIsLoading(true);
     loadUserEvents().then(() => {
-      console.log('useeffect set Isloading(false)')
+      // console.log('useeffect set Isloading(false)')
       setIsLoading(false);
     });
   }, [dispatch, loadUserEvents]);

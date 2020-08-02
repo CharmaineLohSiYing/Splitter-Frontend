@@ -87,11 +87,16 @@ const ViewContactLoansScreen = (props) => {
   // var contactsFromStore = useSelector((state) => state.auth.contacts);
 
   const viewEventHandler = (eventId) => {
-    console.log("view event");
     props.navigation.navigate("Events", {
       screen: "ViewEvent",
       params: { eventId },
+      initial: true,
     });
+    // props.navigation.push("Events", {
+    //   screen: "ViewEvent",
+    //   params: { eventId },
+    // });
+    
   };
 
   const LoanDisplay = (date, amount, matchedName, toId, payerId, isCancelled, eventId) => {

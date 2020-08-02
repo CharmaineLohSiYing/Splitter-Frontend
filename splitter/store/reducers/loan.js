@@ -4,6 +4,7 @@ import {
   
   const initialState = {
     loans: {},
+    netDebt: 0
   };
   
   export default (state = initialState, action) => {
@@ -13,6 +14,7 @@ import {
         return {
           ...state,
           loans: action.loans,
+          netDebt: action.netDebt
         };
       
   

@@ -77,7 +77,7 @@ const LoginScreen = props => {
     try {
       await dispatch(action);
     } catch (err) {
-      console.log('catch error', err)
+      // console.log('catch error', err)
       setIsLoading(false);
       if (err.message === 'NOT_VERIFIED'){
         return props.navigation.navigate('Verify')

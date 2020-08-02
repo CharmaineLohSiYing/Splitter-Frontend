@@ -44,7 +44,7 @@ export const signup = (firstName, lastName, email, password, mobileNumber) => {
 
     if (!response.ok) {
       const errorResData = await response.json();
-      console.log("errorResData", errorResData);
+      // console.log("errorResData", errorResData);
      
       let message = "Something went wrong!";
       if (errorResData) {

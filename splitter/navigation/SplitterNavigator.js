@@ -8,8 +8,12 @@ import {
   createDrawerNavigator,
   DrawerItemList,
 } from "@react-navigation/drawer";
-import { Platform, SafeAreaView, Button, View } from "react-native";
-import {Item, HeaderButtons, HeaderButton} from 'react-navigation-header-buttons'
+import { Platform, SafeAreaView, Button, View, StyleSheet } from "react-native";
+import {
+  Item,
+  HeaderButtons,
+  HeaderButton,
+} from "react-navigation-header-buttons";
 import LoginScreen from "../screens/user/LoginScreen";
 import RegisterScreen from "../screens/user/RegisterScreen";
 import OTPScreen from "../screens/user/OTPScreen";
@@ -23,13 +27,13 @@ import AddOrdersScreen from "../screens/bill-event/create/AddOrdersScreen";
 import SelectSharersScreen from "../screens/bill-event/create/SelectSharersScreen";
 import AddPayersScreen from "../screens/bill-event/create/AddPayersScreen";
 import CalculatorScreen from "../screens/bill-event/create/CalculatorScreen";
-import EnterBillDetailsScreen from '../screens/bill-event/create/EnterBillDetailsScreen'
+import EnterBillDetailsScreen from "../screens/bill-event/create/EnterBillDetailsScreen";
+import TestScreen from "../screens/bill-event/create/TestScreen";
 
 import LoansScreen from "../screens/loan/LoansScreen";
 import ViewContactLoansScreen from "../screens/loan/ViewContactLoansScreen";
 import CreateTransactionScreen from "../screens/loan/CreateTransactionScreen";
 import CreateLoanScreen from "../screens/loan/CreateLoanScreen";
-
 
 import SettingsScreen from "../screens/user/account/SettingsScreen";
 import UpdateEmailScreen from "../screens/user/account/UpdateEmailScreen";
@@ -38,13 +42,19 @@ import UpdatePasswordScreen from "../screens/user/account/UpdatePasswordScreen";
 import UpdateDetailsScreen from "../screens/user/account/UpdateDetailsScreen";
 import AccountOTPScreen from "../screens/user/account/AccountOTPScreen";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
-import CustomHeaderButton from '../components/UI/CustomHeaderButton'
+import CustomHeaderButton from "../components/UI/CustomHeaderButton";
 
 const toggleHeaderButton = (navigation) => {
   return (
-      <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
-        <Item iconName="md-menu" onPress={navigation.toggleDrawer} color='white' iconSize={28} IconComponent={Ionicons}/>
-      </HeaderButtons>
+    <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+      <Item
+        iconName="md-menu"
+        onPress={navigation.toggleDrawer}
+        color="white"
+        iconSize={28}
+        IconComponent={Ionicons}
+      />
+    </HeaderButtons>
   );
 };
 
@@ -54,24 +64,24 @@ const defaultNavOptions = {
   },
   headerTitleContainerStyle: {
     left: 0, // THIS RIGHT HERE
-    right: 0
+    right: 0,
   },
   headerTitleStyle: {
     fontFamily: "roboto-regular",
     flex: 1,
-    alignSelf:'center',
-    letterSpacing:2
+    alignSelf: "center",
+    letterSpacing: 2,
   },
   headerBackTitleStyle: {
     fontFamily: "open-sans",
   },
   headerTintColor: Platform.OS === "android" ? "white" : Colors.primary,
-  headerTitle: 'SPLITTER'
+  headerTitle: "SPLITTER",
 };
 
 const AuthStackNavigator = createStackNavigator();
 
-export const AuthNavigator = ({navigation}) => {
+export const AuthNavigator = ({ navigation }) => {
   return (
     <AuthStackNavigator.Navigator screenOptions={{ headerShown: false }}>
       <AuthStackNavigator.Screen name="Login" component={LoginScreen} />
@@ -89,10 +99,12 @@ const EventsStackNavigator = createStackNavigator();
 
 export const EventsNavigator = ({ navigation }) => {
   return (
-    <EventsStackNavigator.Navigator
-      screenOptions={defaultNavOptions}>
-       
-      <EventsStackNavigator.Screen name="Events" component={EventsScreen} options={{headerLeft: () => toggleHeaderButton(navigation)}}/>
+    <EventsStackNavigator.Navigator screenOptions={defaultNavOptions}>
+      <EventsStackNavigator.Screen
+        name="Events"
+        component={EventsScreen}
+        options={{ headerLeft: () => toggleHeaderButton(navigation) }}
+      />
       <EventsStackNavigator.Screen
         name="ViewEvent"
         component={ViewEventScreen}
@@ -104,10 +116,18 @@ export const EventsNavigator = ({ navigation }) => {
       <EventsStackNavigator.Screen
         name="AddOrders"
         component={AddOrdersScreen}
+        options={{
+          headerTitle: "Add Orders",
+          headerTitleStyle: styles.headerTitle,
+        }}
       />
-       <EventsStackNavigator.Screen
+      <EventsStackNavigator.Screen
         name="BillDetails"
         component={EnterBillDetailsScreen}
+        options={{
+          headerTitle: "Enter Bill Details",
+          headerTitleStyle: styles.headerTitle,
+        }}
       />
       <EventsStackNavigator.Screen
         name="SelectSharers"
@@ -121,21 +141,22 @@ export const EventsNavigator = ({ navigation }) => {
         name="AddPayers"
         component={AddPayersScreen}
       />
+      <EventsStackNavigator.Screen
+        name="Test"
+        component={TestScreen}
+      />
     </EventsStackNavigator.Navigator>
   );
 };
 
 const LoansStackNavigator = createStackNavigator();
 
-export const LoansNavigator = ({navigation}) => {
+export const LoansNavigator = ({ navigation }) => {
   return (
     <LoansStackNavigator.Navigator
-      screenOptions={{
-        ...defaultNavOptions,
-        headerLeft: () => toggleHeaderButton(navigation),
-      }}
+      screenOptions={defaultNavOptions}
     >
-      <LoansStackNavigator.Screen name="Loans" component={LoansScreen} />
+      <LoansStackNavigator.Screen name="Loans" component={LoansScreen} options={{ headerLeft: () => toggleHeaderButton(navigation) }}/>
       <LoansStackNavigator.Screen
         name="ViewContactLoans"
         component={ViewContactLoansScreen}
@@ -154,7 +175,7 @@ export const LoansNavigator = ({navigation}) => {
 
 const AccountStackNavigator = createStackNavigator();
 
-export const AccountNavigator = ({navigation}) => {
+export const AccountNavigator = ({ navigation }) => {
   return (
     <AccountStackNavigator.Navigator
       screenOptions={{
@@ -207,7 +228,7 @@ export const SplitterNavigator = () => {
               justifyContent: "space-between",
             }}
           >
-            <SafeAreaView forceInset={{ top:"always", horizontal: "never" }}>
+            <SafeAreaView forceInset={{ top: "always", horizontal: "never" }}>
               <DrawerItemList {...props} />
             </SafeAreaView>
             <SafeAreaView forceInset={{ top: "always", horizontal: "never" }}>
@@ -226,6 +247,19 @@ export const SplitterNavigator = () => {
         activeTintColor: Colors.primary,
       }}
     >
+       <SplitterDrawerNavigator.Screen
+        name="Loans"
+        component={LoansNavigator}
+        screenOptions={{
+          drawerIcon: (props) => (
+            <Ionicons
+              name={Platform.OS === "android" ? "md-list" : "ios-list"}
+              size={23}
+              color={props.color}
+            />
+          ),
+        }}
+      />
       <SplitterDrawerNavigator.Screen
         name="Events"
         component={EventsNavigator}
@@ -239,19 +273,7 @@ export const SplitterNavigator = () => {
           ),
         }}
       />
-      <SplitterDrawerNavigator.Screen
-        name="Loans"
-        component={LoansNavigator}
-        screenOptions={{
-          drawerIcon: (props) => (
-            <Ionicons
-              name={Platform.OS === "android" ? "md-list" : "ios-list"}
-              size={23}
-              color={props.color}
-            />
-          ),
-        }}
-      />
+     
       <SplitterDrawerNavigator.Screen
         name="Account"
         component={AccountNavigator}
@@ -268,3 +290,11 @@ export const SplitterNavigator = () => {
     </SplitterDrawerNavigator.Navigator>
   );
 };
+
+const styles = StyleSheet.create({
+  headerTitle: {
+    fontFamily: "roboto-regular",
+    flex: 1,
+    alignSelf: "center",
+  },
+});

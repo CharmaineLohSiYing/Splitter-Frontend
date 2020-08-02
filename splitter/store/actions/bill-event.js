@@ -104,7 +104,7 @@ export const createEvent = () => {
 
     if (!response.ok) {
       const errorResData = await response.json();
-      console.log("errorResData", errorResData);
+      // console.log("errorResData", errorResData);
 
       let message = "Something went wrong!";
       if (errorResData) {

@@ -74,7 +74,7 @@ const AuthScreen = (props) => {
 
   const authHandler = () => {
 
-    console.log(formState.inputValues.retypePassword)
+    // console.log(formState.inputValues.retypePassword)
 
     if (formState.inputValues.password !== formState.inputValues.retypePassword){
       setError("Passwords do not match")

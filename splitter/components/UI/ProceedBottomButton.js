@@ -2,9 +2,7 @@ import React from "react";
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import Colors from '../../constants/Colors'
 const ProceedBottomButton = (props) => {
-  if (props.text){
-    console.log('PROCEED TEXT', props.text)
-  }
+
   return (
     <TouchableOpacity
       onPress={props.proceedHandler}

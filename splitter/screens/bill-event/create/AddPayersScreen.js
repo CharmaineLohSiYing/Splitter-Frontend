@@ -68,18 +68,18 @@ const AddPayersScreen = (props) => {
       setError(null);
       setIsLoading(true);
       try {
-        console.log("before dispatch");
-        console.log("isedit", isEdit);
+        // console.log("before dispatch");
+        // console.log("isedit", isEdit);
         if (isEdit) {
           await dispatch(eventActions.editEvent());
         } else {
           await dispatch(eventActions.createEvent());
         }
-        console.log("after dispatch");
+        // console.log("after dispatch");
         props.navigation.navigate("Events");
       } catch (err) {
         setError("Error");
-        console.log("error caught");
+        // console.log("error caught");
       }
       setIsLoading(false);
     }

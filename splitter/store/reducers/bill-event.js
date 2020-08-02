@@ -85,16 +85,27 @@ export default (state = initialState, action) => {
 
       // check if any attendee from shared orders has been removed
       // and update total bill if removed attendee previously placed an order
+      const sharedOrdersToRemove = []
       Object.keys(originalAttendees).forEach((key) => {
+        
         if (!(key in attendees)) {
           newSharedOrders.forEach((sharedOrder) => {
             sharedOrder.users = sharedOrder.users.filter(
               (item) => item !== key
             );
+            if (sharedOrder.users.length < 2) {
+              sharedOrdersToRemove.push(sharedOrder.id)
+            }
           });
           updatedBill = updateTotalBill();
         }
       });
+      console.log(sharedOrdersToRemove)
+      sharedOrdersToRemove.forEach(toRemoveId => {
+        newSharedOrders = newSharedOrders.filter((obj) => obj.id !== toRemoveId)
+      })
+      console.log(newSharedOrders)
+
       return {
         ...state,
         attendees: attendees,
@@ -123,13 +134,14 @@ export default (state = initialState, action) => {
         unpaidAmount
       };
     case REMOVE_SHARED_ORDER:
+      const orderAmount = state.sharedOrders.find(
+        (order) => order.id == action.orderId
+      ).amount;
       var filteredOrders = state.sharedOrders.filter(
         (order) => order.id != action.orderId
       );
 
-      const orderAmount = state.sharedOrders.find(
-        (order) => order.id == action.orderId
-      ).amount;
+      
 
       var totalBill = addToBill(-1 * parseFloat(orderAmount));
 

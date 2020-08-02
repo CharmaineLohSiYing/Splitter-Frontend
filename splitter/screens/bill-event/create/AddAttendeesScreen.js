@@ -29,6 +29,8 @@ import { Item, HeaderButtons } from "react-navigation-header-buttons";
 import CustomHeaderButton from "../../../components/UI/CustomHeaderButton";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 
+// height of each contact container + flatlist separator
+const ITEM_HEIGHT = 61
 const FlatListItemSeparator = () => {
   return (
     <View
@@ -61,26 +63,28 @@ const AddAttendeesScreen = (props) => {
   );
   const dispatch = useDispatch();
 
+  // console.log('render')
+
   var contactsFromStore = useSelector((state) => state.auth.contacts);
   var attendeesFromStore = useSelector((state) => state.billEvent.attendees);
 
   const selectedContactsRef = useRef(null);
 
-  props.navigation.setOptions({
-    headerTitle: 'Add Attendees',
-    headerTitleStyle: {
-      fontFamily: "roboto-regular",
-      flex: 1,
-      alignSelf: "center",
-    },
-    headerRight: () => {
-      return (
-        <View style={styles.numAttendeesContainer}>
-          <Text style={{color: 'white'}}>{selectedContacts.length} selected</Text>
-        </View>
-      );
-    },
-  });
+  // props.navigation.setOptions({
+  //   headerTitle: 'Add Attendees',
+  //   headerTitleStyle: {
+  //     fontFamily: "roboto-regular",
+  //     flex: 1,
+  //     alignSelf: "center",
+  //   },
+  //   headerRight: () => {
+  //     return (
+  //       <View style={styles.numAttendeesContainer}>
+  //         <Text style={{color: 'white'}}>{selectedContacts.length} selected</Text>
+  //       </View>
+  //     );
+  //   },
+  // });
 
   useEffect(() => {
     const attendeesFromStoreArr = Object.keys(attendeesFromStore);
@@ -143,6 +147,7 @@ const AddAttendeesScreen = (props) => {
   const proceedHandler = () => {
     dispatch(eventActions.addAttendees(selectedContacts));
     props.navigation.navigate("AddOrders");
+    // props.navigation.navigate("Test");
   };
 
   const removeFromSelectedContacts = (mobileNumber) => {
@@ -202,7 +207,7 @@ const AddAttendeesScreen = (props) => {
       </View>
       <TouchableOpacity
         disabled={selectedContacts.length === 0}
-        activeOpacity={0.7}
+        activeOpacity={0.9}
         onPress={proceedHandler}
         style={[styles.floatingButton, selectedContacts.length === 0 && styles.disabledButton]}
       >
@@ -214,9 +219,6 @@ const AddAttendeesScreen = (props) => {
               contentContainerStyle={{ alignItems: "center" }}
               keyExtractor={(item, index) => item.mobileNumber}
               data={selectedContacts}
-              onScrollToIndexFailed={() => {
-                console.log("top");
-              }}
               extraData={selectedContacts}
               initialNumToRender={10}
               ref={selectedContactsRef}
@@ -249,12 +251,15 @@ const AddAttendeesScreen = (props) => {
       )}
 
       <SearchableFlatList
-        style={styles.list}
         data={contactsArr}
         ItemSeparatorComponent={FlatListItemSeparator}
         searchTerm={query}
         searchAttribute="name"
         ignoreCase={true}
+        getItemLayout={(data, index) => (
+          {length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index}
+        )}
+      
         renderItem={({ item }) => (
           <ContactDisplay
             selected={item.selected}
@@ -269,9 +274,6 @@ const AddAttendeesScreen = (props) => {
   );
 };
 
-AddAttendeesScreen.navigationOptions = {
-  headerTitle: "Add Attendees",
-};
 
 const styles = StyleSheet.create({
   selectedContacts: {

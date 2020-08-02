@@ -21,6 +21,6 @@ export const fetchLoans = () => {
     }
    
     const resData = await response.json();
-    dispatch({ type: SET_LOANS, loans: resData});
+    dispatch({ type: SET_LOANS, loans: resData.loans, netDebt: resData.netDebt});
   };
 };

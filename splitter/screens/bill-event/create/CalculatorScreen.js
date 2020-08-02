@@ -21,7 +21,7 @@ import { bindActionCreators } from "redux";
 import ProceedBottomButton from '../../../components/UI/ProceedBottomButton'
 import Colors from '../../../constants/Colors'
 
-class CalculatorScreen extends React.Component {
+class CalculatorScreen extends React.PureComponent {
   constructor(props) {
     super(props);
 
@@ -39,6 +39,7 @@ class CalculatorScreen extends React.Component {
       updatePaidAmount: false,
     };
   }
+
 
   pressDigitHandler = async (value) => {
     if (value === "Decimal" && this.state.currentOperand.includes(".")) {
@@ -214,7 +215,7 @@ class CalculatorScreen extends React.Component {
   }
 
   submitOrder = async () => {
-    console.log('=====================submit===============')
+    // console.log('=====================submit===============')
     await this.compute();
 
     const {

@@ -9,13 +9,14 @@ class ContactDisplay extends Component {
 
     return newSelected !== oldSelected;
   }
+
   render() {
     const mobileNumber = this.props.mobileNumber;
     const name = this.props.name;
     const selected = this.props.selected;
     return (
       <TouchableOpacity
-        activeOpacity={0.8}
+        activeOpacity={0.9}
         onPress={() => this.props.onSelect(name, mobileNumber)}
         style={styles.container}
       >

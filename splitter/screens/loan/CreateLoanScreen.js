@@ -61,7 +61,7 @@ const CreateLoanScreen = (props) => {
         setError(errorResData);
         return;
       }
-      console.log("loan created successfully");
+      // console.log("loan created successfully");
       props.navigation.goBack();
     } catch (err) {
       setError(err.message);

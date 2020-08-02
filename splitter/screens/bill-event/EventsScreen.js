@@ -26,6 +26,7 @@ import Colors from "../../constants/Colors";
 const EventsScreen = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
+  const [text, setText] = useState("hello")
   const userEvents = useSelector((state) => state.billEvent.userEvents);
   const dispatch = useDispatch();
 
@@ -109,6 +110,14 @@ const EventsScreen = (props) => {
     );
   }
 
+  const change = () => {
+    if (text == 'hello'){
+      setText('bye')
+    } else {
+      setText('hello')
+    }
+  }
+
   return (
     <View style={styles.screen}>
       <TouchableOpacity
@@ -117,6 +126,9 @@ const EventsScreen = (props) => {
         style={styles.addEventButton}
       >
         <Ionicons name="md-add" size={40} color="white" />
+      </TouchableOpacity>
+      <TouchableOpacity style={{height: 40, backgroundColor:'yellow', width: '100%'}} onPress={change}>
+  <Text>{text}</Text>
       </TouchableOpacity>
       <View style={styles.eventsContainer}>
         <FlatList

@@ -9,34 +9,44 @@ class OrderDisplay extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-      const { contacts, amount, dispatch, id, name, onSelect, sharers } = nextProps;
-      const curr = this.props;
-      
-    
-      if (contacts !== curr.contacts) {
-        console.log("contacts not equal!!!");
-      }
-      if (sharers !== curr.sharers) {
-        console.log("contacts not equal!!!");
-      }
+    // const {
+    //   contacts,
+    //   amount,
+    //   dispatch,
+    //   id,
+    //   name,
+    //   onSelect,
+    //   sharers,
+    // } = nextProps;
+    // const curr = this.props;
 
-      if (dispatch !== curr.dispatch) {
-        console.log("dispatch not equal", dispatch, curr.dispatch);
-      }
-      if (id !== curr.id) {
-        console.log("id not equal", id, curr.id);
-      }
-      if (name !== curr.name) {
-        console.log("name not equal", name, curr.name);
-      }
-      if (onSelect !== curr.onSelect) {
-        console.log("onSelect not equal", onSelect, curr.onSelect);
-      }
-    
-   
+    // if (contacts !== curr.contacts) {
+    //   console.log("contacts not equal!!!");
+    // }
+    // if (sharers !== curr.sharers) {
+    //   console.log("contacts not equal!!!");
+    // }
+
+    // if (dispatch !== curr.dispatch) {
+    //   console.log("dispatch not equal", dispatch, curr.dispatch);
+    // }
+    // if (id !== curr.id) {
+    //   console.log("id not equal", id, curr.id);
+    // }
+    // if (name !== curr.name) {
+    //   console.log("name not equal", name, curr.name);
+    // }
+    // // if (onSelect !== curr.onSelect) {
+    // //   console.log("onSelect not equal", onSelect, curr.onSelect);
+    // // }
+
     if (
       this.props.amount === nextProps.amount &&
-      this.props.contacts === nextProps.contacts && this.props.id === nextProps.id
+      this.props.contacts === nextProps.contacts &&
+      this.props.id === nextProps.id &&
+      this.props.sharers === nextProps.sharers 
+      // &&
+      // this.props.onSelect === nextProps.onSelect
     ) {
       return false;
     } else {
@@ -44,15 +54,12 @@ class OrderDisplay extends Component {
     }
   }
 
-  componentDidUpdate(){
-    console.log('componentDidUpdate', this.props.amount)
+  componentDidUpdate() {
+    // console.log("componentDidUpdate", this.props.amount);
   }
 
-  componentDidMount(){
-    console.log('componentDidMOUNT', this.props.amount)
-  }
-  componentDidUpdate(){
-    console.log('componentDidUpdate', this.props.amount)
+  componentDidMount() {
+    // console.log("componentDidMOUNT", this.props.amount);
   }
 
   handleSelect = () => {
@@ -64,18 +71,20 @@ class OrderDisplay extends Component {
   };
 
   render() {
-    let sharersNames = [];
-    
+    let firstSharerName = "";
+    let sharers = [];
     if (this.props.sharers) {
-      const sharers = this.props.sharers;
+      sharers = this.props.sharers;
       if (this.props.contacts) {
-        sharers.forEach((key) => {
-          if (key in this.props.contacts) {
-            sharersNames = sharersNames.concat(this.props.contacts[key].name);
-          }
-        });
+        const key = sharers[0];
+        if (key in this.props.contacts) {
+          firstSharerName = this.props.contacts[key].name;
+        } else if (key === this.props.userId) {
+          firstSharerName = "You";
+        }
       }
     }
+
     return (
       <TouchableOpacity
         style={styles.container}
@@ -85,12 +94,15 @@ class OrderDisplay extends Component {
         {!this.props.sharers && <Text>{this.props.name}</Text>}
         {!!this.props.sharers && (
           <Text>
-            {sharersNames[0]} and {sharersNames.length - 1} other(s)
+            {firstSharerName} and {sharers.length - 1} other(s)
           </Text>
         )}
         <View style={styles.amountContainer}>
           <Text>${this.props.amount}</Text>
         </View>
+        {/* <TouchableOpacity style={styles.amountContainer} onPress={() => this.props.onDelete(this.props.id)}>
+          <Text>Delete</Text>
+        </TouchableOpacity> */}
       </TouchableOpacity>
     );
   }
@@ -118,8 +130,8 @@ const styles = StyleSheet.create({
   },
 });
 const mapStateToProps = (state) => {
-  const { contacts } = state.auth;
-  return { contacts };
+  const { contacts, userId } = state.auth;
+  return { contacts, userId };
 };
 
 export default connect(mapStateToProps)(OrderDisplay);

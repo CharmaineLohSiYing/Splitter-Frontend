@@ -14,6 +14,9 @@ import {
   TextInput,
   Share,
   TouchableWithoutFeedback,
+  LayoutAnimation,
+  UIManager,
+  Platform,
 } from "react-native";
 
 import AddOrdersHeader from "../../../components/AddOrdersSubSectionHeader";
@@ -44,44 +47,44 @@ const EnterBillDetailsScreen = (props) => {
     billDetails = null;
   }
 
-  props.navigation.setOptions({
-    headerTitle: "Enter Bill Details",
-    headerTitleStyle: {
-      fontFamily: "roboto-regular",
-      flex: 1,
-      alignSelf: "center",
-    },
-  });
+  console.log('render')
+  // props.navigation.setOptions({
+  //   headerTitle: "Enter Bill Details",
+  //   headerTitleStyle: {
+  //     fontFamily: "roboto-regular",
+  //     flex: 1,
+  //     alignSelf: "center",
+  //   },
+  // });
   const currentFullDate = new Date();
   const currentFormattedDate = moment().format("D MMM YYYY");
 
-  const [eventName, setEventName] = useState(
-    billDetails ? billDetails.eventName : ""
+  const [eventName, setEventName] = useState(() => {return billDetails ? billDetails.eventName : ""}
   );
-  const [formattedDate, setFormattedDate] = useState(
-    billDetails
+  const [formattedDate, setFormattedDate] = useState(() => {
+    return billDetails
       ? moment(new Date(billDetails.formattedDate)).format("D MMM YYYY")
-      : currentFormattedDate
-  );
-  const [eventDate, setEventDate] = useState(
-    billDetails ? billDetails.eventDate : currentFullDate
+      : currentFormattedDate;
+  });
+  const [eventDate, setEventDate] = useState(() => {
+    return billDetails ? billDetails.eventDate : currentFullDate}
   );
   const [totalBill, setTotalBill] = useState(
     billDetails ? billDetails.totalBill : 0
   );
-  const [addGST, setAddGST] = useState(
-    billDetails ? billDetails.addGST : false
+  const [addGST, setAddGST] = useState(() => {
+    return billDetails ? billDetails.addGST : false}
   );
-  const [addServiceCharge, setAddServiceCharge] = useState(
-    billDetails ? billDetails.addServiceCharge : false
+  const [addServiceCharge, setAddServiceCharge] = useState(() => {
+    return billDetails ? billDetails.addServiceCharge : false}
   );
-  const [discountType, setDiscountType] = useState(
-    billDetails ? billDetails.discountType : "NONE"
+  const [discountType, setDiscountType] = useState(() => {
+    return billDetails ? billDetails.discountType : "NONE"}
   );
-  const [discountAmount, setDiscountAmount] = useState(
-    billDetails ? billDetails.discountAmount : null
+  const [discountAmount, setDiscountAmount] = useState(() => {
+    return billDetails ? billDetails.discountAmount : null}
   );
-  const [netBill, setNetBill] = useState(billDetails ? billDetails.netBill : 0);
+  const [netBill, setNetBill] = useState(() => {return billDetails ? billDetails.netBill : 0});
 
   const proceedHandler = () => {
     dispatch(
@@ -114,6 +117,7 @@ const EnterBillDetailsScreen = (props) => {
   const totalBillFromStore = useSelector((state) => state.billEvent.totalBill);
 
   useEffect(() => {
+    console.log("called");
     var multiplier = 1;
     if (addGST) {
       multiplier += 0.07;
@@ -148,7 +152,7 @@ const EnterBillDetailsScreen = (props) => {
 
   useEffect(() => {
     if (props.route.params && props.route.params.isEdit) {
-      console.log("isEdit - add orders screen", props.route.params.isEdit);
+      // console.log("isEdit - add orders screen", props.route.params.isEdit);
       setIsEdit(true);
     }
   }, []);

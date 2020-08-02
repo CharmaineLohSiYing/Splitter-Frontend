@@ -13,21 +13,33 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSelector, useDispatch } from "react-redux";
-import Colors from '../../constants/Colors'
+import Colors from "../../constants/Colors";
+
+import AddOrdersSubSectionHeader from "../../components/AddOrdersSubSectionHeader";
 
 import LoanDisplay from "../../components/LoanDisplay";
 import * as authActions from "../../store/actions/auth";
 import * as loanActions from "../../store/actions/loan";
-import {matchUsersWithContacts} from '../../utils/initialiseContacts'
+import { matchUsersWithContacts } from "../../utils/initialiseContacts";
 
-
+const FlatListItemSeparator = () => {
+  return (
+    <View
+      style={{
+        height: 10,
+        width: "100%",
+        backgroundColor: "transparent",
+      }}
+    />
+  );
+};
 
 const LoansScreen = (props) => {
-
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState();
-  const loans = useSelector(state => state.loan.loans);
+  const loans = useSelector((state) => state.loan.loans);
+  const netDebt = useSelector((state) => state.loan.netDebt);
   const dispatch = useDispatch();
 
   const loadLoans = useCallback(async () => {
@@ -42,22 +54,13 @@ const LoansScreen = (props) => {
   }, [dispatch, setIsLoading, setError]);
 
   useEffect(() => {
-    const listenerCreated = props.navigation.addListener(
-      'focus',
-      loadLoans
-    );
+    const listenerCreated = props.navigation.addListener("focus", loadLoans);
 
     return () => {
       // calling this function will remove the listener
       listenerCreated();
     };
   }, [loadLoans]);
-
-  // useEffect(() => {
-  //   if (retrievedLoans){
-  //     setLoans(retrievedLoans)
-  //   }
-  // }, [retrievedLoans]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -67,32 +70,24 @@ const LoansScreen = (props) => {
   }, [dispatch, loadLoans]);
 
   var contactsFromStore = useSelector((state) => state.auth.contacts);
-  
 
   useEffect(() => {
-
     async function initialiseContacts() {
-      var matched = await matchUsersWithContacts()
+      var matched = await matchUsersWithContacts();
       dispatch(authActions.setContacts(matched));
     }
 
-   if (!contactsFromStore){
-      console.log('calling initialiseContacts')
-      initialiseContacts()
+    if (!contactsFromStore) {
+      console.log("calling initialiseContacts");
+      initialiseContacts();
     }
   }, [contactsFromStore]);
-
-
 
   if (error) {
     return (
       <View style={styles.centered}>
         <Text>An error occurred!</Text>
-        <Button
-          title="Try again"
-          onPress={loadLoans}
-          color={Colors.primary}
-        />
+        <Button title="Try again" onPress={loadLoans} color={Colors.primary} />
       </View>
     );
   }
@@ -105,7 +100,7 @@ const LoansScreen = (props) => {
     );
   }
 
-  if (!isLoading && Object.keys(loans) === 0)  {
+  if (!isLoading && Object.keys(loans) === 0) {
     return (
       <View style={styles.centered}>
         <Text>No loans found</Text>
@@ -113,24 +108,42 @@ const LoansScreen = (props) => {
     );
   }
 
+  const headerComponent = () => {
+    return (
+      <View style={{ marginVertical: 20 }}>
+        <AddOrdersSubSectionHeader
+          header={"Net Debt: $" + netDebt}
+          style={{
+            backgroundColor: netDebt <= 0 ? Colors.lightBlue : Colors.lightRed,
+            alignItems: "center",
+          }}
+        />
+      </View>
+    );
+  };
+
   return (
-    <View>
-      <View>
+    <View style={{ alignItems: "center", paddingVertical: 20 }}>
+      <View style={{ width: "90%" }}>
         <FlatList
+          ItemSeparatorComponent={FlatListItemSeparator}
+          ListHeaderComponent={headerComponent}
           onRefresh={loadLoans}
           refreshing={isRefreshing}
           keyExtractor={(item, index) => index.toString()}
           data={Object.keys(loans)}
           renderItem={({ item }) => (
-            <LoanDisplay friendMobileNumber={item} debt={loans[item]} navigate={props.navigation.navigate}/>
+            <LoanDisplay
+              friendMobileNumber={item}
+              debt={loans[item]}
+              navigate={props.navigation.navigate}
+            />
           )}
         />
       </View>
-      
     </View>
   );
 };
-
 
 const styles = StyleSheet.create({
   screen: {

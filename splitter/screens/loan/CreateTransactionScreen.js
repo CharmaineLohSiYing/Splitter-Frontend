@@ -45,7 +45,7 @@ const CreateTransactionScreen = (props) => {
         setError(errorResData);
         return;
       }
-      console.log("transaction created successfully");
+      // console.log("transaction created successfully");
       props.navigation.goBack();
     } catch (err) {
       setError(err.message);

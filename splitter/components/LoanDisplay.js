@@ -16,11 +16,11 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useSelector, useDispatch } from "react-redux";
 import CurrencyInput from "./UI/CurrencyInput";
 import loan from "../store/reducers/loan";
-import Colors from '../constants/Colors'
+import Colors from "../constants/Colors";
 
 const LoanDisplay = (props) => {
   const [matchedName, setMatchedName] = useState("");
-  const { debt } = props;
+  const {debt, userId} = props.debt;
   const { contacts } = useSelector((state) => state.auth);
 
   useEffect(() => {
@@ -34,31 +34,41 @@ const LoanDisplay = (props) => {
     }
   }, [contacts]);
 
-
   return (
-    <View style={styles.container}>
-      <TouchableOpacity style={styles.header} onPress={() => props.navigate('ViewContactLoans', {matchedName, friendUserId: debt.userId, debt: debt.debt})}>
-        <Text style={styles.friend}>{matchedName}</Text>
-        <Text style={styles.friend}>DEBT: ${debt.debt}</Text>
-      </TouchableOpacity>
-    </View>
+    <TouchableOpacity
+      style={[styles.container, debt <= 0 ? styles.notInDebt : styles.inDebt]}
+      onPress={() =>
+        props.navigate("ViewContactLoans", {
+          matchedName,
+          friendUserId: userId,
+          debt: debt,
+        })
+      }
+    >
+      <Text style={styles.friend}>{matchedName}</Text>
+      <Text style={styles.friend}>DEBT: ${debt}</Text>
+    </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    margin: 10,
+    flexDirection: "row",
     backgroundColor: "#ccc",
+    alignItems: "center",
+    justifyContent: "space-between",
+    height: 50,
+    paddingHorizontal: 10,
   },
   friend: {
-    textAlign: "center",
     textDecorationStyle: "solid",
   },
-  header: {
-    backgroundColor: '#ccc',
-    textAlign:'center',
-    marginVertical: 10
-  }
+  notInDebt: {
+    backgroundColor: Colors.lightBlue,
+  },
+  inDebt: {
+    backgroundColor: Colors.lightRed,
+  },
 });
 
 export default LoanDisplay;
