@@ -18,7 +18,7 @@ import {
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import * as authActions from "../../../store/actions/auth";
-import * as eventActions from "../../../store/actions/bill-event";
+import * as billActions from "../../../store/actions/bill";
 import * as Contacts from "expo-contacts";
 import ContactDisplay from "../../../components/ContactDisplay";
 import { matchUsersWithContacts } from "../../../utils/initialiseContacts";
@@ -66,7 +66,7 @@ const AddAttendeesScreen = (props) => {
   // console.log('render')
 
   var contactsFromStore = useSelector((state) => state.auth.contacts);
-  var attendeesFromStore = useSelector((state) => state.billEvent.attendees);
+  var attendeesFromStore = useSelector((state) => state.bill.attendees);
 
   const selectedContactsRef = useRef(null);
 
@@ -145,7 +145,7 @@ const AddAttendeesScreen = (props) => {
   }, [contactsFromStore]);
 
   const proceedHandler = () => {
-    dispatch(eventActions.addAttendees(selectedContacts));
+    dispatch(billActions.addAttendees(selectedContacts));
     props.navigation.navigate("AddOrders");
     // props.navigation.navigate("Test");
   };

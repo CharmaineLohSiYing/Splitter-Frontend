@@ -105,7 +105,7 @@ export const login = (email, password) => {
   };
 };
 
-export const verifyOTP = (otp, userId) => {
+export const verifyOTP = (otp, user_id) => {
   return async (dispatch) => {
     const response = await fetch("http://192.168.1.190:5000/auth/verifyotp", {
       method: "POST",
@@ -113,7 +113,7 @@ export const verifyOTP = (otp, userId) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        userId,
+        userId: user_id,
         otp,
       }),
     });

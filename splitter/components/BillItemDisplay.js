@@ -17,7 +17,7 @@ import { useSelector, useDispatch } from "react-redux";
 import moment from "moment";
 import Colors from '../constants/Colors'
 
-const EventItemDisplay = (props) => {
+const BillItemDisplay = (props) => {
   let totalExpenditure = props.individualOrderAmount;
   const sharedOrders = props.sharedOrders;
   sharedOrders.forEach((order) => {
@@ -33,7 +33,7 @@ const EventItemDisplay = (props) => {
       onPress={props.onSelect}
     >
       <View style={styles.firstRow}>
-        <Text style={styles.eventName}>{props.eventName ? props.eventName : "Event"}</Text>
+        <Text style={styles.billName}>{props.billName ? props.billName : "Bill"}</Text>
         <View style={styles.netBillContainer}>
           <Text>${props.netBill.toFixed(2)}</Text>
         </View>
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
   },
-  eventName:{
+  billName:{
     fontWeight: 'bold',
     fontSize: 18
   },
@@ -71,4 +71,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default EventItemDisplay;
+export default BillItemDisplay;

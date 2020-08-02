@@ -32,7 +32,7 @@ const SelectSharersScreen = (props) => {
     },
   });
 
-  const attendees = useSelector((state) => state.billEvent.attendees);
+  const attendees = useSelector((state) => state.bill.attendees);
   const allSelectedArray = [];
   Object.keys(attendees).forEach((key) => allSelectedArray.push(key));
   var sharerParams = [];

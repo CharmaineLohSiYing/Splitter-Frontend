@@ -16,7 +16,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useSelector, useDispatch } from "react-redux";
 import { MaterialIcons, Ionicons, Feather } from "@expo/vector-icons";
 
-const ViewUserEventDisplay = (props) => {
+const ViewUserBillDisplay = (props) => {
   const [expanded, setExpanded] = useState(false);
 
   var individualTotal = props.individualOrderAmount;
@@ -112,4 +112,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ViewUserEventDisplay;
+export default ViewUserBillDisplay;

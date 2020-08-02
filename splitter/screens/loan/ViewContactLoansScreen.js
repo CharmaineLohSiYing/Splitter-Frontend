@@ -16,7 +16,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useSelector, useDispatch } from "react-redux";
 import moment from 'moment'
 
-import EventItemDisplay from "../../components/EventItemDisplay";
+import BillItemDisplay from "../../components/BillItemDisplay";
 import * as authActions from "../../store/actions/auth";
 import Colors from "../../constants/Colors";
 
@@ -86,20 +86,20 @@ const ViewContactLoansScreen = (props) => {
 
   // var contactsFromStore = useSelector((state) => state.auth.contacts);
 
-  const viewEventHandler = (eventId) => {
-    props.navigation.navigate("Events", {
-      screen: "ViewEvent",
-      params: { eventId },
+  const viewBillHandler = (billId) => {
+    props.navigation.navigate("Bills", {
+      screen: "ViewBill",
+      params: { billId },
       initial: true,
     });
-    // props.navigation.push("Events", {
-    //   screen: "ViewEvent",
-    //   params: { eventId },
+    // props.navigation.push("Bills", {
+    //   screen: "ViewBill",
+    //   params: { billId },
     // });
     
   };
 
-  const LoanDisplay = (date, amount, matchedName, toId, payerId, isCancelled, eventId) => {
+  const LoanDisplay = (date, amount, matchedName, toId, payerId, isCancelled, billId) => {
     
     if (payerId){
       // display loan
@@ -115,10 +115,10 @@ const ViewContactLoansScreen = (props) => {
               {matchedName} owes you ${amount}
             </Text>
           )}
-          {eventId && (
+          {billId && (
             <Button
-              title="View event"
-              onPress={() => viewEventHandler(eventId)}
+              title="View bill"
+              onPress={() => viewBillHandler(billId)}
             />
           )}
         </View>
@@ -198,7 +198,7 @@ const ViewContactLoansScreen = (props) => {
               item.from,
               item.payer,
               item.isCancelled,
-              item.event
+              item.bill
             )
           }
         />

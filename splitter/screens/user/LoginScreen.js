@@ -146,7 +146,7 @@ const LoginScreen = props => {
             <View style={styles.buttonContainer}>
               <Button
                 title="Sign Up"
-                color={Colors.lightBlue}
+                color={Colors.blue}
                 onPress={() => {
                   props.navigation.navigate("Register")
                 }}

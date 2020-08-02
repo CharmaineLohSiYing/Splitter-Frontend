@@ -6,21 +6,21 @@ import {
   UPDATE_INDIVIDUAL_ORDER,
   UPDATE_PAID_AMOUNT,
   UPDATE_BILL_DETAILS,
-  CREATE_EVENT,
-  EDIT_EVENT,
-  SET_USEREVENTS,
-  INITIALISE_EVENT_DETAILS,
-} from "../actions/bill-event";
+  CREATE_BILL,
+  EDIT_BILL,
+  SET_USERBILLS,
+  INITIALISE_BILL_DETAILS,
+} from "../actions/bill";
 
 const initialState = {
   attendees: {},
   sharedOrders: [],
   totalBill: 0,
   currentHighestSharedOrderId: 0,
-  events: [],
-  userEvents: [],
+  bills: [],
+  userBills: [],
   billDetails: {},
-  eventId: null,
+  billId: null,
   unpaidAmount: 0
 };
 
@@ -52,7 +52,7 @@ export default (state = initialState, action) => {
   let unpaidAmount; 
   
   switch (action.type) {
-    case INITIALISE_EVENT_DETAILS:
+    case INITIALISE_BILL_DETAILS:
       return {
         ...state,
         currentHighestSharedOrderId: action.sharedOrderId,
@@ -60,7 +60,7 @@ export default (state = initialState, action) => {
         attendees: action.attendees,
         sharedOrders: action.sharedOrders,
         totalBill: action.totalBill,
-        eventId: action.eventId 
+        billId: action.billId 
       };
     case ADD_ATTENDEES:
       let originalAttendees = state.attendees;
@@ -198,38 +198,38 @@ export default (state = initialState, action) => {
       //   totalBill,
       // };
 
-    case CREATE_EVENT:
-      console.log('reducer - create event')
-      var updatedUserEvents = state.events.concat(action.userEvent);
+    case CREATE_BILL:
+      console.log('reducer - create bill')
+      var updatedUserBills = state.bills.concat(action.userBill);
       return {
         ...state,
         attendees: {},
         sharedOrders: [],
         totalBill: 0,
         currentHighestSharedOrderId: 0,
-        userEvents: updatedUserEvents,
+        userBills: updatedUserBills,
         billDetails: {},
         unpaidAmount: 0
       };
-    case EDIT_EVENT:
-      const originalUserEvent = state.userEvents.find(userEvent => userEvent._id.toString() === action.userEvent._id.toString());
-      var i = state.userEvents.indexOf(originalUserEvent);
-      state.userEvents[i] = action.userEvent;
+    case EDIT_BILL:
+      const originalUserBill = state.userBills.find(userBill => userBill._id.toString() === action.userBill._id.toString());
+      var i = state.userBills.indexOf(originalUserBill);
+      state.userBills[i] = action.userBill;
       return {
         ...state,
         attendees: {},
         sharedOrders: [],
         totalBill: 0,
         currentHighestSharedOrderId: 0,
-        userEvents: state.userEvents,
+        userBills: state.userBills,
         billDetails: {},
         unpaidAmount: 0,
-        eventId: null
+        billId: null
       };
-    case SET_USEREVENTS:
+    case SET_USERBILLS:
       return {
         ...state,
-        userEvents: action.userEvents,
+        userBills: action.userBills,
       };
 
     default:

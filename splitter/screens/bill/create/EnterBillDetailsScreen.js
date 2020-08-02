@@ -21,7 +21,7 @@ import {
 
 import AddOrdersHeader from "../../../components/AddOrdersSubSectionHeader";
 import Colors from "../../../constants/Colors";
-import * as eventActions from "../../../store/actions/bill-event";
+import * as billActions from "../../../store/actions/bill";
 import { useSelector, useDispatch } from "react-redux";
 import moment from "moment";
 import AddOrdersSubSectionHeader from "../../../components/AddOrdersSubSectionHeader";
@@ -42,7 +42,7 @@ const EnterBillDetailsScreen = (props) => {
   const dispatch = useDispatch();
 
   var billDetails = null;
-  billDetails = useSelector((state) => state.billEvent.billDetails);
+  billDetails = useSelector((state) => state.bill.billDetails);
   if (Object.keys(billDetails).length === 0) {
     billDetails = null;
   }
@@ -59,15 +59,15 @@ const EnterBillDetailsScreen = (props) => {
   const currentFullDate = new Date();
   const currentFormattedDate = moment().format("D MMM YYYY");
 
-  const [eventName, setEventName] = useState(() => {return billDetails ? billDetails.eventName : ""}
+  const [billName, setBillName] = useState(() => {return billDetails ? billDetails.billName : ""}
   );
   const [formattedDate, setFormattedDate] = useState(() => {
     return billDetails
       ? moment(new Date(billDetails.formattedDate)).format("D MMM YYYY")
       : currentFormattedDate;
   });
-  const [eventDate, setEventDate] = useState(() => {
-    return billDetails ? billDetails.eventDate : currentFullDate}
+  const [billDate, setBillDate] = useState(() => {
+    return billDetails ? billDetails.billDate : currentFullDate}
   );
   const [totalBill, setTotalBill] = useState(
     billDetails ? billDetails.totalBill : 0
@@ -88,8 +88,8 @@ const EnterBillDetailsScreen = (props) => {
 
   const proceedHandler = () => {
     dispatch(
-      eventActions.updateBillDetails(
-        eventName,
+      billActions.updateBillDetails(
+        billName,
         formattedDate,
         addGST,
         addServiceCharge,
@@ -114,7 +114,7 @@ const EnterBillDetailsScreen = (props) => {
     setFormattedDate(date);
   };
 
-  const totalBillFromStore = useSelector((state) => state.billEvent.totalBill);
+  const totalBillFromStore = useSelector((state) => state.bill.totalBill);
 
   useEffect(() => {
     console.log("called");
@@ -188,21 +188,21 @@ const EnterBillDetailsScreen = (props) => {
           />
           <View style={styles.contentContainer}>
             <FormRow>
-              <LabelLeft label="Event Name" />
+              <LabelLeft label="Bill Name" />
               <InputRight>
                 <TextInput
                   style={{ textAlign: "right" }}
-                  value={eventName}
-                  onChangeText={setEventName}
+                  value={billName}
+                  onChangeText={setBillName}
                   placeholder="Optional"
                 />
               </InputRight>
             </FormRow>
             <FormRow>
-              <LabelLeft label="Event Date" />
+              <LabelLeft label="Bill Date" />
               <InputRight>
                 <DatePicker
-                  date={eventDate}
+                  date={billDate}
                   onSelectDate={selectDateHandler}
                   formattedDate={formattedDate}
                 />

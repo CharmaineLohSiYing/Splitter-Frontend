@@ -15,7 +15,7 @@ import {
 import Colors from "../../../constants/Colors";
 
 import IndividualOrders from "../../../components/IndividualOrders";
-import * as eventActions from "../../../store/actions/bill-event";
+import * as billActions from "../../../store/actions/bill";
 import Header from "../../../components/AddOrdersSubSectionHeader";
 import ProceedBottomButton from '../../../components/UI/ProceedBottomButton'
 
@@ -26,7 +26,7 @@ const AddPayersScreen = (props) => {
   const [error, setError] = useState();
   const [isEdit, setIsEdit] = useState();
 
-  const unpaidAmount = useSelector((state) => state.billEvent.unpaidAmount);
+  const unpaidAmount = useSelector((state) => state.bill.unpaidAmount);
 
   props.navigation.setOptions({
     headerTitle: "Select Payers",
@@ -61,7 +61,7 @@ const AddPayersScreen = (props) => {
     });
   };
 
-  const createEventHandler = useCallback(async () => {
+  const createBillHandler = useCallback(async () => {
     if (unpaidAmount != 0.0) {
       setError("Numbers do not tally");
     } else {
@@ -71,12 +71,12 @@ const AddPayersScreen = (props) => {
         // console.log("before dispatch");
         // console.log("isedit", isEdit);
         if (isEdit) {
-          await dispatch(eventActions.editEvent());
+          await dispatch(billActions.editBill());
         } else {
-          await dispatch(eventActions.createEvent());
+          await dispatch(billActions.createBill());
         }
         // console.log("after dispatch");
-        props.navigation.navigate("Events");
+        props.navigation.navigate("Bills");
       } catch (err) {
         setError("Error");
         // console.log("error caught");
@@ -99,7 +99,7 @@ const AddPayersScreen = (props) => {
           {isLoading ? (
             <ActivityIndicator size="small" color={Colors.primary} />
           ) : (
-            <ProceedBottomButton proceedHandler={createEventHandler}/> 
+            <ProceedBottomButton proceedHandler={createBillHandler}/> 
           )}
         </View>
        

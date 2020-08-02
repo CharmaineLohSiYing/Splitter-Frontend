@@ -8,12 +8,12 @@ import ReduxThunk from 'redux-thunk';
 import * as Font from 'expo-font';
 
 import authReducer from './store/reducers/auth'
-import billEventReducer from './store/reducers/bill-event'
+import billReducer from './store/reducers/bill'
 import loanReducer from './store/reducers/loan'
 
 const rootReducer = combineReducers({
   auth: authReducer,
-  billEvent: billEventReducer,
+  bill: billReducer,
   loan: loanReducer
 });
 

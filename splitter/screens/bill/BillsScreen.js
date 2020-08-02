@@ -17,29 +17,29 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useSelector, useDispatch } from "react-redux";
 import { matchUsersWithContacts } from "../../utils/initialiseContacts";
 
-import EventItemDisplay from "../../components/EventItemDisplay";
+import BillItemDisplay from "../../components/BillItemDisplay";
 import * as authActions from "../../store/actions/auth";
-import * as eventActions from "../../store/actions/bill-event";
+import * as billActions from "../../store/actions/bill";
 import Colors from "../../constants/Colors";
 
 
-const EventsScreen = (props) => {
+const BillsScreen = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
   const [text, setText] = useState("hello")
-  const userEvents = useSelector((state) => state.billEvent.userEvents);
+  const userBills = useSelector((state) => state.bill.userBills);
   const dispatch = useDispatch();
 
   var contactsFromStore = useSelector((state) => state.auth.contacts);
 
-  const addEventHandler = () => {
+  const addBillHandler = () => {
     props.navigation.navigate("AddAttendees");
   };
 
-  const loadUserEvents = useCallback(async () => {
+  const loadUserBills = useCallback(async () => {
     setError(null);
     try {
-      await dispatch(eventActions.fetchUserEvents());
+      await dispatch(billActions.fetchUserBills());
     } catch (err) {
       setError(err.message);
     }
@@ -48,14 +48,14 @@ const EventsScreen = (props) => {
   useEffect(() => {
     const listenerCreated = props.navigation.addListener(
       "focus",
-      loadUserEvents
+      loadUserBills
     );
 
     return () => {
       // calling this function will remove the listener
       listenerCreated();
     };
-  }, [loadUserEvents]);
+  }, [loadUserBills]);
 
   useEffect(() => {
     async function initialiseContacts() {
@@ -70,10 +70,10 @@ const EventsScreen = (props) => {
 
   useEffect(() => {
     setIsLoading(true);
-    loadUserEvents().then(() => {
+    loadUserBills().then(() => {
       setIsLoading(false);
     });
-  }, [dispatch, loadUserEvents]);
+  }, [dispatch, loadUserBills]);
 
   if (error) {
     return (
@@ -81,7 +81,7 @@ const EventsScreen = (props) => {
         <Text>An error occurred!</Text>
         <Button
           title="Try again"
-          onPress={loadUserEvents}
+          onPress={loadUserBills}
           color={Colors.primary}
         />
       </View>
@@ -96,14 +96,14 @@ const EventsScreen = (props) => {
     );
   }
 
-  if (!isLoading && userEvents.length === 0) {
+  if (!isLoading && userBills.length === 0) {
     return (
     <View style={[styles.screen, {justifyContent:'center', alignItems:'center'}]}>
-        <View style={styles.noEventsContainer}>
-          <Text>You have no events yet</Text>
+        <View style={styles.noBillsContainer}>
+          <Text>You have no bills yet</Text>
          
-            <TouchableOpacity style={styles.noEventsAdd} onPress={addEventHandler}>
-              <Text style={styles.noEventsAddText}>Create one</Text>
+            <TouchableOpacity style={styles.noBillsAdd} onPress={addBillHandler}>
+              <Text style={styles.noBillsAddText}>Create one</Text>
             </TouchableOpacity>
         </View>
       </View>
@@ -122,28 +122,28 @@ const EventsScreen = (props) => {
     <View style={styles.screen}>
       <TouchableOpacity
         activeOpacity={0.7}
-        onPress={addEventHandler}
-        style={styles.addEventButton}
+        onPress={addBillHandler}
+        style={styles.addBillButton}
       >
         <Ionicons name="md-add" size={40} color="white" />
       </TouchableOpacity>
       <TouchableOpacity style={{height: 40, backgroundColor:'yellow', width: '100%'}} onPress={change}>
   <Text>{text}</Text>
       </TouchableOpacity>
-      <View style={styles.eventsContainer}>
+      <View style={styles.billsContainer}>
         <FlatList
           keyExtractor={(item, index) => index.toString()}
-          data={userEvents}
+          data={userBills}
           renderItem={({ item }) => (
-            <EventItemDisplay
+            <BillItemDisplay
               onSelect={() =>
-                props.navigation.navigate("ViewEvent", {
-                  eventId: item.event._id,
+                props.navigation.navigate("ViewBill", {
+                  billId: item.bill._id,
                 })
               }
-              eventName={item.event.name}
-              date={item.event.date}
-              netBill={item.event.netBill}
+              billName={item.bill.name}
+              date={item.bill.date}
+              netBill={item.bill.netBill}
               sharedOrders={item.sharedOrders}
               individualOrderAmount={item.individualOrderAmount}
             />
@@ -163,10 +163,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  eventsContainer: {
+  billsContainer: {
     flex: 1,
   },
-  noEventsContainer: {
+  noBillsContainer: {
     borderWidth: 1,
     borderColor: Colors.primary,
     margin: 20,
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     marginTop: 10,
   },
-  noEventsAdd:{
+  noBillsAdd:{
     height: 30,
     backgroundColor:Colors.primary,
     alignItems:'center',
@@ -185,10 +185,10 @@ const styles = StyleSheet.create({
     width:'50%',
     marginTop: 10
   },
-  noEventsAddText:{
+  noBillsAddText:{
     color:'white'
   },
-  addEventButton: {
+  addBillButton: {
     backgroundColor: Colors.primary,
     position: "absolute",
     width: 80,
@@ -202,4 +202,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default EventsScreen;
+export default BillsScreen;

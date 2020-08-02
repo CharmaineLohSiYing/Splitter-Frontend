@@ -12,7 +12,7 @@ import { useSelector } from "react-redux";
 import { LinearGradient } from "expo-linear-gradient";
 import { useDispatch } from "react-redux";
 import OrderDisplay from "./OrderDisplay";
-import * as eventActions from "../store/actions/bill-event";
+import * as billActions from "../store/actions/bill";
 import AddOrdersSubSectionHeader from "./AddOrdersSubSectionHeader";
 import Colors from "../constants/Colors";
 import IndividualOrders from "./IndividualOrders";
@@ -20,8 +20,8 @@ import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 
 const SharedOrders = (props) => {
   const dispatch = useDispatch();
-  const sharedOrders = useSelector((state) => state.billEvent.sharedOrders);
-  const attendees = useSelector((state) => state.billEvent.attendees);
+  const sharedOrders = useSelector((state) => state.bill.sharedOrders);
+  const attendees = useSelector((state) => state.bill.attendees);
   const [orders, setOrders] = useState(sharedOrders);
 
   useEffect(() => {
@@ -33,7 +33,7 @@ const SharedOrders = (props) => {
   };
 
   const deleteSharedOrderHandler = (id) => {
-    dispatch(eventActions.removeSharedOrder(id));
+    dispatch(billActions.removeSharedOrder(id));
   };
 
   const emptyListComponent = () => {

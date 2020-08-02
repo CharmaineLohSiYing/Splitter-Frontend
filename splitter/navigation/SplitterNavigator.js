@@ -21,16 +21,16 @@ import RegisterScreen from "../screens/user/RegisterScreen";
 import OTPScreen from "../screens/user/OTPScreen";
 import VerifyMobileNumberScreen from "../screens/user/VerifyMobileNumberScreen";
 
-import ViewEventScreen from "../screens/bill-event/ViewEventScreen";
-import EventsScreen from "../screens/bill-event/EventsScreen";
+import ViewBillScreen from "../screens/bill/ViewBillScreen";
+import BillsScreen from "../screens/bill/BillsScreen";
 
-import AddAttendeesScreen from "../screens/bill-event/create/AddAttendeesScreen";
-import AddOrdersScreen from "../screens/bill-event/create/AddOrdersScreen";
-import SelectSharersScreen from "../screens/bill-event/create/SelectSharersScreen";
-import AddPayersScreen from "../screens/bill-event/create/AddPayersScreen";
-import CalculatorScreen from "../screens/bill-event/create/CalculatorScreen";
-import EnterBillDetailsScreen from "../screens/bill-event/create/EnterBillDetailsScreen";
-import TestScreen from "../screens/bill-event/create/TestScreen";
+import AddAttendeesScreen from "../screens/bill/create/AddAttendeesScreen";
+import AddOrdersScreen from "../screens/bill/create/AddOrdersScreen";
+import SelectSharersScreen from "../screens/bill/create/SelectSharersScreen";
+import AddPayersScreen from "../screens/bill/create/AddPayersScreen";
+import CalculatorScreen from "../screens/bill/create/CalculatorScreen";
+import EnterBillDetailsScreen from "../screens/bill/create/EnterBillDetailsScreen";
+import TestScreen from "../screens/bill/create/TestScreen";
 
 import LoansScreen from "../screens/loan/LoansScreen";
 import ViewContactLoansScreen from "../screens/loan/ViewContactLoansScreen";
@@ -97,24 +97,24 @@ export const AuthNavigator = ({ navigation }) => {
   );
 };
 
-const EventsStackNavigator = createStackNavigator();
+const BillsStackNavigator = createStackNavigator();
 
-export const EventsNavigator = ({ navigation }) => {
+export const BillsNavigator = ({ navigation }) => {
   return (
-    <EventsStackNavigator.Navigator screenOptions={defaultNavOptions}>
-      <EventsStackNavigator.Screen
-        name="Events"
-        component={EventsScreen}
+    <BillsStackNavigator.Navigator screenOptions={defaultNavOptions}>
+      <BillsStackNavigator.Screen
+        name="Bills"
+        component={BillsScreen}
       />
-      <EventsStackNavigator.Screen
-        name="ViewEvent"
-        component={ViewEventScreen}
+      <BillsStackNavigator.Screen
+        name="ViewBill"
+        component={ViewBillScreen}
       />
-      <EventsStackNavigator.Screen
+      <BillsStackNavigator.Screen
         name="AddAttendees"
         component={AddAttendeesScreen}
       />
-      <EventsStackNavigator.Screen
+      <BillsStackNavigator.Screen
         name="AddOrders"
         component={AddOrdersScreen}
         options={{
@@ -122,7 +122,7 @@ export const EventsNavigator = ({ navigation }) => {
           headerTitleStyle: styles.headerTitle,
         }}
       />
-      <EventsStackNavigator.Screen
+      <BillsStackNavigator.Screen
         name="BillDetails"
         component={EnterBillDetailsScreen}
         options={{
@@ -130,20 +130,20 @@ export const EventsNavigator = ({ navigation }) => {
           headerTitleStyle: styles.headerTitle,
         }}
       />
-      <EventsStackNavigator.Screen
+      <BillsStackNavigator.Screen
         name="SelectSharers"
         component={SelectSharersScreen}
       />
-      <EventsStackNavigator.Screen
+      <BillsStackNavigator.Screen
         name="Calculator"
         component={CalculatorScreen}
       />
-      <EventsStackNavigator.Screen
+      <BillsStackNavigator.Screen
         name="AddPayers"
         component={AddPayersScreen}
       />
-      <EventsStackNavigator.Screen name="Test" component={TestScreen} />
-    </EventsStackNavigator.Navigator>
+      <BillsStackNavigator.Screen name="Test" component={TestScreen} />
+    </BillsStackNavigator.Navigator>
   );
 };
 
@@ -234,7 +234,7 @@ export const SplitterNavigator = () => {
       }}
     >
       <TabNavigator.Screen name="Track Loans" component={LoansNavigator} />
-      <TabNavigator.Screen name="My Bills" component={EventsNavigator} />
+      <TabNavigator.Screen name="My Bills" component={BillsNavigator} />
 
       <TabNavigator.Screen name="Settings" component={AccountNavigator} />
     </TabNavigator.Navigator>
@@ -291,8 +291,8 @@ export const SplitterNavigator = () => {
 //         }}
 //       />
 //       <SplitterDrawerNavigator.Screen
-//         name="Events"
-//         component={EventsNavigator}
+//         name="Bills"
+//         component={BillsNavigator}
 //         screenOptions={{
 //           drawerIcon: (props) => (
 //             <Ionicons

@@ -4,11 +4,11 @@ export const REMOVE_SHARED_ORDER = "REMOVE_SHARED_ORDER";
 export const UPDATE_SHARED_ORDER = "UPDATE_SHARED_ORDER";
 export const UPDATE_INDIVIDUAL_ORDER = "UPDATE_INDIVIDUAL_ORDER";
 export const UPDATE_PAID_AMOUNT = "UPDATE_PAID_AMOUNT";
-export const CREATE_EVENT = "CREATE_EVENT";
-export const EDIT_EVENT = "EDIT_EVENT";
+export const CREATE_BILL = "CREATE_BILL";
+export const EDIT_BILL = "EDIT_BILL";
 export const UPDATE_BILL_DETAILS = "UPDATE_BILL_DETAILS";
-export const SET_USEREVENTS = "SET_USEREVENTS";
-export const INITIALISE_EVENT_DETAILS = "INITIALISE_EVENT_DETAILS";
+export const SET_USERBILLS = "SET_USERBILLS";
+export const INITIALISE_BILL_DETAILS = "INITIALISE_BILL_DETAILS";
 
 export const addAttendees = (attendees) => {
   // convert attendees arr to obj
@@ -57,7 +57,7 @@ export const updatePaidAmount = (userId, amount) => {
 };
 
 export const updateBillDetails = (
-  eventName,
+  billName,
   formattedDate,
   addGST,
   addServiceCharge,
@@ -66,7 +66,7 @@ export const updateBillDetails = (
   netBill
 ) => {
   const billDetails = {
-    eventName,
+    billName,
     formattedDate,
     addGST,
     addServiceCharge,
@@ -80,16 +80,16 @@ export const updateBillDetails = (
   };
 };
 
-export const createEvent = () => {
+export const createBill = () => {
   return async (dispatch, getState) => {
     const {
       billDetails,
       attendees,
       totalBill,
       sharedOrders,
-    } = getState().billEvent;
+    } = getState().bill;
 
-    const response = await fetch("http://192.168.1.190:5000/event/add", {
+    const response = await fetch("http://192.168.1.190:5000/bill/add", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -112,26 +112,26 @@ export const createEvent = () => {
       }
       throw new Error(message);
     }
-    console.log('add event success')
+    console.log('add bill success')
 
     const resData = await response.json();
-    dispatch({ type: CREATE_EVENT, userEvent: resData.userEvent });
+    dispatch({ type: CREATE_BILL, userBill: resData.userBill });
   };
 };
 
-export const editEvent = () => {
+export const editBill = () => {
   return async (dispatch, getState) => {
     const {
       billDetails,
       attendees,
       totalBill,
       sharedOrders,
-      eventId
-    } = getState().billEvent;
+      billId
+    } = getState().bill;
 
 
     var currUserId = getState().auth.userId
-    const response = await fetch("http://192.168.1.190:5000/event/edit", {
+    const response = await fetch("http://192.168.1.190:5000/bill/edit", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -142,7 +142,7 @@ export const editEvent = () => {
         totalBill,
         sharedOrders,
         updatedBy: currUserId,
-        eventId
+        billId
       }),
     });
 
@@ -159,16 +159,16 @@ export const editEvent = () => {
 
 
     const resData = await response.json();
-    dispatch({ type: EDIT_EVENT, userEvent: resData.userEvent });
+    dispatch({ type: EDIT_BILL, userBill: resData.userBill });
   };
 };
 
 
-export const fetchUserEvents = () => {
-  console.log('fetch user events')
+export const fetchUserBills = () => {
+  console.log('fetch user bills')
   return async (dispatch, getState) => {
     const response = await fetch(
-      "http://192.168.1.190:5000/event/user/" + getState().auth.userId,
+      "http://192.168.1.190:5000/bill/user/" + getState().auth.userId,
       {
         method: "GET",
         headers: {
@@ -188,15 +188,15 @@ export const fetchUserEvents = () => {
       throw new Error(message);
     }
     const resData = await response.json()
-    dispatch({ type: SET_USEREVENTS, userEvents: resData.userEvents });
+    dispatch({ type: SET_USERBILLS, userBills: resData.userBills });
   };
 };
 
-export const retrieveForEdit = (eventId, matchedContacts) => {
+export const retrieveForEdit = (billId, matchedContacts) => {
   console.log('retrieveForEdit')
   return async (dispatch, getState) => {
     const response = await fetch(
-      "http://192.168.1.190:5000/event/retrieveForEdit/" + eventId,
+      "http://192.168.1.190:5000/bill/retrieveForEdit/" + billId,
       {
         method: "GET",
         headers: {
@@ -218,23 +218,23 @@ export const retrieveForEdit = (eventId, matchedContacts) => {
 
     const resData = await response.json()
     var attendees = {}
-    const userEvents = resData.userEvents
+    const userBills = resData.userBills
     for (var key of Object.keys(matchedContacts)){
-      var userEvent = userEvents.filter(userEvent => {
-        return userEvent.user._id ===key
+      var userBill = userBills.filter(userBill => {
+        return userBill.user._id ===key
       })[0]
       attendees[key] = {
-        amount: userEvent.individualOrderAmount,
+        amount: userBill.individualOrderAmount,
         name: matchedContacts[key],
-        paidAmount: userEvent.amountPaid
+        paidAmount: userBill.amountPaid
       }
     }
 
     
-    const {eventName, date, createdAt, totalBill ,hasGST, hasServiceCharge, discountType, discountAmount, netBill, sharedOrders} = resData.event 
+    const {billName, date, createdAt, totalBill ,hasGST, hasServiceCharge, discountType, discountAmount, netBill, sharedOrders} = resData.bill 
     
     const billDetails = {
-      event: eventName,
+      bill: billName,
       formattedDate: date,
       addGST: hasGST,
       addServiceCharge: hasServiceCharge,
@@ -250,6 +250,6 @@ export const retrieveForEdit = (eventId, matchedContacts) => {
     })
     sharedOrderId += 1
 
-    dispatch({ type: INITIALISE_EVENT_DETAILS, sharedOrders, billDetails, attendees, totalBill, sharedOrderId, eventId});
+    dispatch({ type: INITIALISE_BILL_DETAILS, sharedOrders, billDetails, attendees, totalBill, sharedOrderId, billId});
   };
 }

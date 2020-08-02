@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
   }
 });
 const mapStateToProps = (state) => {
-  const { attendees } = state.billEvent;
+  const { attendees } = state.bill;
   return { attendees };
 };
 

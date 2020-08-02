@@ -18,7 +18,7 @@ class CollapsibleCard extends React.Component {
 
     _initContentHeight(evt) {
         if (this.anime.contentHeight>0) return;
-        this.anime.contentHeight = evt.nativeEvent.layout.height;
+        this.anime.contentHeight = evt.nativeBill.layout.height;
         this.anime.height.setValue(this.anime.expanded ? this._getMaxValue() : this._getMinValue() );
     }
 

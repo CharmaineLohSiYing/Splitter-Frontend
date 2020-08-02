@@ -25,7 +25,7 @@ const DatePicker = (props) => {
     }
   }, [propsFormattedDate])
   
-  const onChange = (event, selectedDate) => {
+  const onChange = (bill, selectedDate) => {
     const currentDate = selectedDate || date;
     setShow(Platform.OS === "ios");
     setDate(currentDate);

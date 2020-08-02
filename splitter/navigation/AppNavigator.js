@@ -3,7 +3,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { SafeAreaView } from "react-native";
 import {
   AuthNavigator,
-  EventsNavigator,
+  BillsNavigator,
   SplitterNavigator,
 } from "./SplitterNavigator";
 import StartupScreen from "../screens/StartupScreen";

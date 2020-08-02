@@ -24,7 +24,7 @@ import IndividualOrders from "../../../components/IndividualOrders";
 import SharedOrders from "../../../components/SharedOrders";
 
 import Colors from "../../../constants/Colors";
-import * as eventActions from "../../../store/actions/bill-event";
+import * as billActions from "../../../store/actions/bill";
 import { useSelector, useDispatch } from "react-redux";
 import moment from "moment";
 import AddOrdersSubSectionHeader from "../../../components/AddOrdersSubSectionHeader";
@@ -48,8 +48,8 @@ const AddOrdersScreen = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [error, setError] = useState(null);
-  const sharedOrders = useSelector((state) => state.billEvent.sharedOrders);
-  const attendeesFromStore = useSelector((state) => state.billEvent.attendees);
+  const sharedOrders = useSelector((state) => state.bill.sharedOrders);
+  const attendeesFromStore = useSelector((state) => state.bill.attendees);
   const [attendees, setAttendees] = useState(attendeesFromStore);
   const [orders, setOrders] = useState(sharedOrders);
   const [ready, setReady] = useState(false)
@@ -97,7 +97,7 @@ const AddOrdersScreen = (props) => {
   }, [sharedOrders]);
 
   const deleteSharedOrderHandler = (id) => {
-    dispatch(eventActions.removeSharedOrder(id));
+    dispatch(billActions.removeSharedOrder(id));
   };
 
   const addSharedOrderHandler = useCallback(() => {

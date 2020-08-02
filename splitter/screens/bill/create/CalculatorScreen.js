@@ -15,7 +15,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useDispatch } from "react-redux";
 import CalculatorColumn from "../../../components/UI/CalculatorColumn";
 import CalculatorButton from "../../../components/UI/CalculatorButton";
-import * as eventActions from "../../../store/actions/bill-event";
+import * as billActions from "../../../store/actions/bill";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import ProceedBottomButton from '../../../components/UI/ProceedBottomButton'
@@ -414,13 +414,13 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state) => {
-  const { sharedOrders, attendees } = state.billEvent;
+  const { sharedOrders, attendees } = state.bill;
   return { sharedOrders, attendees };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    actions: bindActionCreators(eventActions, dispatch),
+    actions: bindActionCreators(billActions, dispatch),
   };
 };
 

@@ -36,8 +36,18 @@ const OTPScreen = (props) => {
   }, [error]);
 
   const otpSubmitHandler = async () => {
-
-    if (props.route.params.changeMobileNumber){
+    console.log('PEEP')
+    if (!props.route.params){
+      let action = authActions.verifyOTP(inputOTP, userId);
+      setError(null);
+      setIsLoading(true);
+      try {
+        await dispatch(action);
+      } catch (err) {
+        setError(err.message);
+        setIsLoading(false);
+      }
+    } else {
       try {
         setError(null);
         setIsLoading(true);
@@ -60,21 +70,10 @@ const OTPScreen = (props) => {
       } catch (err) {
         setError(err.message);
       }
-    } else {
-
-      let action = authActions.verifyOTP(inputOTP, userId);
-
-      setError(null);
-      setIsLoading(true);
-      try {
-        await dispatch(action);
-      } catch (err) {
-        setError(err.message);
-        setIsLoading(false);
-      }
     }
-
-  };
+  }
+    
+   
 
   return (
     <KeyboardAvoidingView

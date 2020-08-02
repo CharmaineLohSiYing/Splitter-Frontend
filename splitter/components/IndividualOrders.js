@@ -21,7 +21,7 @@ import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import Colors from '../constants/Colors'
 
 const IndividualOrders = (props) => {
-  const attendeesFromStore = useSelector((state) => state.billEvent.attendees);
+  const attendeesFromStore = useSelector((state) => state.bill.attendees);
 
   const [attendees, setAttendees] = useState(attendeesFromStore);
   const [displayPayers, setDisplayPayers] = useState(false);

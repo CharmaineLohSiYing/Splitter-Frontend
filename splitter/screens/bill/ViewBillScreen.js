@@ -16,9 +16,9 @@ import { useSelector, useDispatch } from "react-redux";
 import * as Contacts from "expo-contacts";
 import moment from "moment";
 import Colors from "../../constants/Colors";
-import ViewUserEventDisplay from "../../components/ViewUserEventDisplay";
+import ViewUserBillDisplay from "../../components/ViewUserBillDisplay";
 import LogDisplay from "../../components/LogDisplay";
-import * as eventActions from "../../store/actions/bill-event";
+import * as billActions from "../../store/actions/bill";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { Item, HeaderButtons } from "react-navigation-header-buttons";
@@ -37,7 +37,7 @@ const FlatListItemSeparator = () => {
   );
 }
 
-class ViewEventScreen extends React.Component {
+class ViewBillScreen extends React.Component {
   constructor(props) {
     super(props);
 
@@ -46,29 +46,29 @@ class ViewEventScreen extends React.Component {
       currUserId: null,
       hasError: false,
       loans: [],
-      userEvents: [],
+      userBills: [],
       matchedContacts: {},
-      event: null,
+      bill: null,
       logs: [],
     };
   }
 
-  matchUsersWithContacts = async (userEvents) => {
+  matchUsersWithContacts = async (userBills) => {
     const currUserId = this.props.userId;
     const contacts = this.props.contacts;
 
-    userEvents.forEach(async (userEvent) => {
-      const userId = userEvent.user._id;
+    userBills.forEach(async (userBill) => {
+      const userId = userBill.user._id;
       if (userId !== currUserId) {
         var mobileNum;
-        userEvent.user.isRegistered
-          ? (mobileNum = userEvent.user.mobileNumber)
-          : (mobileNum = userEvent.user.mobileNumberTemp);
+        userBill.user.isRegistered
+          ? (mobileNum = userBill.user.mobileNumber)
+          : (mobileNum = userBill.user.mobileNumberTemp);
 
         let matchedContact = contacts[mobileNum];
 
         if (matchedContact) {
-          // userEvent.user.name = matchedContact.name;
+          // userBill.user.name = matchedContact.name;
           await this.setState({
             matchedContacts: {
               ...this.state.matchedContacts,
@@ -97,8 +97,8 @@ class ViewEventScreen extends React.Component {
   componentDidMount() {
     this.setState({ isLoading: true });
     fetch(
-      "http://192.168.1.190:5000/event/details/" +
-        this.props.route.params.eventId,
+      "http://192.168.1.190:5000/bill/details/" +
+        this.props.route.params.billId,
       {
         method: "GET",
         headers: {
@@ -113,12 +113,12 @@ class ViewEventScreen extends React.Component {
         });
 
         let promise1 = this.setState({
-          userEvents: resData.userEvents,
+          userBills: resData.userBills,
           loans: filteredLoans,
-          event: resData.event,
+          bill: resData.bill,
           logs: resData.logs,
         });
-        let promise2 = this.matchUsersWithContacts(resData.userEvents);
+        let promise2 = this.matchUsersWithContacts(resData.userBills);
         Promise.all([promise1, promise2]).then(() => {
           this.setState({ isLoading: false });
         });
@@ -126,41 +126,41 @@ class ViewEventScreen extends React.Component {
       .catch(() => this.setState({ hasError: true }));
   }
 
-  editEventHandler = async () => {
+  editBillHandler = async () => {
     const { retrieveForEdit } = this.props.actions;
     await retrieveForEdit(
-      this.props.route.params.eventId,
+      this.props.route.params.billId,
       this.state.matchedContacts
     );
     this.props.navigation.navigate("AddOrders", { isEdit: true });
   };
 
   renderHeader = () => {
-    if (this.state.event) {
+    if (this.state.bill) {
       return (
         <View>
-          <View style={styles.eventDetailsContainer}>
-            <Text style={styles.eventName}>
-              {this.state.event.eventName
-                ? this.state.event.eventName
-                : "Event"}
+          <View style={styles.billDetailsContainer}>
+            <Text style={styles.billName}>
+              {this.state.bill.billName
+                ? this.state.bill.billName
+                : "Bill"}
             </Text>
             <View style={styles.netBillContainer}>
-              <Text>${this.state.event.netBill.toFixed(2)}</Text>
+              <Text>${this.state.bill.netBill.toFixed(2)}</Text>
             </View>
             <View style={styles.subtitle}>
               <Text>
-                {moment(new Date(this.state.event.date)).format("D MMM YYYY")}
+                {moment(new Date(this.state.bill.date)).format("D MMM YYYY")}
               </Text>
               <Text> | </Text>
               <Text>
                 Created By{" "}
-                {this.state.matchedContacts[this.state.event.createdBy]}
+                {this.state.matchedContacts[this.state.bill.createdBy]}
               </Text>
             </View>
           </View>
           <View style={styles.numAttendees}>
-              <Text style={styles.numAttendeesText}>{this.state.userEvents.length} Attendees</Text>
+              <Text style={styles.numAttendeesText}>{this.state.userBills.length} Attendees</Text>
           </View>
         </View>
       );
@@ -201,7 +201,7 @@ class ViewEventScreen extends React.Component {
         <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
           <Item
             iconName="edit"
-            onPress={this.editEventHandler}
+            onPress={this.editBillHandler}
             color="white"
             iconSize={28}
             IconComponent={MaterialIcons}
@@ -223,19 +223,19 @@ class ViewEventScreen extends React.Component {
 
     return (
       <View>
-        {!this.state.isLoading && this.state.event ? (
+        {!this.state.isLoading && this.state.bill ? (
           <View>
               <FlatList
                 keyExtractor={(item, index) => index.toString()}
-                data={this.state.userEvents}
+                data={this.state.userBills}
                 ListHeaderComponent={this.renderHeader}
                 ListFooterComponent={this.renderFooter}
                 ItemSeparatorComponent = { FlatListItemSeparator }
                 renderItem={({ item }) => (
-                  <ViewUserEventDisplay
+                  <ViewUserBillDisplay
                     sharedOrders={item.sharedOrders}
-                    editEvent={this.editEventHandler}
-                    eventId={item.event._id}
+                    editBill={this.editBillHandler}
+                    billId={item.bill._id}
                     individualOrderAmount={item.individualOrderAmount}
                     amountPaid={item.amountPaid}
                     loans={this.state.loans}
@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  eventDetailsContainer: {
+  billDetailsContainer: {
     marginVertical: 20,
     alignItems: "center",
   },
@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
   textHeader: {
     textAlign: "center",
   },
-  eventName: {
+  billName: {
     textTransform: "uppercase",
     fontSize: 22,
     fontWeight: "bold",
@@ -311,9 +311,9 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    actions: bindActionCreators(eventActions, dispatch),
+    actions: bindActionCreators(billActions, dispatch),
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ViewEventScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(ViewBillScreen);
 3;
