@@ -20,29 +20,25 @@ const ProgressStep = (props) => {
   const { number, title, active } = props;
 
   return (
-    <View>
+    <View style={styles.container}>
       <View
         style={{
-          ...styles.container,
+          ...styles.step,
+          ...props.style,
           backgroundColor: active ? Colors.primary : Colors.gray,
         }}
       >
         <Text style={styles.number}>{number}</Text>
       </View>
-      {/* <View style={styles.titleContainer}>
+      <View style={styles.titleContainer}>
         <Text style={styles.title}>{title}</Text>
-      </View> */}
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    borderWidth: 1,
-    height: 40,
-    width: 40,
-    borderRadius: 20,
-    borderColor: "#ccc",
+  step: {
     alignItems: "center",
     paddingHorizontal: 10,
     flexDirection: "row",
@@ -53,7 +49,14 @@ const styles = StyleSheet.create({
   },
   title: {
     color: Colors.gray,
+    fontSize: 12
   },
+  titleContainer:{
+    paddingTop: 5
+  },
+  container:{
+    alignItems:'center'
+  }
 });
 
 export default ProgressStep;

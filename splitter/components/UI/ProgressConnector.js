@@ -17,18 +17,17 @@ import { useSelector, useDispatch } from "react-redux";
 import Colors from "../../constants/Colors";
 
 const ProgressConnector = (props) => {
-    const {active} = props;
+    const {active, width} = props;
+    console.log(active, width)
   return (
-    <View style={{ ...styles.connector, backgroundColor: active ? Colors.primary : Colors.gray }}>
+    <View style={{ ...styles.connector, backgroundColor: active ? Colors.primary : Colors.gray, width: width }}>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   connector: {
-    width: 30,
     height: 2,
-    backgroundColor: "#ccc",
   },
 });
 
