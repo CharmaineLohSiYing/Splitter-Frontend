@@ -22,7 +22,7 @@ import {
 
 import IndividualOrders from "../../../components/IndividualOrders";
 import SharedOrders from "../../../components/SharedOrders";
-
+import CreateBillHeader from "../../../components/CreateBillHeader";
 import Colors from "../../../constants/Colors";
 import * as billActions from "../../../store/actions/bill";
 import { useSelector, useDispatch } from "react-redux";
@@ -34,15 +34,21 @@ import ProceedBottomButton from "../../../components/UI/ProceedBottomButton";
 
 const EmptyListComponent = (props) => (
   <View style={styles.emptyFlatlist}>
-    <Text style={styles.noOrdersText}>No shared orders added yet</Text>
-    <TouchableOpacity
-      onPress={props.onPress}
-      style={styles.emptyAddButton}
-    >
-      <Text>Add a shared order</Text>
-    </TouchableOpacity>
+    <Text style={styles.noOrdersText}>Nope, everyone got their own stuff.</Text>
   </View>
-)
+);
+
+const ItemSeparator = () => {
+  return (
+    <View
+      style={{
+        height: 1,
+        width: "100%",
+        backgroundColor: Colors.gray3,
+      }}
+    />
+  );
+};
 
 const AddOrdersScreen = (props) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -52,7 +58,7 @@ const AddOrdersScreen = (props) => {
   const attendeesFromStore = useSelector((state) => state.bill.attendees);
   const [attendees, setAttendees] = useState(attendeesFromStore);
   const [orders, setOrders] = useState(sharedOrders);
-  const [ready, setReady] = useState(false)
+  const [ready, setReady] = useState(false);
   const dispatch = useDispatch();
 
   const { navigation } = props;
@@ -61,11 +67,10 @@ const AddOrdersScreen = (props) => {
     InteractionManager.runAfterInteractions(() => {
       // 2: Component is done animating
       // 3: Start fetching the team / or render the view
-     // this.props.dispatchTeamFetchStart();
-      setReady(true)
+      // this.props.dispatchTeamFetchStart();
+      setReady(true);
     });
-  }, [])
-
+  }, []);
 
   useEffect(() => {
     setAttendees(attendeesFromStore);
@@ -79,7 +84,6 @@ const AddOrdersScreen = (props) => {
       alignSelf: "center",
     },
   });
-
 
   const proceedHandler = useCallback(() => {
     navigation.navigate("BillDetails", { isEdit });
@@ -103,7 +107,6 @@ const AddOrdersScreen = (props) => {
   const addSharedOrderHandler = useCallback(() => {
     navigation.navigate("SelectSharers");
   }, [navigation]);
-
 
   const updateSharedOrderHandler = useCallback((id, sharers) => {
     navigation.navigate("SelectSharers", {
@@ -144,11 +147,7 @@ const AddOrdersScreen = (props) => {
             style={{ paddingVertical: 5, flex: 1 }}
           />
           <TouchableOpacity onPress={addSharedOrderHandler}>
-            <Ionicons
-              name="md-add-circle-outline"
-              size={28}
-              color="black"
-            />
+            <Ionicons name="md-add-circle-outline" size={28} color="black" />
           </TouchableOpacity>
         </View>
       </>
@@ -171,9 +170,15 @@ const AddOrdersScreen = (props) => {
     );
   }
 
-
   return (
-    <View style={{ alignItems: "center", justifyContent: "center", flex: 1 }}>
+    <View style={{ alignItems: "center", flex: 1 }}>
+      <CreateBillHeader
+        displayProceed={true}
+        progress={2}
+        proceedHandler={proceedHandler}
+        title="How much was each order?"
+        subtitle="Don’t worry about the GST and service charges, we will get to that later"
+      ></CreateBillHeader>
       <View style={{ width: "90%" }}>
         {/* <FlatList
           // ListFooterComponent={footerComponent}
@@ -193,27 +198,42 @@ const AddOrdersScreen = (props) => {
           )}
         /> */}
         <SectionList
-          ListFooterComponent={<ProceedBottomButton proceedHandler={proceedHandler}/>}
-          renderSectionFooter={({section}) => {
+          ItemSeparatorComponent={ItemSeparator}
+          contentContainerStyle={{ paddingTop: 20 }}
+          ListFooterComponent={
+            <ProceedBottomButton proceedHandler={proceedHandler} />
+          }
+          renderSectionFooter={({ section }) => {
             if (section.data.length === 0) {
-              return <EmptyListComponent onPress={addSharedOrderHandler}/>
+              return <EmptyListComponent onPress={addSharedOrderHandler} />;
             }
-            return <View></View>
+            return <View></View>;
           }}
-          renderSectionHeader={({ section: { title, data } }) => (
+          renderSectionHeader={({ section: { title, data, type } }) => (
             <View style={styles.header}>
-              <AddOrdersSubSectionHeader header={title} style={{flex: 1}}/>
-              {title == "Shared Orders" && data.length > 0 && <Ionicons
-                name="md-add-circle-outline"
-                size={28}
-                color="black"
-                onPress={addSharedOrderHandler}
-              />}
+              <AddOrdersSubSectionHeader header={title} style={{ flex: 1 }} />
+              {type === "Shared" && (
+                <TouchableOpacity
+                  style={styles.addSharedOrderButton}
+                  onPress={addSharedOrderHandler}
+                >
+                  <Text style={styles.addSharedOrderText}>Create</Text>
+                  <Ionicons
+                    name="md-add-circle"
+                    size={20}
+                    color={Colors.blue1}
+                  />
+                </TouchableOpacity>
+              )}
             </View>
           )}
           sections={[
             {
-              title: "Shared Orders",
+              title:
+                orders.length > 0
+                  ? orders.length + " shared orders"
+                  : "Any shared orders?",
+              type: "Shared",
               data: orders,
               renderItem: ({ item }) => (
                 <OrderDisplay
@@ -226,6 +246,7 @@ const AddOrdersScreen = (props) => {
               ),
             },
             {
+              type: "Individual",
               title: "Individual Orders",
               data: Object.keys(attendees),
               renderItem: ({ item }) => (
@@ -237,7 +258,6 @@ const AddOrdersScreen = (props) => {
                 />
               ),
             },
-           
           ]}
           keyExtractor={(item, index) => index.toString()}
         />
@@ -254,28 +274,31 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
   },
-  emptyAddButton: {
-    alignSelf: "center",
-    marginVertical: 5,
-    justifyContent: "center",
-    alignItems: "center",
-    width: "80%",
-    height: 40,
-    backgroundColor: Colors.blue2,
-  },
   emptyFlatlist: {
-    borderWidth: 1,
-    borderColor: Colors.blue2,
-    height: 90,
-    padding: 10,
+    padding: 20,
+    backgroundColor: "#ccc",
   },
   noOrdersText: {
     alignSelf: "center",
+    fontStyle: "italic",
   },
-  header:{
-    flexDirection:'row',
-    paddingRight: 10
-  }
+  header: {
+    flexDirection: "row",
+    paddingRight: 10,
+    paddingBottom: 10,
+  },
+  addSharedOrderButton: {
+    backgroundColor: Colors.blue4Rgba,
+    borderRadius: 30,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 10,
+    width: 80,
+  },
+  addSharedOrderText: {
+    color: Colors.blue1,
+  },
 });
 
 export default AddOrdersScreen;

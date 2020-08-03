@@ -237,7 +237,7 @@ const AddAttendeesScreen = (props) => {
         </TouchableOpacity>
       )}
       <CreateBillHeader
-        proceedEnabled={selectedContacts.length > 0}
+        displayProceed={selectedContacts.length > 0}
         progress={1}
         proceedHandler={proceedHandler}
         title={

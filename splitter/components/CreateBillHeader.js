@@ -50,8 +50,7 @@ const CreateBillHeader = (props) => {
           <MyAppText style={styles.numSelectedText}>
             {props.title}
           </MyAppText>
-          <TouchableOpacity
-            disabled={!props.proceedEnabled}
+          {props.displayProceed && <TouchableOpacity
             style={{
               flexDirection: "row",
               alignItems: "center",
@@ -60,12 +59,17 @@ const CreateBillHeader = (props) => {
             }}
             onPress={props.proceedHandler}
           >
-            <Text style={{ fontStyle: "italic", color: props.proceedEnabled ? Colors.blue1 : Colors.gray }}>
+            <Text style={{ fontStyle: "italic", color: Colors.blue1 }}>
               Next
             </Text>
-            <Ionicons name="md-arrow-forward" size={16} color={props.proceedEnabled ? Colors.blue1 : Colors.gray} />
-          </TouchableOpacity>
+            <Ionicons name="md-arrow-forward" size={16} color={Colors.blue1} />
+          </TouchableOpacity>}
         </View>
+        {props.subtitle && <View style={{marginVertical:5}}>
+            <MyAppText style={{fontSize: 12, fontStyle:"italic"}}>
+                {props.subtitle}
+            </MyAppText>
+        </View>}
         {props.children}
       </View>
     </BoxShadow>
@@ -73,23 +77,13 @@ const CreateBillHeader = (props) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    borderWidth: 1,
-    height: 30,
-    borderColor: "#ccc",
-    alignItems: "center",
-    marginHorizontal: 10,
-    paddingHorizontal: 10,
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
   header: {
     position: "relative",
     width: "100%",
     height: HEADER_HEIGHT,
     overflow: "hidden",
     backgroundColor: "#fff",
-    paddingHorizontal: 10
+    paddingHorizontal: 20
   },
   numSelectedText: {
     fontSize: 18,

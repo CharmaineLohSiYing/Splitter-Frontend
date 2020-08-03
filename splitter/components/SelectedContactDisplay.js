@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
   nameContainer: {
     flexDirection: "row",
     borderRadius: 15,
-    backgroundColor: "rgba(221, 235, 255, 0.62)",
+    backgroundColor: Colors.blue4Rgba,
     height: 30,
     alignItems: "center",
     paddingHorizontal: 10,

@@ -100,9 +100,9 @@ class OrderDisplay extends Component {
         <View style={styles.amountContainer}>
           <Text>${this.props.amount}</Text>
         </View>
-        {/* <TouchableOpacity style={styles.amountContainer} onPress={() => this.props.onDelete(this.props.id)}>
+        <TouchableOpacity style={styles.amountContainer} onPress={() => this.props.onDelete(this.props.id)}>
           <Text>Delete</Text>
-        </TouchableOpacity> */}
+        </TouchableOpacity>
       </TouchableOpacity>
     );
   }
@@ -110,14 +110,12 @@ class OrderDisplay extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Colors.blue2,
-    // width: "80%",
     flexDirection: "row",
     justifyContent: "space-between",
     height: 50,
     alignItems: "center",
     paddingHorizontal: 10,
-    marginVertical: 10,
+    backgroundColor:Colors.gray4
   },
   amountContainer: {
     backgroundColor: "white",
