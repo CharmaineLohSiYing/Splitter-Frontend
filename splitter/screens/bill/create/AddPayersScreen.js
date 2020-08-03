@@ -90,14 +90,14 @@ const AddPayersScreen = (props) => {
       <View style={styles.container}>
         <Header
           header={"Unpaid amount: $" + unpaidAmount}
-          style={{ alignItems: "center", borderWidth: 2, borderColor:Colors.primary }}
+          style={{ alignItems: "center", borderWidth: 2, borderColor:Colors.blue1 }}
         />
         <View style={styles.flatlistContainer}>
           <IndividualOrders payers updatePaidAmount={updatePaidAmountHandler} />
         </View>
         <View>
           {isLoading ? (
-            <ActivityIndicator size="small" color={Colors.primary} />
+            <ActivityIndicator size="small" color={Colors.blue1} />
           ) : (
             <ProceedBottomButton proceedHandler={createBillHandler}/> 
           )}
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     width: "90%",
     height: '60%',
     borderWidth: 1,
-    borderColor: Colors.lightBlue,
+    borderColor: Colors.blue2,
     marginVertical: 10,
     padding: 10,
   },

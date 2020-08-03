@@ -25,7 +25,7 @@ const ProgressStep = (props) => {
         style={{
           ...styles.step,
           ...props.style,
-          backgroundColor: active ? Colors.primary : Colors.gray,
+          backgroundColor: active ? Colors.blue1 : Colors.lightGray,
         }}
       >
         <Text style={styles.number}>{number}</Text>
@@ -48,8 +48,8 @@ const styles = StyleSheet.create({
     color: "white",
   },
   title: {
-    color: Colors.gray,
-    fontSize: 12
+    color: Colors.lightGray,
+    fontSize: 10
   },
   titleContainer:{
     paddingTop: 5

@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     height: 50,
     marginVertical: 5,
     alignItems: "center",
-    backgroundColor: Colors.lightBlue,
+    backgroundColor: Colors.blue2,
     padding: 10,
   },
 });

@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
   proceedButton: {
     width: "100%",
     height: 40,
-    backgroundColor: Colors.primary,
+    backgroundColor: Colors.blue1,
     alignItems: "center",
     justifyContent: "center",
   },

@@ -184,7 +184,7 @@ const EnterBillDetailsScreen = (props) => {
           <AddOrdersHeader
             header="Bill Information"
             subtitle={netBill}
-            style={{ backgroundColor: Colors.lightBlue, alignItems: "center" }}
+            style={{ backgroundColor: Colors.blue2, alignItems: "center" }}
           />
           <View style={styles.contentContainer}>
             <FormRow>
@@ -208,7 +208,7 @@ const EnterBillDetailsScreen = (props) => {
                 />
               </InputRight>
             </FormRow>
-            <FormRow style={{ backgroundColor: Colors.lightBlue, height: 40 }}>
+            <FormRow style={{ backgroundColor: Colors.blue2, height: 40 }}>
               <LabelLeft
                 label={"Add calculations to total bill ($" + totalBill + ")"}
                 style={{ alignItems: "center" }}
@@ -306,7 +306,7 @@ const EnterBillDetailsScreen = (props) => {
 const styles = StyleSheet.create({
   contentContainer: {
     marginVertical: 10,
-    borderColor: Colors.lightBlue,
+    borderColor: Colors.blue2,
     borderWidth: 1,
     alignSelf: "center",
     alignItems: "center",
@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
     margin: 1,
   },
   floatingButton: {
-    backgroundColor: Colors.primary,
+    backgroundColor: Colors.blue1,
     position: "absolute",
     width: 70,
     height: 70,

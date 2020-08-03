@@ -246,7 +246,7 @@ class ViewBillScreen extends React.Component {
               />
           </View>
         ) : (
-          <ActivityIndicator size="small" color={Colors.primary} />
+          <ActivityIndicator size="small" color={Colors.blue1} />
         )}
       </View>
     );

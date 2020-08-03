@@ -82,7 +82,7 @@ const BillsScreen = (props) => {
         <Button
           title="Try again"
           onPress={loadUserBills}
-          color={Colors.primary}
+          color={Colors.blue1}
         />
       </View>
     );
@@ -91,7 +91,7 @@ const BillsScreen = (props) => {
   if (isLoading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color={Colors.primary} />
+        <ActivityIndicator size="large" color={Colors.blue1} />
       </View>
     );
   }
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
   },
   noBillsContainer: {
     borderWidth: 1,
-    borderColor: Colors.primary,
+    borderColor: Colors.blue1,
     margin: 20,
     width: '80%',
     alignItems:'center',
@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
   },
   noBillsAdd:{
     height: 30,
-    backgroundColor:Colors.primary,
+    backgroundColor:Colors.blue1,
     alignItems:'center',
     justifyContent:'center',
     width:'50%',
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
     color:'white'
   },
   addBillButton: {
-    backgroundColor: Colors.primary,
+    backgroundColor: Colors.blue1,
     position: "absolute",
     width: 80,
     height: 80,

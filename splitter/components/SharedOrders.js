@@ -104,11 +104,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "80%",
     height: 40,
-    backgroundColor: Colors.lightBlue,
+    backgroundColor: Colors.blue2,
   },
   emptyFlatlist: {
     borderWidth: 1,
-    borderColor: Colors.lightBlue,
+    borderColor: Colors.blue2,
     height: 90,
     padding: 10,
   },

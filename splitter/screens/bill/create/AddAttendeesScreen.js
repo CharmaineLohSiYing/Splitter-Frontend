@@ -14,6 +14,7 @@ import {
   TextInput,
   TouchableOpacity,
   Dimensions,
+  TouchableHighlight,
 } from "react-native";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
@@ -28,48 +29,67 @@ import SelectedContactDisplay from "../../../components/SelectedContactDisplay";
 import { Item, HeaderButtons } from "react-navigation-header-buttons";
 import CustomHeaderButton from "../../../components/UI/CustomHeaderButton";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
-import AddBillProgress from "../../../components/AddBillProgress"
+import MyAppText from "../../../components/UI/MyAppText";
+import CreateBillHeader from "../../../components/CreateBillHeader";
+const screenWidth = Dimensions.get("window").width;
+
+const HEADER_HEIGHT = 160;
 
 // height of each contact container + flatlist separator
-const ITEM_HEIGHT = 61
-const FlatListItemSeparator = () => {
+const ITEM_HEIGHT = 61;
+const ContactListItemSeparator = () => {
   return (
     <View
       style={{
         height: 1,
         width: "100%",
-        backgroundColor: "#A9B7DB",
+        backgroundColor: "#ccc",
+      }}
+    />
+  );
+};
+const SelectedContactListItemSeparator = () => {
+  return (
+    <View
+      style={{
+        width: 10,
+        backgroundColor: "transparent",
       }}
     />
   );
 };
 
-const compare = ( a, b ) => {
-  if ( a.name < b.name ){
+const compare = (a, b) => {
+  if (a.name < b.name) {
     return -1;
   }
-  if ( a.name > b.name ){
+  if (a.name > b.name) {
     return 1;
   }
   return 0;
-}
-
+};
 
 const AddAttendeesScreen = (props) => {
   const [contactsArr, setContactsArr] = useState([]);
   const [selectedContacts, setSelectedContacts] = useState([]);
   const [query, setQuery] = useState("");
-  const [screenWidth, setScreenWidth] = useState(
-    () => Dimensions.get("window").width
-  );
+  const [displaySearchBar, setDisplaySearchBar] = useState(false);
   const dispatch = useDispatch();
-
-  // console.log('render')
 
   var contactsFromStore = useSelector((state) => state.auth.contacts);
   var attendeesFromStore = useSelector((state) => state.bill.attendees);
 
   const selectedContactsRef = useRef(null);
+  const shadowOpt = {
+    width: screenWidth,
+    height: HEADER_HEIGHT,
+    color: "#000",
+    border: 2,
+    radius: 3,
+    opacity: 0.1,
+    x: 0,
+    y: 1,
+  };
 
   // props.navigation.setOptions({
   //   headerTitle: 'Add Attendees',
@@ -190,6 +210,11 @@ const AddAttendeesScreen = (props) => {
     setQuery(text);
   };
 
+  const closeSearchbar = () => {
+    setQuery("");
+    setDisplaySearchBar(false);
+  };
+
   return (
     <View
       style={{
@@ -197,36 +222,67 @@ const AddAttendeesScreen = (props) => {
         backgroundColor: "#fff",
         justifyContent: "center",
       }}
-    > 
-      <AddBillProgress progress={3}/>
-      <View>
-        <TextInput
-          style={styles.searchBar}
-          placeholder="Search"
-          onChangeText={handleSearch}
-          value={query}
-        />
-      </View>
-      <TouchableOpacity
-        disabled={selectedContacts.length === 0}
-        activeOpacity={0.9}
-        onPress={proceedHandler}
-        style={[styles.floatingButton, selectedContacts.length === 0 && styles.disabledButton]}
+    >
+      {!displaySearchBar && (
+        <TouchableOpacity
+          // disabled={selectedContacts.length === 0}
+          activeOpacity={0.9}
+          onPress={() => setDisplaySearchBar(true)}
+          style={[
+            styles.floatingButton,
+            // selectedContacts.length === 0 && styles.disabledButton,
+          ]}
+        >
+          <Ionicons name="md-search" size={24} color="white" />
+        </TouchableOpacity>
+      )}
+      <CreateBillHeader
+        proceedEnabled={selectedContacts.length > 0}
+        progress={1}
+        proceedHandler={proceedHandler}
+        title={
+          selectedContacts.length === 0
+            ? "Who are you splitting\nthe bill with?"
+            : selectedContacts.length + " friends selected"
+        }
       >
-          <Ionicons name="md-arrow-forward" size={24} color="white" />
-       </TouchableOpacity>
-      {selectedContacts.length > 0 && (
-          <View style={styles.selectedContacts}>
+        <View>
+          {displaySearchBar && (
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <TouchableOpacity
+                style={{ paddingRight: 5 }}
+                onPress={closeSearchbar}
+              >
+                <Ionicons name="md-arrow-back" size={20} />
+              </TouchableOpacity>
+              <TextInput
+                autoFocus={true}
+                style={styles.searchBar}
+                placeholder="Search"
+                onChangeText={handleSearch}
+                value={query}
+              />
+            </View>
+          )}
+          {!displaySearchBar && (
             <FlatList
-              contentContainerStyle={{ alignItems: "center" }}
+              contentContainerStyle={{
+                alignItems: "center",
+                paddingVertical: 10,
+              }}
+              ItemSeparatorComponent={SelectedContactListItemSeparator}
               keyExtractor={(item, index) => item.mobileNumber}
               data={selectedContacts}
               extraData={selectedContacts}
               initialNumToRender={10}
               ref={selectedContactsRef}
               horizontal={true}
+              showsHorizontalScrollIndicator={false}
               onContentSizeChange={(contentWidth) => {
-                if (contentWidth <= screenWidth) {
+                if (
+                  contentWidth <= screenWidth &&
+                  selectedContacts.length > 0
+                ) {
                   selectedContactsRef.current.scrollToIndex({
                     index: 0,
                     animated: false,
@@ -239,29 +295,28 @@ const AddAttendeesScreen = (props) => {
                 }
               }}
               renderItem={({ item }) => (
-                <View>
-                  <SelectedContactDisplay
-                    name={item.name}
-                    onPress={removeFromSelectedContacts}
-                    mobileNumber={item.mobileNumber}
-                  />
-                </View>
+                <SelectedContactDisplay
+                  name={item.name}
+                  onPress={removeFromSelectedContacts}
+                  mobileNumber={item.mobileNumber}
+                />
               )}
             />
-          </View>
-
-      )}
-
+          )}
+        </View>
+      </CreateBillHeader>
       <SearchableFlatList
         data={contactsArr}
-        ItemSeparatorComponent={FlatListItemSeparator}
+        keyboardShouldPersistTaps={"handled"}
+        ItemSeparatorComponent={ContactListItemSeparator}
         searchTerm={query}
         searchAttribute="name"
         ignoreCase={true}
-        getItemLayout={(data, index) => (
-          {length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index}
-        )}
-      
+        getItemLayout={(data, index) => ({
+          length: ITEM_HEIGHT,
+          offset: ITEM_HEIGHT * index,
+          index,
+        })}
         renderItem={({ item }) => (
           <ContactDisplay
             selected={item.selected}
@@ -276,15 +331,15 @@ const AddAttendeesScreen = (props) => {
   );
 };
 
-
 const styles = StyleSheet.create({
   selectedContacts: {
-    height: 50,
+    paddingTop: 10,
+    paddingBottom: 5,
     justifyContent: "center",
-    // width: "80%",
+    paddingLeft: 10,
   },
   floatingButton: {
-    backgroundColor: Colors.primary,
+    backgroundColor: Colors.blue1,
     position: "absolute",
     width: 70,
     height: 70,
@@ -294,14 +349,14 @@ const styles = StyleSheet.create({
     bottom: 30,
     borderRadius: 35,
     zIndex: 1,
-    flexDirection:'row',
+    flexDirection: "row",
   },
-  disabledButton:{
-    backgroundColor:'#619995'
+  disabledButton: {
+    backgroundColor: "#619995",
   },
   searchBar: {
     // borderBottomWidth: 1,
-    // borderBottomColor: Colors.primary,
+    // borderBottomColor: Colors.blue1,
     padding: 10,
     height: 50,
   },
@@ -317,17 +372,20 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  numSelected: {
-    color: "white",
-    fontSize: 24,
-  },
   numAttendeesContainer: {
     paddingHorizontal: 10,
-    // width: "20%",
   },
-  selectedContactsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+
+  headerText: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  header: {
+    position: "relative",
+    width: "100%",
+    height: HEADER_HEIGHT,
+    overflow: "hidden",
+    backgroundColor: "#fff",
   },
 });
 export default AddAttendeesScreen;

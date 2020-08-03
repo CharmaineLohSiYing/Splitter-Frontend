@@ -110,7 +110,7 @@ class OrderDisplay extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Colors.lightBlue,
+    backgroundColor: Colors.blue2,
     // width: "80%",
     flexDirection: "row",
     justifyContent: "space-between",

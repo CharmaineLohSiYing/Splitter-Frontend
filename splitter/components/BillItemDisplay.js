@@ -48,7 +48,7 @@ const BillItemDisplay = (props) => {
 const styles = StyleSheet.create({
   container: {
     margin: 20,
-    borderColor: Colors.primary,
+    borderColor: Colors.blue1,
     borderWidth: 1,
     padding: 10,
   },
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
   netBillContainer:{
     minWidth: 100,
     padding:5,
-    backgroundColor: Colors.lightBlue,
+    backgroundColor: Colors.blue2,
     alignItems:'center'
   }
 });

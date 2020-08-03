@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
   },
   container: {
     borderWidth: 1,
-    borderColor: Colors.lightBlue,
+    borderColor: Colors.blue2,
     marginVertical: 10,
     width: "90%",
     padding: 10,
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     minWidth: 100,
     height: 30,
-    backgroundColor: Colors.lightBlue,
+    backgroundColor: Colors.blue2,
   },
 });
 

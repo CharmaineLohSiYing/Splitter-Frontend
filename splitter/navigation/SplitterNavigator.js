@@ -76,7 +76,7 @@ const defaultNavOptions = {
   headerBackTitleStyle: {
     fontFamily: "open-sans",
   },
-  headerTintColor: Colors.gray,
+  headerTintColor: Colors.lightGray,
   headerTitle: "SPLITTER",
 };
 
@@ -238,7 +238,7 @@ export const SplitterNavigator = () => {
         },
       })}
       tabBarOptions={{
-        activeTintColor: Colors.primary,
+        activeTintColor: Colors.blue1,
         inactiveTintColor: Colors.gray,
       }}
     >
@@ -273,7 +273,7 @@ export const SplitterNavigator = () => {
 //             <SafeAreaView forceInset={{ top: "always", horizontal: "never" }}>
 //               <Button
 //                 title="Logout"
-//                 color={Colors.primary}
+//                 color={Colors.blue1}
 //                 onPress={() => {
 //                   dispatch(authActions.logout());
 //                 }}
@@ -283,7 +283,7 @@ export const SplitterNavigator = () => {
 //         );
 //       }}
 //       drawerContentOptions={{
-//         activeTintColor: Colors.primary,
+//         activeTintColor: Colors.blue1,
 //       }}
 //     >
 //        <SplitterDrawerNavigator.Screen

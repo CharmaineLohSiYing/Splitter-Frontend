@@ -18,17 +18,20 @@ class ContactDisplay extends Component {
       <TouchableOpacity
         activeOpacity={0.9}
         onPress={() => this.props.onSelect(name, mobileNumber)}
-        style={styles.container}
+        style={{...styles.container, backgroundColor: selected ? Colors.blue4 : 'transparent'}}
       >
+        <View style={styles.avatar}>
+          <Ionicons name="md-person" size={18} color="white"/>
+        </View>
         <View>
           <Text style={styles.name}>{name}</Text>
           <Text style={styles.mobileNumber}>{mobileNumber}</Text>
         </View>
-        {selected && (
+        {/* {selected && (
           <View style={styles.selected}>
             <Ionicons name="md-checkmark-circle" size={28} color="#007A74" />
           </View>
-        )}
+        )} */}
       </TouchableOpacity>
     );
   }
@@ -44,12 +47,20 @@ const styles = StyleSheet.create({
   },
   container: {
     flexDirection: "row",
-    justifyContent:'space-between',
     alignItems: "center",
     height: 60,
     paddingHorizontal: 10,
     backgroundColor: "#D4DBED",
   },
+  avatar:{
+    height: 40,
+    width: 40,
+    borderRadius: 20,
+    backgroundColor:'#ccc',
+    alignItems:'center',
+    justifyContent:'center',
+    marginRight:10
+  }
 });
 
 export default ContactDisplay;

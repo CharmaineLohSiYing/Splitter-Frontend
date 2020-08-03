@@ -39,7 +39,7 @@ class SharedOrderDisplay extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor:Colors.lightBlue,
+    backgroundColor:Colors.blue2,
     width: "100%",
     flexDirection: "row",
     justifyContent: "space-between",

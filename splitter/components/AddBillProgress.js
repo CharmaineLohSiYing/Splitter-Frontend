@@ -17,9 +17,9 @@ import { useSelector, useDispatch } from "react-redux";
 import ProgressStep from "./UI/ProgressStep";
 import ProgressConnector from "./UI/ProgressConnector";
 
-const STEP_WIDTH = 40;
-const STEP_X_MARGIN = 15; 
-const CONTAINER_Y_PADDING = 20; 
+const STEP_WIDTH = 30;
+const STEP_X_MARGIN = 20; 
+const CONTAINER_Y_PADDING = 15; 
 
 const AddBillProgress = (props) => {
  
@@ -62,9 +62,7 @@ const AddBillProgress = (props) => {
 
 const styles = StyleSheet.create({
   container: {
-    borderWidth: 1,
     paddingVertical: CONTAINER_Y_PADDING,
-    borderColor: "#ccc",
     alignItems: "center",
     paddingHorizontal: 10,
     flexDirection: "row",

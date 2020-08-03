@@ -1,5 +1,6 @@
 import React from "react";
 import { StyleSheet, Text } from "react-native";
+import Colors from '../../constants/Colors'
 
 const MyAppText = (props) => {
   return (
@@ -12,7 +13,7 @@ const MyAppText = (props) => {
 const styles = StyleSheet.create({
   text: {
     fontFamily:'roboto-medium',
-    color: '#535353'
+    color: Colors.gray
   },
 });
 

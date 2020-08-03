@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     textDecorationStyle: "solid",
   },
   notInDebt: {
-    backgroundColor: Colors.lightBlue,
+    backgroundColor: Colors.blue2,
   },
   inDebt: {
     backgroundColor: Colors.lightRed,

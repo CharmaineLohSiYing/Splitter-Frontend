@@ -18,9 +18,9 @@ const styles = StyleSheet.create({
     justifyContent:'center',
     alignItems:'flex-start',
     padding: 5,
-    // borderColor:Colors.lightBlue,
+    // borderColor:Colors.blue2,
     // borderWidth: 1,
-    // backgroundColor: Colors.lightBlue
+    // backgroundColor: Colors.blue2
   },
   headerText:{
     fontWeight: 'bold',

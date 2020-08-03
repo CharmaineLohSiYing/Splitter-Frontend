@@ -129,11 +129,11 @@ const UpdateDetailsScreen = (props) => {
             />
           <View style={styles.buttonContainer}>
             {isLoading ? (
-              <ActivityIndicator size="small" color={Colors.primary} />
+              <ActivityIndicator size="small" color={Colors.blue1} />
             ) : (
               <Button
                 title="Update"
-                color={Colors.primary}
+                color={Colors.blue1}
                 onPress={submitHandler}
                 disabled={!formState.formIsValid}
               />

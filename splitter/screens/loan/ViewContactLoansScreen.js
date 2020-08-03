@@ -149,7 +149,7 @@ const ViewContactLoansScreen = (props) => {
     return (
       <View style={styles.centered}>
         <Text>An error occurred!</Text>
-        <Button title="Try again" onPress={loadLoans} color={Colors.primary} />
+        <Button title="Try again" onPress={loadLoans} color={Colors.blue1} />
       </View>
     );
   }
@@ -157,7 +157,7 @@ const ViewContactLoansScreen = (props) => {
   if (isLoading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color={Colors.primary} />
+        <ActivityIndicator size="large" color={Colors.blue1} />
       </View>
     );
   }
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
   headerContainer:{
     textAlign:'center',
     alignItems:'center',
-    backgroundColor: Colors.lightBlue
+    backgroundColor: Colors.blue2
   },
   loanContainer:{
     backgroundColor:'#ccc',
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
     alignItems:'center'
   },
   headerButtons:{
-    backgroundColor: Colors.lightBlue,
+    backgroundColor: Colors.blue2,
     flexDirection:'row',
     justifyContent:'space-evenly'
   }

@@ -17,40 +17,44 @@ import { useSelector, useDispatch } from "react-redux";
 import moment from "moment";
 import { Badge } from "react-native-elements";
 import { Ionicons } from "@expo/vector-icons";
+import Colors from "../constants/Colors";
 
 const SelectedContactDisplay = (props) => {
-
   const handleSelect = () => {
     props.onPress(props.mobileNumber);
   };
 
   return (
-    <TouchableOpacity style={styles.container} onPress={handleSelect}>
-      <View style={styles.nameContainer}>
-        <Text>{props.name}</Text>
-        <Badge
-          status="success"
-          containerStyle={{ position: "absolute", top: -8, right: -8 }}
-          value={<Ionicons name="md-close" size={10} color="white" />}
-        />
+    <TouchableOpacity style={styles.nameContainer} onPress={handleSelect}>
+      <Text style={styles.name}>{props.name}</Text>
+      <View style={styles.iconContainer}>
+        <Ionicons name="md-close" size={10} color="white" />
       </View>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    height: 50,
-    justifyContent: "center",
-  },
   nameContainer: {
-    borderWidth: 1,
+    flexDirection: "row",
+    borderRadius: 15,
+    backgroundColor: "rgba(221, 235, 255, 0.62)",
     height: 30,
-    borderColor: "green",
     alignItems: "center",
-    marginHorizontal: 10,
     paddingHorizontal: 10,
     justifyContent: "center",
+  },
+  iconContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    height: 15,
+    width: 15,
+    borderRadius: 7.5,
+    backgroundColor: Colors.blue2,
+  },
+  name: {
+    color: Colors.blue2,
+    paddingRight: 5,
   },
 });
 

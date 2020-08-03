@@ -53,7 +53,7 @@ const CalculatorButton = (props) => {
       activeOpacity={0.8}
       style={[
         { ...styles.button, ...props.style },
-        { backgroundColor: props.grey ? "#ccc" : Colors.lightBlue },
+        { backgroundColor: props.grey ? "#ccc" : Colors.blue2 },
       ]}
     >
       {!props.digit && iconType == "Entypo" && (

@@ -391,7 +391,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   delete: {
-    backgroundColor: Colors.lightBlue,
+    backgroundColor: Colors.blue2,
     height: "12%",
     width: "25%",
     alignSelf: "flex-end",

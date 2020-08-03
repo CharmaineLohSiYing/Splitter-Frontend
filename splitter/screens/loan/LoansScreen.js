@@ -87,7 +87,7 @@ const LoansScreen = (props) => {
     return (
       <View style={styles.centered}>
         <Text>An error occurred!</Text>
-        <Button title="Try again" onPress={loadLoans} color={Colors.primary} />
+        <Button title="Try again" onPress={loadLoans} color={Colors.blue1} />
       </View>
     );
   }
@@ -95,7 +95,7 @@ const LoansScreen = (props) => {
   if (isLoading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color={Colors.primary} />
+        <ActivityIndicator size="large" color={Colors.blue1} />
       </View>
     );
   }
@@ -114,7 +114,7 @@ const LoansScreen = (props) => {
         <AddOrdersSubSectionHeader
           header={"Net Debt: $" + netDebt}
           style={{
-            backgroundColor: netDebt <= 0 ? Colors.lightBlue : Colors.lightRed,
+            backgroundColor: netDebt <= 0 ? Colors.blue2 : Colors.lightRed,
             alignItems: "center",
           }}
         />
