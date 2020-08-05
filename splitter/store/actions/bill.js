@@ -23,7 +23,7 @@ export const addAttendees = (attendees) => {
     const currUser = getState().auth;
     attendeesObj[currUser.userId] = {
       id: currUser.userId,
-      name: 'You',
+      name: 'Me',
       mobileNumber: currUser.user.mobileNumber.toString(),
       currentUser: true,
     };

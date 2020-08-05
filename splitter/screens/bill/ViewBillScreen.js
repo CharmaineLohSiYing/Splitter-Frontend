@@ -87,7 +87,7 @@ class ViewBillScreen extends React.Component {
         await this.setState({
           matchedContacts: {
             ...this.state.matchedContacts,
-            [userId]: "You",
+            [userId]: "Me",
           },
         });
       }

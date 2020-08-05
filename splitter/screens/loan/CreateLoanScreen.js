@@ -24,7 +24,7 @@ const CreateLoanScreen = (props) => {
 
   const switchBorrower = () => {
       if (borrower === matchedName){
-          setBorrower("You")
+          setBorrower("Me")
       } else {
           setBorrower(matchedName)
       }

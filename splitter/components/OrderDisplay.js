@@ -2,6 +2,10 @@ import React, { PureComponent, Component } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import Colors from "../constants/Colors";
 import { connect } from "react-redux";
+import Avatar from "../components/Avatar";
+import OverlappingAvatars from "../components/OverlappingAvatars";
+
+import OrderAmount from "../components/UI/AmountButton";
 
 class OrderDisplay extends Component {
   constructor(props) {
@@ -44,7 +48,7 @@ class OrderDisplay extends Component {
       this.props.amount === nextProps.amount &&
       this.props.contacts === nextProps.contacts &&
       this.props.id === nextProps.id &&
-      this.props.sharers === nextProps.sharers 
+      this.props.sharers === nextProps.sharers
       // &&
       // this.props.onSelect === nextProps.onSelect
     ) {
@@ -71,16 +75,18 @@ class OrderDisplay extends Component {
   };
 
   render() {
+    let sharersLengthMinusOne = 0;
     let firstSharerName = "";
     let sharers = [];
     if (this.props.sharers) {
       sharers = this.props.sharers;
+      sharersLengthMinusOne = sharers.length - 1;
       if (this.props.contacts) {
         const key = sharers[0];
         if (key in this.props.contacts) {
           firstSharerName = this.props.contacts[key].name;
         } else if (key === this.props.userId) {
-          firstSharerName = "You";
+          firstSharerName = "Me";
         }
       }
     }
@@ -91,18 +97,39 @@ class OrderDisplay extends Component {
         activeOpacity={0.8}
         onPress={this.handleSelect}
       >
-        {!this.props.sharers && <Text>{this.props.name}</Text>}
-        {!!this.props.sharers && (
-          <Text>
-            {firstSharerName} and {sharers.length - 1} other(s)
-          </Text>
-        )}
-        <View style={styles.amountContainer}>
-          <Text>${this.props.amount}</Text>
+        <View style={styles.topRow}>
+          {!this.props.sharers ? (
+            <View style={styles.individualOrderContainer}>
+              <Avatar />
+              <Text>{this.props.name}</Text>
+            </View>
+          ) : (
+            <View>
+              <OverlappingAvatars num={sharersLengthMinusOne + 1} />
+            </View>
+          )}
+
+          <OrderAmount
+            amount={this.props.amount}
+            color={Colors.gray}
+            backgroundColor="white"
+          />
         </View>
-        <TouchableOpacity style={styles.amountContainer} onPress={() => this.props.onDelete(this.props.id)}>
+        {this.props.sharers && (
+          <View style={styles.bottomRow}>
+            <Text style={styles.bottomRowText}>
+              {sharersLengthMinusOne === 1
+                ? firstSharerName + " and " + sharersLengthMinusOne + " other"
+                : firstSharerName + " and " + sharersLengthMinusOne + " others"}
+            </Text>
+          </View>
+        )}
+        {/* <TouchableOpacity
+          style={styles.amountContainer}
+          onPress={() => this.props.onDelete(this.props.id)}
+        >
           <Text>Delete</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </TouchableOpacity>
     );
   }
@@ -110,12 +137,11 @@ class OrderDisplay extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    height: 50,
+    justifyContent:'center',
+    height: 70,
     alignItems: "center",
     paddingHorizontal: 10,
-    backgroundColor:Colors.gray4
+    backgroundColor: Colors.gray4,
   },
   amountContainer: {
     backgroundColor: "white",
@@ -126,6 +152,21 @@ const styles = StyleSheet.create({
     height: 30,
     justifyContent: "center",
   },
+  individualOrderContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  topRow:{
+    flexDirection:'row',
+    justifyContent:'space-between',
+    width:'100%'
+  },
+  bottomRow:{
+    width:'100%',
+  },
+  bottomRowText:{
+    fontSize: 12
+  }
 });
 const mapStateToProps = (state) => {
   const { contacts, userId } = state.auth;

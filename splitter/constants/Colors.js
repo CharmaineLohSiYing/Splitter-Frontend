@@ -3,6 +3,7 @@ export default {
     blue2: '#4595FF',
     blue3:'#CCE2FF',
     blue4:'#DDEBFF',
+    blue5:'#F8FBFF',
     blue4Rgba: 'rgba(221, 235, 255, 0.62)',
     gray: '#707070',
     lightGray:'#8E8E8F',

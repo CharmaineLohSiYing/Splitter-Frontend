@@ -31,6 +31,8 @@ import AddOrdersSubSectionHeader from "../../../components/AddOrdersSubSectionHe
 import OrderDisplay from "../../../components/OrderDisplay";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import ProceedBottomButton from "../../../components/UI/ProceedBottomButton";
+import AddOrderModal from '../../../components/AddOrderModal'
+
 
 const EmptyListComponent = (props) => (
   <View style={styles.emptyFlatlist}>
@@ -59,6 +61,7 @@ const AddOrdersScreen = (props) => {
   const [attendees, setAttendees] = useState(attendeesFromStore);
   const [orders, setOrders] = useState(sharedOrders);
   const [ready, setReady] = useState(false);
+  const [sharedOrderToUpdate, setSharedOrderToUpdate] = useState(null)
   const dispatch = useDispatch();
 
   const { navigation } = props;
@@ -109,12 +112,13 @@ const AddOrdersScreen = (props) => {
   }, [navigation]);
 
   const updateSharedOrderHandler = useCallback((id, sharers) => {
-    navigation.navigate("SelectSharers", {
-      updateSharedOrder: true,
-      orderId: id,
-      sharers: sharers,
-    });
-  }, []);
+    // navigation.navigate("SelectSharers", {
+    //   updateSharedOrder: true,
+    //   orderId: id,
+    //   sharers: sharers,
+    // });
+    setSharedOrderToUpdate(id)
+  }, [setSharedOrderToUpdate]);
 
   const updateIndividualOrderHandler = useCallback((id) => {
     navigation.navigate("Calculator", {
@@ -123,36 +127,10 @@ const AddOrdersScreen = (props) => {
     });
   }, []);
 
-  function footerComponent() {
-    return (
-      <>
-        <AddOrdersSubSectionHeader header="Individual Orders" />
-        <IndividualOrders
-          updateIndividualOrder={updateIndividualOrderHandler}
-        />
-        <ProceedBottomButton
-          proceedHandler={proceedHandler}
-          style={{ marginBottom: 20 }}
-        />
-      </>
-    );
+  const closeUpdateSharedOrderModal = () => {
+    setSharedOrderToUpdate(null)
   }
 
-  const headerComponent = () => {
-    return (
-      <>
-        <View style={{ flexDirection: "row", paddingRight: 10 }}>
-          <AddOrdersSubSectionHeader
-            header="Shared Orders"
-            style={{ paddingVertical: 5, flex: 1 }}
-          />
-          <TouchableOpacity onPress={addSharedOrderHandler}>
-            <Ionicons name="md-add-circle-outline" size={28} color="black" />
-          </TouchableOpacity>
-        </View>
-      </>
-    );
-  };
 
   if (error) {
     return (
@@ -171,7 +149,7 @@ const AddOrdersScreen = (props) => {
   }
 
   return (
-    <View style={{ alignItems: "center", flex: 1 }}>
+    <View style={{ flex: 1}}>
       <CreateBillHeader
         displayProceed={true}
         progress={2}
@@ -179,30 +157,9 @@ const AddOrdersScreen = (props) => {
         title="How much was each order?"
         subtitle="Don’t worry about the GST and service charges, we will get to that later"
       ></CreateBillHeader>
-      <View style={{ width: "90%" }}>
-        {/* <FlatList
-          // ListFooterComponent={footerComponent}
-          ListHeaderComponent={headerComponent}
-          keyExtractor={(item, index) => index.toString()}
-          data={orders}
-          ListEmptyComponent={emptyListComponent}
-          initialNumToRender={5}
-          renderItem={({ item }) => (
-            <OrderDisplay
-              id={item.id}
-              sharers={item.users}
-              amount={item.amount}
-              onSelect={updateSharedOrderHandler}
-              delete={deleteSharedOrderHandler}
-            />
-          )}
-        /> */}
         <SectionList
+          contentContainerStyle={{paddingHorizontal:'5%', paddingVertical:20}}
           ItemSeparatorComponent={ItemSeparator}
-          contentContainerStyle={{ paddingTop: 20 }}
-          ListFooterComponent={
-            <ProceedBottomButton proceedHandler={proceedHandler} />
-          }
           renderSectionFooter={({ section }) => {
             if (section.data.length === 0) {
               return <EmptyListComponent onPress={addSharedOrderHandler} />;
@@ -247,7 +204,7 @@ const AddOrdersScreen = (props) => {
             },
             {
               type: "Individual",
-              title: "Individual Orders",
+              title: "Prices of individual orders",
               data: Object.keys(attendees),
               renderItem: ({ item }) => (
                 <OrderDisplay
@@ -261,14 +218,11 @@ const AddOrdersScreen = (props) => {
           ]}
           keyExtractor={(item, index) => index.toString()}
         />
-      </View>
+        {sharedOrderToUpdate && <AddOrderModal onClose={closeUpdateSharedOrderModal} orderId={sharedOrderToUpdate}/>}
     </View>
   );
 };
 
-AddOrdersScreen.navigationOptions = {
-  headerTitle: "Add Orders",
-};
 
 const styles = StyleSheet.create({
   screen: {
@@ -284,7 +238,6 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: "row",
-    paddingRight: 10,
     paddingBottom: 10,
   },
   addSharedOrderButton: {

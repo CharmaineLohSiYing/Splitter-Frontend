@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import SharerDisplay from "../../../components/SharerDisplay";
 import ProceedBottomButton from "../../../components/UI/ProceedBottomButton";
 
+import AppModal from '../../../components/UI/AppModal'
 import Input from "../../../components/UI/Input";
 import Card from "../../../components/UI/Card";
 import Colors from "../../../constants/Colors";
@@ -121,6 +122,7 @@ const SelectSharersScreen = (props) => {
         />
       </View>
     </View>
+    // <AppModal title="hi"/>
   );
 };
 
