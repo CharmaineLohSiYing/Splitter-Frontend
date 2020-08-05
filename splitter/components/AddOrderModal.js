@@ -30,18 +30,22 @@ const ItemSeparator = () => {
 
 const AddOrderModal = (props) => {
   const dispatch = useDispatch()
-  const { orderId } = props;
+  const { sharedOrderIdToUpdate, newSharedOrder, user } = props;
   let sharedOrders;
   let sharedOrder;
-  const attendees = useSelector((state) => state.bill.attendees);
-  if (orderId) {
+  let attendees = useSelector((state) => state.bill.attendees);
+  let matchedUser;
+  if (sharedOrderIdToUpdate) {
     sharedOrders = useSelector((state) => state.bill.sharedOrders);
-    sharedOrder = sharedOrders.filter((order) => order.id === orderId)[0];
+    sharedOrder = sharedOrders.filter((order) => order.id === sharedOrderIdToUpdate)[0];
+  } else if (user) {
+    matchedUser = attendees[user]
   }
+  
   const [modalVisible, setModalVisible] = useState(true);
-  const [sharers, setSharers] = useState(orderId ? sharedOrder.users : []);
+  const [sharers, setSharers] = useState(sharedOrderIdToUpdate ? sharedOrder.users : []);
   const [previousOperand, setPreviousOperand] = useState("")
-  const [currentOperand, setCurrentOperand] = useState(() => {return orderId ? sharedOrder.amount : "0"})
+  const [currentOperand, setCurrentOperand] = useState(() => {return sharedOrderIdToUpdate ? sharedOrder.amount : "0"})
   const [operation, setOperation] = useState("")
   // let previousOperand = "";
   // let currentOperand = "";
@@ -192,22 +196,30 @@ const AddOrderModal = (props) => {
   };
 
   const CalculatorComponent = useCallback(() => {
+
+    let initialAmount = 0;
+    if (sharedOrderIdToUpdate) {
+      initialAmount = sharedOrder.amount
+    } else if (matchedUser) {
+      initialAmount = matchedUser.amount
+    }
+
     return (
       <View
         style={{
           flexDirection: "row",
           justifyContent: "space-around",
-          paddingTop: 10,
+          // paddingTop: 10,
         }}
       >
-        <View style={{ padding: 5 }}>
+        {(sharedOrderIdToUpdate || newSharedOrder) && <View style={{ padding: 5 }}>
           <Text>Price</Text>
-        </View>
+        </View>}
         {/* <Calculator updateSharedOrder={true} previousOperand={previousOperand} previousOperandDisplay={previousOperandDisplay} currentOperand={currentOperand} operation={operation} compute={compute} pressOperatorHandler={pressOperatorHandler} pressClearHandler={pressClearHandler} pressDeleteHandler={pressDeleteHandler} pressDigitHandler={pressDigitHandler} pressEqualHandler={pressEqualHandler}/> */}
         <Calculator
-          updateSharedOrder={true}
-          initialAmount={orderId ? sharedOrder.amount : "0"}
+          initialAmount={initialAmount}
           getValuesFromCalculator={getValuesFromCalculator}
+          style={user ? styles.individualOrderCalculator : styles.sharedOrderCalculator}
         />
       </View>
     );
@@ -220,9 +232,22 @@ const AddOrderModal = (props) => {
     } else {
       finalValue = currentOperand;
     }
-    await dispatch(billActions.updateSharedOrder(orderId, finalValue, sharers))
+    if (sharedOrderIdToUpdate){
+      await dispatch(billActions.updateSharedOrder(sharedOrderIdToUpdate, finalValue, sharers))
+    } else if (newSharedOrder) {
+      await dispatch(billActions.addSharedOrder(finalValue, sharers))
+    } else {
+      await dispatch(billActions.updateIndividualOrder(user, finalValue))
+    }
+    
     props.onClose()
   };
+
+  if (user) {
+    return <AppModal title={matchedUser.name === "Me" ? "My Individual Order" : matchedUser.name + "'s Individual Order"} onClose={props.onClose} onSubmit={onSubmit} contentsStyle={styles.individualOrderModalContents}>
+      <CalculatorComponent/>
+    </AppModal>
+  }
 
   return (
     <AppModal title="Add Order" onClose={props.onClose} onSubmit={onSubmit}>
@@ -251,7 +276,23 @@ const AddOrderModal = (props) => {
 };
 
 const styles = StyleSheet.create({
-  selectSharers: {},
+  sharedOrderCalculator:{
+    width:'70%',
+    height: 300,
+  },
+  individualOrderCalculator:{
+    width:'100%',
+    height:400,
+    borderWidth:0,
+  },
+  individualOrderModalContents:{
+    paddingVertical: 0,
+    height:'100%',
+    width:'100%',
+    justifyContent:"center",
+    alignItems:'center',
+    // backgroundColor:'yellow'
+  }
 });
 
 export default AddOrderModal;

@@ -26,7 +26,7 @@ const App = (props) => {
             <View style={styles.header}>
               <Text style={styles.headerText}>{props.title}</Text>
             </View>
-            <View style={styles.contents}>
+            <View style={[styles.contents, props.contentsStyle]}>
               {props.children}
             </View>
             
@@ -57,7 +57,6 @@ const styles = StyleSheet.create({
   },
   modalView: {
     width: '80%',
-    margin: 20,
     minHeight:'70%',
     backgroundColor: "white",
     borderRadius: 20,
@@ -72,12 +71,12 @@ const styles = StyleSheet.create({
     elevation: 5,
     overflow:'hidden'
   },
-  openButton: {
-    backgroundColor: "#F194FF",
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2
-  },
+  // openButton: {
+  //   backgroundColor: "#F194FF",
+  //   borderRadius: 20,
+  //   padding: 10,
+  //   elevation: 2
+  // },
   textStyle: {
     color: "white",
     fontWeight: "bold",

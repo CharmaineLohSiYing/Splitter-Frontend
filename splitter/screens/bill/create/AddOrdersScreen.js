@@ -62,6 +62,8 @@ const AddOrdersScreen = (props) => {
   const [orders, setOrders] = useState(sharedOrders);
   const [ready, setReady] = useState(false);
   const [sharedOrderToUpdate, setSharedOrderToUpdate] = useState(null)
+  const [createSharedOrder, setCreateSharedOrder] = useState(false)
+  const [individualOrderToUpdate, setIndividualOrderToUpdate] = useState(null)
   const dispatch = useDispatch();
 
   const { navigation } = props;
@@ -108,8 +110,13 @@ const AddOrdersScreen = (props) => {
   };
 
   const addSharedOrderHandler = useCallback(() => {
-    navigation.navigate("SelectSharers");
-  }, [navigation]);
+    setCreateSharedOrder(true)
+    // navigation.navigate("SelectSharers");
+  }, [setCreateSharedOrder]);
+
+  // const addSharedOrderHandler = useCallback(() => {
+  //   navigation.navigate("SelectSharers");
+  // }, [navigation]);
 
   const updateSharedOrderHandler = useCallback((id, sharers) => {
     // navigation.navigate("SelectSharers", {
@@ -120,15 +127,19 @@ const AddOrdersScreen = (props) => {
     setSharedOrderToUpdate(id)
   }, [setSharedOrderToUpdate]);
 
-  const updateIndividualOrderHandler = useCallback((id) => {
-    navigation.navigate("Calculator", {
-      updateIndividualOrder: true,
-      userId: id,
-    });
+  const updateIndividualOrderHandler = useCallback((user) => {
+    setIndividualOrderToUpdate(user)
   }, []);
 
   const closeUpdateSharedOrderModal = () => {
     setSharedOrderToUpdate(null)
+  }
+  const closeCreateSharedOrderModal = () => {
+    setCreateSharedOrder(false)
+  }
+
+  const closeUpdateIndividualOrderModal = () => {
+    setIndividualOrderToUpdate(null)
   }
 
 
@@ -218,7 +229,9 @@ const AddOrdersScreen = (props) => {
           ]}
           keyExtractor={(item, index) => index.toString()}
         />
-        {sharedOrderToUpdate && <AddOrderModal onClose={closeUpdateSharedOrderModal} orderId={sharedOrderToUpdate}/>}
+        {(sharedOrderToUpdate) && <AddOrderModal onClose={closeUpdateSharedOrderModal} orderId={sharedOrderToUpdate}/>}
+        {(createSharedOrder) && <AddOrderModal onClose={closeCreateSharedOrderModal} newSharedOrder={true}/>}
+        {(individualOrderToUpdate) && <AddOrderModal onClose={closeUpdateIndividualOrderModal} user={individualOrderToUpdate}/>}
     </View>
   );
 };

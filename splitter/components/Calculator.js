@@ -48,7 +48,7 @@ class Calculator extends React.PureComponent {
       value = ".";
     } else if (value === "0" && this.state.currentOperand === "") {
       return;
-    } else if (this.state.currentOperand === "0" && value !== "Decimal") {
+    } else if (this.state.currentOperand.toString() === "0" && value !== "Decimal") {
       await this.setState({
         currentOperand: value.toString(),
       });
@@ -57,7 +57,6 @@ class Calculator extends React.PureComponent {
       await this.setState({
         currentOperand: this.state.currentOperand.toString() + value.toString(),
       });
-      console.log(this.state.currentOperand, this.state.previousOperand, this.state.operation)
       this.props.getValuesFromCalculator(this.state.currentOperand, this.state.previousOperand, this.state.operation)
       this.updateDisplay();
     }
@@ -248,7 +247,7 @@ class Calculator extends React.PureComponent {
 
   render() {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, this.props.style]}>
         <View style={styles.aboveCalculator}>
           <View style={styles.calculatedValueContainer}>
             <Text style={styles.calculation}>
@@ -376,10 +375,11 @@ class Calculator extends React.PureComponent {
 
 const styles = StyleSheet.create({
   container: {
-    width:'70%',
-    height: 300,
+    // width:'70%',
+    // height: 300,
     borderWidth:1,
-    borderColor:Colors.blue3
+    borderColor:Colors.blue3,
+    // backgroundColor:'blue'
   },
   calculator: {
     height: "80%",
