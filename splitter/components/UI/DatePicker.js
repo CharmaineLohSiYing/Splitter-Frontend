@@ -66,7 +66,8 @@ const DatePicker = (props) => {
 const styles = StyleSheet.create({
   container: {
     flexDirection:'row',
-    alignItems:'center'
+    alignItems:'center',
+    justifyContent:'space-between'
   },
   icon:{
     paddingHorizontal: 5

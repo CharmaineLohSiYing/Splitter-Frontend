@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   Alert,
   Modal,
@@ -14,7 +14,7 @@ import AppModal from "./UI/AppModal";
 import Calculator from "./Calculator";
 import SharerDisplay from "./SharerDisplay";
 import Colors from "../constants/Colors";
-import * as billActions from '../store/actions/bill'
+import * as billActions from "../store/actions/bill";
 
 const ItemSeparator = () => {
   return (
@@ -29,27 +29,56 @@ const ItemSeparator = () => {
 };
 
 const AddOrderModal = (props) => {
-  const dispatch = useDispatch()
-  const { sharedOrderIdToUpdate, newSharedOrder, user } = props;
+  const dispatch = useDispatch();
+  const { sharedOrderIdToUpdate, newSharedOrder, user, updatePayer } = props;
   let sharedOrders;
   let sharedOrder;
+  let unpaidAmount;
   let attendees = useSelector((state) => state.bill.attendees);
   let matchedUser;
   if (sharedOrderIdToUpdate) {
     sharedOrders = useSelector((state) => state.bill.sharedOrders);
-    sharedOrder = sharedOrders.filter((order) => order.id === sharedOrderIdToUpdate)[0];
+    sharedOrder = sharedOrders.filter(
+      (order) => order.id === sharedOrderIdToUpdate
+    )[0];
   } else if (user) {
-    matchedUser = attendees[user]
+    matchedUser = attendees[user];
   }
-  
-  const [modalVisible, setModalVisible] = useState(true);
-  const [sharers, setSharers] = useState(sharedOrderIdToUpdate ? sharedOrder.users : []);
-  const [previousOperand, setPreviousOperand] = useState("")
-  const [currentOperand, setCurrentOperand] = useState(() => {return sharedOrderIdToUpdate ? sharedOrder.amount : "0"})
-  const [operation, setOperation] = useState("")
+
+  if (updatePayer) {
+    unpaidAmount = useSelector((state) => state.bill.unpaidAmount);
+  }
+  const [sharers, setSharers] = useState(
+    sharedOrderIdToUpdate ? sharedOrder.users : []
+  );
+  const [previousOperand, setPreviousOperand] = useState("");
+  const [currentOperand, setCurrentOperand] = useState(() => {
+    return sharedOrderIdToUpdate ? sharedOrder.amount : "0";
+  });
+  const [operation, setOperation] = useState("");
   // let previousOperand = "";
   // let currentOperand = "";
   // let operation = "";
+
+  let initialAmount = 0;
+
+  useEffect(() => {
+    
+    if (sharedOrderIdToUpdate) {
+      initialAmount = sharedOrder.amount;
+    } else if (updatePayer) {
+      if (matchedUser.paidAmount > 0) {
+        initialAmount = matchedUser.paidAmount;
+      } else {
+        initialAmount = unpaidAmount;
+      }
+    } else if (matchedUser) {
+      initialAmount = matchedUser.amount;
+    }
+    console.log("useeffect", initialAmount);
+    
+    setCurrentOperand(initialAmount);
+  }, []);
 
   const toggleSharerHandler = async (id) => {
     if (sharers.includes(id)) {
@@ -187,39 +216,39 @@ const AddOrderModal = (props) => {
   };
 
   const getValuesFromCalculator = (current, previous, op) => {
-    setCurrentOperand(current)
-    setPreviousOperand(previous)
-    setOperation(op)
+    console.log("get values", current, previous, op);
+    setCurrentOperand(current);
+    setPreviousOperand(previous);
+    setOperation(op);
     // currentOperand = current;
     // previousOperand = previous;
     // operation = op;
   };
 
   const CalculatorComponent = useCallback(() => {
-
-    let initialAmount = 0;
-    if (sharedOrderIdToUpdate) {
-      initialAmount = sharedOrder.amount
-    } else if (matchedUser) {
-      initialAmount = matchedUser.amount
-    }
-
+    console.log('initialamount', initialAmount)
     return (
       <View
         style={{
           flexDirection: "row",
           justifyContent: "space-around",
-          // paddingTop: 10,
+          paddingTop: !user ? 10 : 0,
         }}
       >
-        {(sharedOrderIdToUpdate || newSharedOrder) && <View style={{ padding: 5 }}>
-          <Text>Price</Text>
-        </View>}
+        {!user && (
+          <View style={{ padding: 5 }}>
+            <Text>Price</Text>
+          </View>
+        )}
         {/* <Calculator updateSharedOrder={true} previousOperand={previousOperand} previousOperandDisplay={previousOperandDisplay} currentOperand={currentOperand} operation={operation} compute={compute} pressOperatorHandler={pressOperatorHandler} pressClearHandler={pressClearHandler} pressDeleteHandler={pressDeleteHandler} pressDigitHandler={pressDigitHandler} pressEqualHandler={pressEqualHandler}/> */}
         <Calculator
           initialAmount={initialAmount}
           getValuesFromCalculator={getValuesFromCalculator}
-          style={user ? styles.individualOrderCalculator : styles.sharedOrderCalculator}
+          style={
+            user
+              ? styles.individualOrderCalculator
+              : styles.sharedOrderCalculator
+          }
         />
       </View>
     );
@@ -227,26 +256,61 @@ const AddOrderModal = (props) => {
 
   const onSubmit = async () => {
     let finalValue = 0;
+    console.log("current", currentOperand);
     if (previousOperand && operation) {
       finalValue = compute(currentOperand, previousOperand, operation);
     } else {
       finalValue = currentOperand;
     }
-    if (sharedOrderIdToUpdate){
-      await dispatch(billActions.updateSharedOrder(sharedOrderIdToUpdate, finalValue, sharers))
+    if (sharedOrderIdToUpdate) {
+      await dispatch(
+        billActions.updateSharedOrder(
+          sharedOrderIdToUpdate,
+          finalValue,
+          sharers
+        )
+      );
     } else if (newSharedOrder) {
-      await dispatch(billActions.addSharedOrder(finalValue, sharers))
+      await dispatch(billActions.addSharedOrder(finalValue, sharers));
+    } else if (updatePayer) {
+      await dispatch(billActions.updatePaidAmount(user, finalValue));
     } else {
-      await dispatch(billActions.updateIndividualOrder(user, finalValue))
+      await dispatch(billActions.updateIndividualOrder(user, finalValue));
     }
-    
-    props.onClose()
+
+    props.onClose();
   };
 
   if (user) {
-    return <AppModal title={matchedUser.name === "Me" ? "My Individual Order" : matchedUser.name + "'s Individual Order"} onClose={props.onClose} onSubmit={onSubmit} contentsStyle={styles.individualOrderModalContents}>
-      <CalculatorComponent/>
-    </AppModal>
+    return (
+      <AppModal
+        title={
+          matchedUser.name === "Me"
+            ? "My Individual Order"
+            : matchedUser.name + "'s Individual Order"
+        }
+        onClose={props.onClose}
+        onSubmit={onSubmit}
+        contentsStyle={styles.individualOrderModalContents}
+      >
+        <CalculatorComponent />
+      </AppModal>
+    );
+  } else if (updatePayer) {
+    return (
+      <AppModal
+        title={
+          matchedUser.name === "Me"
+            ? "How Much I Paid"
+            : "How much " + matchedUser.name + " Paid"
+        }
+        onClose={props.onClose}
+        onSubmit={onSubmit}
+        contentsStyle={styles.individualOrderModalContents}
+      >
+        <CalculatorComponent />
+      </AppModal>
+    );
   }
 
   return (
@@ -276,23 +340,23 @@ const AddOrderModal = (props) => {
 };
 
 const styles = StyleSheet.create({
-  sharedOrderCalculator:{
-    width:'70%',
+  sharedOrderCalculator: {
+    width: "70%",
     height: 300,
   },
-  individualOrderCalculator:{
-    width:'100%',
-    height:400,
-    borderWidth:0,
+  individualOrderCalculator: {
+    width: "100%",
+    height: 400,
+    borderWidth: 0,
   },
-  individualOrderModalContents:{
+  individualOrderModalContents: {
     paddingVertical: 0,
-    height:'100%',
-    width:'100%',
-    justifyContent:"center",
-    alignItems:'center',
+    height: "100%",
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
     // backgroundColor:'yellow'
-  }
+  },
 });
 
 export default AddOrderModal;

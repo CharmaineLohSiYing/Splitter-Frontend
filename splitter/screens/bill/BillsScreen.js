@@ -22,12 +22,12 @@ import * as authActions from "../../store/actions/auth";
 import * as billActions from "../../store/actions/bill";
 import Colors from "../../constants/Colors";
 
-
 const BillsScreen = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
-  const [text, setText] = useState("hello")
+  const [text, setText] = useState("hello");
   const userBills = useSelector((state) => state.bill.userBills);
+  console.log(userBills)
   const dispatch = useDispatch();
 
   var contactsFromStore = useSelector((state) => state.auth.contacts);
@@ -98,25 +98,30 @@ const BillsScreen = (props) => {
 
   if (!isLoading && userBills.length === 0) {
     return (
-    <View style={[styles.screen, {justifyContent:'center', alignItems:'center'}]}>
+      <View
+        style={[
+          styles.screen,
+          { justifyContent: "center", alignItems: "center" },
+        ]}
+      >
         <View style={styles.noBillsContainer}>
           <Text>You have no bills yet</Text>
-         
-            <TouchableOpacity style={styles.noBillsAdd} onPress={addBillHandler}>
-              <Text style={styles.noBillsAddText}>Create one</Text>
-            </TouchableOpacity>
+
+          <TouchableOpacity style={styles.noBillsAdd} onPress={addBillHandler}>
+            <Text style={styles.noBillsAddText}>Create one</Text>
+          </TouchableOpacity>
         </View>
       </View>
     );
   }
 
   const change = () => {
-    if (text == 'hello'){
-      setText('bye')
+    if (text == "hello") {
+      setText("bye");
     } else {
-      setText('hello')
+      setText("hello");
     }
-  }
+  };
 
   return (
     <View style={styles.screen}>
@@ -127,9 +132,12 @@ const BillsScreen = (props) => {
       >
         <Ionicons name="md-add" size={40} color="white" />
       </TouchableOpacity>
-      <TouchableOpacity style={{height: 40, backgroundColor:'yellow', width: '100%'}} onPress={change}>
-  <Text>{text}</Text>
-      </TouchableOpacity>
+      {/* <TouchableOpacity
+        style={{ height: 40, backgroundColor: "yellow", width: "100%" }}
+        onPress={change}
+      >
+        <Text>{text}</Text>
+      </TouchableOpacity> */}
       <View style={styles.billsContainer}>
         <FlatList
           keyExtractor={(item, index) => index.toString()}
@@ -170,23 +178,23 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.blue1,
     margin: 20,
-    width: '80%',
-    alignItems:'center',
-    padding: 10
+    width: "80%",
+    alignItems: "center",
+    padding: 10,
   },
   buttonContainer: {
     marginTop: 10,
   },
-  noBillsAdd:{
+  noBillsAdd: {
     height: 30,
-    backgroundColor:Colors.blue1,
-    alignItems:'center',
-    justifyContent:'center',
-    width:'50%',
-    marginTop: 10
+    backgroundColor: Colors.blue1,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "50%",
+    marginTop: 10,
   },
-  noBillsAddText:{
-    color:'white'
+  noBillsAddText: {
+    color: "white",
   },
   addBillButton: {
     backgroundColor: Colors.blue1,

@@ -24,7 +24,6 @@ import Colors from '../constants/Colors'
 class Calculator extends React.PureComponent {
   constructor(props) {
     super(props);
-
     this.state = {
       date: new Date(),
       sharers: [],
@@ -32,34 +31,34 @@ class Calculator extends React.PureComponent {
       currentOperand: props.initialAmount,
       operation: "",
       previousOperandDisplay: "",
-      orderIdToUpdate: null,
-      attendeeIdToUpdate: null,
-      isLoading: false,
-      combinedOrder: false,
-      updatePaidAmount: false,
     };
   }
 
+  componentDidUpdate(){
+    this.setState({
+      currentOperand: this.props.initialAmount
+    })
+  }
+
+
 
   pressDigitHandler = async (value) => {
-    if (value === "Decimal" && this.state.currentOperand.includes(".")) {
+    if (value === "." && this.state.currentOperand.includes(".")) {
       return;
-    } else if (value === "Decimal") {
-      value = ".";
     } else if (value === "0" && this.state.currentOperand === "") {
       return;
-    } else if (this.state.currentOperand.toString() === "0" && value !== "Decimal") {
+    } else if (this.state.currentOperand.toString() === "0" && value !== ".") {
       await this.setState({
         currentOperand: value.toString(),
       });
-      return;
     } else {
       await this.setState({
         currentOperand: this.state.currentOperand.toString() + value.toString(),
       });
       this.props.getValuesFromCalculator(this.state.currentOperand, this.state.previousOperand, this.state.operation)
-      this.updateDisplay();
     }
+    this.props.getValuesFromCalculator(this.state.currentOperand, this.state.previousOperand, this.state.operation)
+    this.updateDisplay();
   }
 
   pressEqualHandler = (value) => {

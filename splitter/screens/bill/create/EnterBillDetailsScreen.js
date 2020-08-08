@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Button,
   FlatList,
+  Switch,
   Text,
   ActivityIndicator,
   TouchableOpacity,
@@ -24,16 +25,14 @@ import Colors from "../../../constants/Colors";
 import * as billActions from "../../../store/actions/bill";
 import { useSelector, useDispatch } from "react-redux";
 import moment from "moment";
-import AddOrdersSubSectionHeader from "../../../components/AddOrdersSubSectionHeader";
-import OrderDisplay from "../../../components/OrderDisplay";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
-import ProceedBottomButton from "../../../components/UI/ProceedBottomButton";
 import FormRow from "../../../components/UI/FormRow";
 import LabelLeft from "../../../components/UI/LabelLeft";
 import InputRight from "../../../components/UI/InputRight";
 import DatePicker from "../../../components/UI/DatePicker";
 import { Layout, Radio, CheckBox } from "@ui-kitten/components";
 import CurrencyInput from "../../../components/UI/CurrencyInput";
+import CreateBillHeader from "../../../components/CreateBillHeader";
 
 const EnterBillDetailsScreen = (props) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -47,44 +46,43 @@ const EnterBillDetailsScreen = (props) => {
     billDetails = null;
   }
 
-  console.log('render')
-  // props.navigation.setOptions({
-  //   headerTitle: "Enter Bill Details",
-  //   headerTitleStyle: {
-  //     fontFamily: "roboto-regular",
-  //     flex: 1,
-  //     alignSelf: "center",
-  //   },
-  // });
   const currentFullDate = new Date();
   const currentFormattedDate = moment().format("D MMM YYYY");
 
-  const [billName, setBillName] = useState(() => {return billDetails ? billDetails.billName : ""}
-  );
+  const [billName, setBillName] = useState(() => {
+    return billDetails ? billDetails.billName : "";
+  });
   const [formattedDate, setFormattedDate] = useState(() => {
     return billDetails
       ? moment(new Date(billDetails.formattedDate)).format("D MMM YYYY")
       : currentFormattedDate;
   });
   const [billDate, setBillDate] = useState(() => {
-    return billDetails ? billDetails.billDate : currentFullDate}
-  );
+    return billDetails ? billDetails.billDate : currentFullDate;
+  });
   const [totalBill, setTotalBill] = useState(
     billDetails ? billDetails.totalBill : 0
   );
   const [addGST, setAddGST] = useState(() => {
-    return billDetails ? billDetails.addGST : false}
-  );
+    return billDetails ? billDetails.addGST : false;
+  });
   const [addServiceCharge, setAddServiceCharge] = useState(() => {
-    return billDetails ? billDetails.addServiceCharge : false}
-  );
-  const [discountType, setDiscountType] = useState(() => {
-    return billDetails ? billDetails.discountType : "NONE"}
-  );
-  const [discountAmount, setDiscountAmount] = useState(() => {
-    return billDetails ? billDetails.discountAmount : null}
-  );
-  const [netBill, setNetBill] = useState(() => {return billDetails ? billDetails.netBill : 0});
+    return billDetails ? billDetails.addServiceCharge : false;
+  });
+
+  const discountType = "NONE";
+  const discountAmount = null;
+  // const [discountType, setDiscountType] = useState(() => {
+  //   return billDetails ? billDetails.discountType : "NONE";
+  // });
+  // const [discountAmount, setDiscountAmount] = useState(() => {
+  //   return billDetails ? billDetails.discountAmount : null;
+  // });
+  const [netBill, setNetBill] = useState(() => {
+    return billDetails ? billDetails.netBill : 0;
+  });
+
+  const [hasDiscount, setHasDiscount] = useState(false);
 
   const proceedHandler = () => {
     dispatch(
@@ -117,7 +115,6 @@ const EnterBillDetailsScreen = (props) => {
   const totalBillFromStore = useSelector((state) => state.bill.totalBill);
 
   useEffect(() => {
-    console.log("called");
     var multiplier = 1;
     if (addGST) {
       multiplier += 0.07;
@@ -129,11 +126,11 @@ const EnterBillDetailsScreen = (props) => {
     var calculatedDiscount = 0;
 
     var newTotal = multiplier * totalBillFromStore;
-    if (discountType === "PERCENTAGE") {
-      calculatedDiscount = discountAmount * 0.01 * newTotal;
-    } else if (discountType === "ABSOLUTE") {
-      calculatedDiscount = discountAmount;
-    }
+    // if (discountType === "PERCENTAGE") {
+    //   calculatedDiscount = discountAmount * 0.01 * newTotal;
+    // } else if (discountType === "ABSOLUTE") {
+    //   calculatedDiscount = discountAmount;
+    // }
 
     var newTotal = multiplier * totalBillFromStore - calculatedDiscount;
     setNetBill(newTotal.toFixed(2));
@@ -141,8 +138,8 @@ const EnterBillDetailsScreen = (props) => {
     totalBillFromStore,
     addGST,
     addServiceCharge,
-    discountType,
-    discountAmount,
+    // discountType,
+    // discountAmount,
   ]);
   useEffect(() => {
     if (totalBillFromStore) {
@@ -157,9 +154,9 @@ const EnterBillDetailsScreen = (props) => {
     }
   }, []);
 
-  const updateDiscountTypeHandler = (type) => {
-    setDiscountType(type);
-  };
+  // const updateDiscountTypeHandler = (type) => {
+  //   setDiscountType(type);
+  // };
 
   if (error) {
     return (
@@ -178,125 +175,91 @@ const EnterBillDetailsScreen = (props) => {
   }
 
   return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <View style={{ width: "90%" }}>
+    <View style={{ flex: 1 }}>
+      <CreateBillHeader
+        displayProceed={true}
+        progress={3}
+        proceedHandler={proceedHandler}
+        title="Bill Details"
+      />
+      <View style={{ paddingHorizontal: "5%", paddingVertical: 20 }}>
         <View style={styles.container}>
-          <AddOrdersHeader
-            header="Bill Information"
-            subtitle={netBill}
-            style={{ backgroundColor: Colors.blue2, alignItems: "center" }}
-          />
           <View style={styles.contentContainer}>
             <FormRow>
-              <LabelLeft label="Bill Name" />
-              <InputRight>
+              <LabelLeft label="Event Name" />
+              <InputRight style={{ flex: 2 }}>
                 <TextInput
-                  style={{ textAlign: "right" }}
+                  style={{ flex: 1, textAlign: "right" }}
                   value={billName}
                   onChangeText={setBillName}
                   placeholder="Optional"
+                  backgroundColor={Colors.gray5}
                 />
               </InputRight>
             </FormRow>
             <FormRow>
-              <LabelLeft label="Bill Date" />
+              <LabelLeft label="Date" />
+              <InputRight style={{ flex: 2 }}>
+                <View style={{ flex: 1 }}>
+                  <DatePicker
+                    date={billDate}
+                    onSelectDate={selectDateHandler}
+                    formattedDate={formattedDate}
+                  />
+                </View>
+              </InputRight>
+            </FormRow>
+            <FormRow>
+              <LabelLeft label="Total Bill before taxes" />
               <InputRight>
-                <DatePicker
-                  date={billDate}
-                  onSelectDate={selectDateHandler}
-                  formattedDate={formattedDate}
+                <Text>$ {totalBill}</Text>
+              </InputRight>
+            </FormRow>
+            <FormRow>
+              <LabelLeft label="GST" />
+              <InputRight>
+                <Switch
+                  trackColor={{ false: "#767577", true: "#81b0ff" }}
+                  thumbColor={addGST ? "#f5dd4b" : "#f4f3f4"}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={() => setAddGST((prev) => !prev)}
+                  value={addGST}
                 />
               </InputRight>
             </FormRow>
-            <FormRow style={{ backgroundColor: Colors.blue2, height: 40 }}>
-              <LabelLeft
-                label={"Add calculations to total bill ($" + totalBill + ")"}
-                style={{ alignItems: "center" }}
-              />
-            </FormRow>
-            <FormRow
-              style={{
-                flexDirection: "column",
-                height: 60,
-                justifyContent: "center",
-              }}
-            >
-              <LabelLeft label="Extra Charges" />
+            <FormRow>
+              <LabelLeft label="Service Charge" />
               <InputRight>
-                <Layout style={styles.layoutContainer}>
-                  <CheckBox
-                    style={styles.radio}
-                    checked={addGST}
-                    onChange={() => setAddGST((prev) => !prev)}
-                  >
-                    GST
-                  </CheckBox>
-                  <CheckBox
-                    style={styles.radio}
-                    checked={addServiceCharge}
-                    onChange={() => setAddServiceCharge((prev) => !prev)}
-                  >
-                    Service Charge
-                  </CheckBox>
-                </Layout>
+                <Switch
+                  trackColor={{ false: "#767577", true: "#81b0ff" }}
+                  thumbColor={addServiceCharge ? "#f5dd4b" : "#f4f3f4"}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={() => setAddServiceCharge((prev) => !prev)}
+                  value={addServiceCharge}
+                />
               </InputRight>
             </FormRow>
-            <FormRow
-              style={{
-                flexDirection: "column",
-                height: 60,
-                justifyContent: "center",
-              }}
-            >
+            {/* <FormRow>
               <LabelLeft label="Discount" />
               <InputRight>
-                <Layout style={styles.layoutContainer}>
-                  <Radio
-                    style={styles.radio}
-                    checked={discountType === "NONE"}
-                    onChange={() => updateDiscountTypeHandler("NONE")}
-                  >
-                    None
-                  </Radio>
-                  <Radio
-                    style={styles.radio}
-                    checked={discountType === "PERCENTAGE"}
-                    onChange={() => updateDiscountTypeHandler("PERCENTAGE")}
-                  >
-                    Percentage
-                  </Radio>
-                  <Radio
-                    style={styles.radio}
-                    checked={discountType === "ABSOLUTE"}
-                    onChange={() => updateDiscountTypeHandler("ABSOLUTE")}
-                  >
-                    Absolute Value
-                  </Radio>
-                </Layout>
-              </InputRight>
-            </FormRow>
-            {discountType != "NONE" && (
-              <FormRow>
-                <LabelLeft
-                  label={
-                    discountType == "ABSOLUTE"
-                      ? "Discount Amount ($)"
-                      : "Discount Amount (%)"
-                  }
+                <Switch
+                  trackColor={{ false: "#767577", true: "#81b0ff" }}
+                  thumbColor={hasDiscount ? "#f5dd4b" : "#f4f3f4"}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={() => setHasDiscount((prev) => !prev)}
+                  value={hasDiscount}
                 />
-                <InputRight>
-                  <CurrencyInput
-                    autoFocus={true}
-                    placeholder="0.00"
-                    style={{ textAlign: "right" }}
-                    value={discountAmount}
-                    onChangeValue={discountAmountHandler}
-                  />
-                </InputRight>
-              </FormRow>
-            )}
+              </InputRight>
+            </FormRow> */}
+            <FormRow style={{backgroundColor:Colors.blue4Rgba}}>
+              <View style={{flex: 1, padding: 10}}>
+                <Text style={{fontStyle:'italic', fontSize: 16, fontWeight:'bold'}}>Total Paid</Text>
+              </View>
+              <View style={{flex: 1, padding: 10, alignItems:'flex-end'}}>
+                <Text style={{fontStyle:'italic', fontSize: 16, fontWeight:'bold'}}>$ {netBill}</Text>
+              </View>
+            </FormRow>
           </View>
-          <ProceedBottomButton proceedHandler={proceedHandler} />
         </View>
       </View>
     </View>
@@ -305,9 +268,6 @@ const EnterBillDetailsScreen = (props) => {
 
 const styles = StyleSheet.create({
   contentContainer: {
-    marginVertical: 10,
-    borderColor: Colors.blue2,
-    borderWidth: 1,
     alignSelf: "center",
     alignItems: "center",
   },

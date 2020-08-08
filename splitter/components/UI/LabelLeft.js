@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
     padding: 5
   },
   labelText:{
-    fontWeight:'bold'
+    // fontWeight:'bold'
   }
 });
 

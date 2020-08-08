@@ -58,13 +58,13 @@ class OrderDisplay extends Component {
     }
   }
 
-  componentDidUpdate() {
-    // console.log("componentDidUpdate", this.props.amount);
-  }
+  // componentDidUpdate() {
+  //   console.log("componentDidUpdate", this.props.amount);
+  // }
 
-  componentDidMount() {
-    // console.log("componentDidMOUNT", this.props.amount);
-  }
+  // componentDidMount() {
+  //   console.log("componentDidMOUNT", this.props.amount);
+  // }
 
   handleSelect = () => {
     if (this.props.sharers) {
@@ -93,7 +93,7 @@ class OrderDisplay extends Component {
 
     return (
       <TouchableOpacity
-        style={styles.container}
+        style={{...styles.container, ...this.props.style}}
         activeOpacity={0.8}
         onPress={this.handleSelect}
       >

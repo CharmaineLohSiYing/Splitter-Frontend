@@ -11,22 +11,49 @@ import {
   Alert,
   TextInput,
   Share,
+  TouchableOpacity,
+  FlatList,
 } from "react-native";
 import Colors from "../../../constants/Colors";
 
 import IndividualOrders from "../../../components/IndividualOrders";
 import * as billActions from "../../../store/actions/bill";
 import Header from "../../../components/AddOrdersSubSectionHeader";
-import ProceedBottomButton from '../../../components/UI/ProceedBottomButton'
+import ProceedBottomButton from "../../../components/UI/ProceedBottomButton";
+import CreateBillHeader from "../../../components/CreateBillHeader";
+import OrderDisplay from "../../../components/OrderDisplay";
+import AddOrderModal from "../../../components/AddOrderModal";
+import FormRow from "../../../components/UI/FormRow";
+import LabelLeft from "../../../components/UI/LabelLeft";
+import InputRight from "../../../components/UI/InputRight";
 
 import { useSelector, useDispatch } from "react-redux";
+
+const ItemSeparator = () => {
+  return (
+    <View
+      style={{
+        height: 1,
+        width: "100%",
+        backgroundColor: Colors.blue3,
+      }}
+    ></View>
+  );
+};
 
 const AddPayersScreen = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
   const [isEdit, setIsEdit] = useState();
-
+  const attendeesFromStore = useSelector((state) => state.bill.attendees);
+  const [attendees, setAttendees] = useState(attendeesFromStore);
+  const [payerToUpdate, setPayerToUpdate] = useState(null);
   const unpaidAmount = useSelector((state) => state.bill.unpaidAmount);
+  const netBill = useSelector((state) => state.bill.billDetails.netBill);
+
+  useEffect(() => {
+    setAttendees(attendeesFromStore);
+  }, [attendeesFromStore]);
 
   props.navigation.setOptions({
     headerTitle: "Select Payers",
@@ -54,15 +81,11 @@ const AddPayersScreen = (props) => {
   const dispatch = useDispatch();
 
   const updatePaidAmountHandler = (id) => {
-    props.navigation.navigate("Calculator", {
-      updatePaidAmount: true,
-      userId: id,
-      unpaidAmount,
-    });
+    setPayerToUpdate(id);
   };
 
   const createBillHandler = useCallback(async () => {
-    if (unpaidAmount != 0.0) {
+    if (unpaidAmount != 0) {
       setError("Numbers do not tally");
     } else {
       setError(null);
@@ -85,26 +108,83 @@ const AddPayersScreen = (props) => {
     }
   }, [dispatch, props.navigation, isEdit]);
 
+  const PayerHeader = () => {
+    return <View
+    style={{
+      backgroundColor: Colors.blue4Rgba,
+      height: 50,
+      marginBottom: 20,
+    }}
+  >
+    <FormRow>
+      <View style={{ flex: 1, padding: 10 }}>
+        <Text
+          style={{
+            fontStyle: "italic",
+            fontSize: 16,
+            fontWeight: "bold",
+          }}
+        >
+          Unsettled Amount
+        </Text>
+      </View>
+      <View style={{ flex: 1, padding: 10, alignItems: "flex-end" }}>
+        <Text
+          style={{
+            fontStyle: "italic",
+            fontSize: 16,
+            fontWeight: "bold",
+          }}
+        >
+          $ {unpaidAmount} / {netBill}
+        </Text>
+      </View>
+    </FormRow>
+  </View>
+  }
+
   return (
     <SafeAreaView style={styles.screen}>
-      <View style={styles.container}>
-        <Header
-          header={"Unpaid amount: $" + unpaidAmount}
-          style={{ alignItems: "center", borderWidth: 2, borderColor:Colors.blue1 }}
-        />
-        <View style={styles.flatlistContainer}>
-          <IndividualOrders payers updatePaidAmount={updatePaidAmountHandler} />
-        </View>
-        <View>
-          {isLoading ? (
-            <ActivityIndicator size="small" color={Colors.blue1} />
-          ) : (
-            <ProceedBottomButton proceedHandler={createBillHandler}/> 
-          )}
-        </View>
-       
-      </View>
+      <CreateBillHeader
+        progress={4}
+        displayProceed={true}
+        proceedHandler={createBillHandler}
+        title="Last thing, who settled the bill?"
+      />
 
+      
+      <FlatList
+        ListHeaderComponent={PayerHeader}
+        style={{width:'100%'}}
+        contentContainerStyle={{paddingHorizontal:'5%', paddingVertical:20 }}
+        ItemSeparatorComponent={ItemSeparator}
+        keyExtractor={(item, index) => index.toString()}
+        data={Object.keys(attendees)}
+        renderItem={({ item }) => (
+          <OrderDisplay
+            style={{
+              backgroundColor:
+                attendees[item].paidAmount > 0 ? "white" : Colors.gray5,
+              // width:'90%'
+            }}
+            onSelect={updatePaidAmountHandler}
+            id={item}
+            name={attendees[item].name}
+            amount={attendees[item].paidAmount}
+          />
+        )}
+      />
+
+      {payerToUpdate && (
+        <AddOrderModal
+          updatePayer={true}
+          user={payerToUpdate}
+          unpaidAmount={unpaidAmount}
+          onClose={() => {
+            setPayerToUpdate(null);
+          }}
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -116,19 +196,12 @@ AddPayersScreen.navigationOptions = {
 const styles = StyleSheet.create({
   container: {
     width: "90%",
-    height: '60%',
-    borderWidth: 1,
-    borderColor: Colors.blue2,
     marginVertical: 10,
     padding: 10,
   },
-  screen:{
-    flex:1,
-    alignItems:'center',
-    justifyContent:'center'
+  screen: {
+    flex: 1,
+    alignItems: "center"
   },
-  flatlistContainer:{
-    flex: 1
-  }
 });
 export default AddPayersScreen;

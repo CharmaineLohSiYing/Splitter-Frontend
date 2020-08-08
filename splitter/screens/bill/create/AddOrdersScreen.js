@@ -167,7 +167,7 @@ const AddOrdersScreen = (props) => {
         proceedHandler={proceedHandler}
         title="How much was each order?"
         subtitle="Don’t worry about the GST and service charges, we will get to that later"
-      ></CreateBillHeader>
+      />
         <SectionList
           contentContainerStyle={{paddingHorizontal:'5%', paddingVertical:20}}
           ItemSeparatorComponent={ItemSeparator}
