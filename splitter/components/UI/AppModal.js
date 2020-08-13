@@ -12,7 +12,6 @@ import {
 const App = (props) => {
   const [modalVisible, setModalVisible] = useState(true);
   return (
-    <View style={styles.centeredView}>
       <Modal
         animationType="fade"
         transparent={true}
@@ -44,17 +43,16 @@ const App = (props) => {
           </View>
         </View>
       </Modal>
-    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  centeredView: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: 'rgba(0, 0, 0, 0.5)'
-  },
+  // centeredView: {
+  //   flex: 1,
+  //   justifyContent: "center",
+  //   alignItems: "center",
+  //   backgroundColor: 'rgba(0, 0, 0, 0.5)'
+  // },
   modalView: {
     width: '80%',
     minHeight:'70%',

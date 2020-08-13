@@ -84,7 +84,7 @@ const ViewContactLoansScreen = (props) => {
       }
     }
 
-    if (!response.ok) {
+    if (response && !response.ok) {
       const errorResData = await response.json();
       console.log("errorResData", errorResData);
 
