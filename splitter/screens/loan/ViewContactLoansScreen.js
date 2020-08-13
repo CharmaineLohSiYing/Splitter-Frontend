@@ -33,16 +33,22 @@ const ViewContactLoansScreen = (props) => {
 
   const { matchedName, friendMobileNumber } = props.route.params;
   const currUserId = useSelector((state) => state.auth.userId);
-  const [friendUserId, setFriendUserId] = useState(props.route.params.friendUserId)
+  const [friendUserId, setFriendUserId] = useState(
+    props.route.params.friendUserId
+  );
   const [createNewLoan, setCreateNewLoan] = useState(false);
   const [createNewTransaction, setCreateNewTransaction] = useState(false);
 
   const loadLoans = useCallback(async () => {
+    console.log(friendUserId, props.route.params.friendUserId);
     setError(null);
     setIsRefreshing(true);
-    try {
-      let response;
-      if (friendUserId) {
+
+    let response;
+
+    if (friendUserId) {
+      try {
+        console.log("have friend id");
         response = await fetch(
           "http://192.168.1.190:5000/loan/friend/" +
             currUserId +
@@ -55,7 +61,12 @@ const ViewContactLoansScreen = (props) => {
             },
           }
         );
-      } else {
+      } catch (err) {
+        setError(err);
+      }
+    } else {
+      try {
+        console.log("no friend id", friendUserId);
         response = await fetch(
           "http://192.168.1.190:5000/loan/friend/mobileNumber/" +
             currUserId +
@@ -68,30 +79,29 @@ const ViewContactLoansScreen = (props) => {
             },
           }
         );
+      } catch (err) {
+        setError(err);
       }
-
-        if (!response.ok) {
-          const errorResData = await response.json();
-          console.log("errorResData", errorResData);
-
-          let message = "Something went wrong!";
-          if (errorResData) {
-            message = errorResData;
-          }
-          throw new Error(message);
-        }
-
-        const resData = await response.json();
-        const {loans, debt, friendUserId} = resData;
-        if (friendUserId){
-          setFriendUserId(friendUserId)
-        }
-        setLoans(loans);
-        setDebt(debt);
-      
-    } catch (err) {
-      setError(err.message);
     }
+
+    if (!response.ok) {
+      const errorResData = await response.json();
+      console.log("errorResData", errorResData);
+
+      let message = "Something went wrong!";
+      if (errorResData) {
+        message = errorResData;
+      }
+      setError(message);
+    }
+
+    const resData = await response.json();
+    const {loans, debt} = resData;
+    if (!friendUserId && resData.friendUserId){
+      setFriendUserId(resData.friendUserId)
+    }
+    setLoans(loans);
+    setDebt(debt)
     setIsRefreshing(false);
   }, []);
 
@@ -105,9 +115,8 @@ const ViewContactLoansScreen = (props) => {
   }, [loadLoans]);
 
   useEffect(() => {
-    loadLoans()
- }, [friendUserId, loadLoans]);
-
+    loadLoans();
+  }, [friendUserId, loadLoans]);
 
   const viewBillHandler = (billId) => {
     props.navigation.navigate("Bills", {
@@ -167,7 +176,7 @@ const ViewContactLoansScreen = (props) => {
   const updateFriendId = (friendId) => {
     // console.log('setting...', friendId)
     // setFriendUserId(friendId)
-  }
+  };
 
   if (error) {
     return (
@@ -263,7 +272,7 @@ const ViewContactLoansScreen = (props) => {
           setFriendUserId={updateFriendId}
           onClose={() => {
             setCreateNewLoan(false);
-            loadLoans()
+            loadLoans();
           }}
         />
       )}
@@ -275,7 +284,7 @@ const ViewContactLoansScreen = (props) => {
           setFriendUserId={updateFriendId}
           onClose={() => {
             setCreateNewTransaction(false);
-            loadLoans()
+            loadLoans();
           }}
         />
       )}
