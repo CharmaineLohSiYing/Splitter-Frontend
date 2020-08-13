@@ -14,59 +14,86 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSelector, useDispatch } from "react-redux";
-import moment from 'moment'
+import moment from "moment";
+import LoanModal from "../../components/LoanModal";
+import TransactionModal from "../../components/TransactionModal";
 
 import BillItemDisplay from "../../components/BillItemDisplay";
 import * as authActions from "../../store/actions/auth";
 import Colors from "../../constants/Colors";
+import Avatar from "../../components/Avatar";
 
 const ViewContactLoansScreen = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState();
   const [debt, setDebt] = useState();
-  const [loans, setLoans] = useState({});
+  const [loans, setLoans] = useState([]);
   const dispatch = useDispatch();
 
-  const { matchedName, friendUserId } = props.route.params;
+  const { matchedName, friendMobileNumber } = props.route.params;
   const currUserId = useSelector((state) => state.auth.userId);
+  const [friendUserId, setFriendUserId] = useState(props.route.params.friendUserId)
+  const [createNewLoan, setCreateNewLoan] = useState(false);
+  const [createNewTransaction, setCreateNewTransaction] = useState(false);
+
   const loadLoans = useCallback(async () => {
     setError(null);
     setIsRefreshing(true);
     try {
-      const response = await fetch(
-        "http://192.168.1.190:5000/loan/friend/" +
-          currUserId +
-          "/" +
-          friendUserId,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!response.ok) {
-        const errorResData = await response.json();
-        console.log("errorResData", errorResData);
-
-        let message = "Something went wrong!";
-        if (errorResData) {
-          message = errorResData;
-        }
-        throw new Error(message);
+      let response;
+      if (friendUserId) {
+        response = await fetch(
+          "http://192.168.1.190:5000/loan/friend/" +
+            currUserId +
+            "/" +
+            friendUserId,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+      } else {
+        response = await fetch(
+          "http://192.168.1.190:5000/loan/friend/mobileNumber/" +
+            currUserId +
+            "/" +
+            friendMobileNumber,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
       }
 
-      const resData = await response.json();
-      // console.log(resData.loans)
-      setLoans(resData.loans);
-      setDebt(resData.debt)
+        if (!response.ok) {
+          const errorResData = await response.json();
+          console.log("errorResData", errorResData);
+
+          let message = "Something went wrong!";
+          if (errorResData) {
+            message = errorResData;
+          }
+          throw new Error(message);
+        }
+
+        const resData = await response.json();
+        const {loans, debt, friendUserId} = resData;
+        if (friendUserId){
+          setFriendUserId(friendUserId)
+        }
+        setLoans(loans);
+        setDebt(debt);
+      
     } catch (err) {
       setError(err.message);
     }
     setIsRefreshing(false);
-  }, [dispatch, setIsLoading, setError]);
+  }, []);
 
   useEffect(() => {
     const listenerCreated = props.navigation.addListener("focus", loadLoans);
@@ -78,13 +105,9 @@ const ViewContactLoansScreen = (props) => {
   }, [loadLoans]);
 
   useEffect(() => {
-    setIsLoading(true);
-    loadLoans().then(() => {
-      setIsLoading(false);
-    });
-  }, [dispatch, loadLoans]);
+    loadLoans()
+ }, [friendUserId, loadLoans]);
 
-  // var contactsFromStore = useSelector((state) => state.auth.contacts);
 
   const viewBillHandler = (billId) => {
     props.navigation.navigate("Bills", {
@@ -92,58 +115,59 @@ const ViewContactLoansScreen = (props) => {
       params: { billId },
       initial: true,
     });
-    // props.navigation.push("Bills", {
-    //   screen: "ViewBill",
-    //   params: { billId },
-    // });
-    
   };
 
-  const LoanDisplay = (date, amount, matchedName, toId, payerId, isCancelled, billId) => {
-    
-    if (payerId){
+  const LoanDisplay = (
+    date,
+    amount,
+    matchedName,
+    toId,
+    payerId,
+    isCancelled,
+    billId
+  ) => {
+    let Container = View;
+    if (billId) {
+      Container = TouchableOpacity;
+    }
+    if (payerId) {
       // display loan
       return (
-        <View style={styles.loanContainer}>
-          <Text>{moment(date).format("D MMM YYYY")}</Text>
+        <Container
+          style={styles.loanContainer}
+          onPress={() => viewBillHandler(billId)}
+        >
           {payerId === currUserId ? (
-            <Text>
+            <Text style={[styles.text, { color: Colors.darkRed }]}>
               You owe {matchedName} ${amount}
             </Text>
           ) : (
-            <Text>
+            <Text style={[styles.text, { color: Colors.blue1 }]}>
               {matchedName} owes you ${amount}
             </Text>
           )}
-          {billId && (
-            <Button
-              title="View bill"
-              onPress={() => viewBillHandler(billId)}
-            />
-          )}
-        </View>
+          <Text>{moment(date).format("D MMM YYYY")}</Text>
+        </Container>
       );
-    }
-    else{
+    } else {
       // display transaction
       return (
         <View style={styles.loanContainer}>
-          <Text>{moment(date).format("D MMM YYYY")}</Text>
           {toId === currUserId ? (
-            <Text>
-              {matchedName} paid you ${amount}
-            </Text>
+            <Text>- ${amount.toFixed(2)}</Text>
           ) : (
-            <Text>
-              You paid {matchedName} ${amount}
-            </Text>
+            <Text>+ ${amount.toFixed(2)}</Text>
           )}
-         
+          <Text>{moment(date).format("D MMM YYYY")}</Text>
         </View>
       );
     }
-    
   };
+
+  const updateFriendId = (friendId) => {
+    // console.log('setting...', friendId)
+    // setFriendUserId(friendId)
+  }
 
   if (error) {
     return (
@@ -173,15 +197,43 @@ const ViewContactLoansScreen = (props) => {
   return (
     <View style={styles.screen}>
       <View style={styles.headerContainer}>
-        <Text>{matchedName}</Text>
-          {debt < 0 && <Text>{matchedName} owes you ${-debt}</Text>}
-          {debt > 0 && <Text>You owe {matchedName} ${debt}</Text>}
-          {debt === 0 && <Text>No debt</Text>}
+        <Avatar />
+        <Text style={{ fontWeight: "bold", fontStyle: "italic", fontSize: 18 }}>
+          {matchedName}
+        </Text>
+      </View>
+      <View
+        style={[
+          styles.netDebt,
+          { backgroundColor: debt > 0 ? Colors.lightRed : Colors.blue3 },
+        ]}
+      >
+        {debt < 0 && (
+          <Text>
+            {matchedName} owes you ${-debt.toFixed(2)}
+          </Text>
+        )}
+        {debt > 0 && (
+          <Text>
+            You owe {matchedName} ${debt.toFixed(2)}
+          </Text>
+        )}
+        {debt === 0 && <Text>No debt</Text>}
       </View>
       <View style={styles.headerButtons}>
-          <Button title="Settle Up" onPress={() => props.navigation.navigate("CreateTransaction", {matchedName, debt, friendUserId })}/>
-          <Button title="New Loan" onPress={() => props.navigation.navigate("CreateLoan", {matchedName, friendUserId })}/>
-        </View>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => setCreateNewLoan(true)}
+        >
+          <Text style={{ color: Colors.blue1 }}>Create New Loan</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => setCreateNewTransaction(true)}
+        >
+          <Text style={{ color: Colors.blue1 }}>Transfer $</Text>
+        </TouchableOpacity>
+      </View>
 
       <View style={styles.loansContainer}>
         <FlatList
@@ -203,6 +255,30 @@ const ViewContactLoansScreen = (props) => {
           }
         />
       </View>
+      {createNewLoan && (
+        <LoanModal
+          matchedName={matchedName}
+          friendUserId={friendUserId}
+          friendMobileNumber={friendMobileNumber}
+          setFriendUserId={updateFriendId}
+          onClose={() => {
+            setCreateNewLoan(false);
+            loadLoans()
+          }}
+        />
+      )}
+      {createNewTransaction && (
+        <TransactionModal
+          matchedName={matchedName}
+          friendUserId={friendUserId}
+          friendMobileNumber={friendMobileNumber}
+          setFriendUserId={updateFriendId}
+          onClose={() => {
+            setCreateNewTransaction(false);
+            loadLoans()
+          }}
+        />
+      )}
     </View>
   );
 };
@@ -210,28 +286,52 @@ const ViewContactLoansScreen = (props) => {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
+    paddingHorizontal: 20,
   },
   loansContainer: {
-    flex: 1
+    flex: 1,
   },
-  headerContainer:{
-    textAlign:'center',
-    alignItems:'center',
-    backgroundColor: Colors.blue2
+  headerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingTop: 30,
+    paddingBottom: 20,
   },
-  loanContainer:{
-    backgroundColor:'#ccc',
-    margin:10,
+  loanContainer: {
+    paddingHorizontal: 5,
+    backgroundColor: Colors.gray3,
+    borderRadius: 10,
+    marginTop: 10,
     height: 40,
-    flexDirection:'row',
-    justifyContent:'space-between',
-    alignItems:'center'
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
-  headerButtons:{
-    backgroundColor: Colors.blue2,
-    flexDirection:'row',
-    justifyContent:'space-evenly'
-  }
+  headerButtons: {
+    marginTop: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    height: 50,
+  },
+  button: {
+    height: 30,
+    width: "47%",
+    borderRadius: 15,
+    backgroundColor: Colors.blue3,
+    borderWidth: 1,
+    borderColor: Colors.blue1,
+    alignItems: "center",
+    justifyContent: "center",
+    elevation: 1,
+  },
+  netDebt: {
+    borderRadius: 20,
+    paddingVertical: 5,
+    alignItems: "center",
+  },
+  text: {
+    fontWeight: "bold",
+  },
 });
 
 export default ViewContactLoansScreen;

@@ -15,8 +15,14 @@ import {
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 
 const Avatar = (props) => {
+  const size = {}
+  if (props.height){
+    size.height = props.height
+    size.width = props.height
+    size.borderRadius = props.height / 2
+  }
   return (
-      <View style={{...styles.avatar, ...props.style}}>
+      <View style={[styles.avatar, props.height ? size : {}]}>
         {props.numExcess ? <Text style={styles.numExcess}>+{props.numExcess}</Text>:<Ionicons name="md-person" size={18} color="white" />}
       </View>
   );

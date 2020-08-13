@@ -4,16 +4,21 @@ import {
   View,
   FlatList,
   KeyboardAvoidingView,
+  TouchableOpacity,
   StyleSheet,
   Button,
   Text,
   ActivityIndicator,
   Alert,
   TextInput,
+  SectionList,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSelector, useDispatch } from "react-redux";
 import Colors from "../../constants/Colors";
+import LoanSectionDisplay from "../../components/LoanSectionDisplay";
+import { Ionicons } from "@expo/vector-icons";
+
 
 import AddOrdersSubSectionHeader from "../../components/AddOrdersSubSectionHeader";
 
@@ -22,27 +27,20 @@ import * as authActions from "../../store/actions/auth";
 import * as loanActions from "../../store/actions/loan";
 import { matchUsersWithContacts } from "../../utils/initialiseContacts";
 
-const FlatListItemSeparator = () => {
-  return (
-    <View
-      style={{
-        height: 10,
-        width: "100%",
-        backgroundColor: "transparent",
-      }}
-    />
-  );
-};
 
 const LoansScreen = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState();
-  const loans = useSelector((state) => state.loan.loans);
+  const [query, setQuery] = useState("")
+  const { borrowedFrom, loanedTo, borrowed, loaned } = useSelector(
+    (state) => state.loan.loans
+  )
   const netDebt = useSelector((state) => state.loan.netDebt);
   const dispatch = useDispatch();
 
   const loadLoans = useCallback(async () => {
+    console.log("load loans");
     setError(null);
     setIsRefreshing(true);
     try {
@@ -92,7 +90,7 @@ const LoansScreen = (props) => {
     );
   }
 
-  if (isLoading) {
+  if (isLoading || !borrowedFrom) {
     return (
       <View style={styles.centered}>
         <ActivityIndicator size="large" color={Colors.blue1} />
@@ -100,44 +98,49 @@ const LoansScreen = (props) => {
     );
   }
 
-  if (!isLoading && Object.keys(loans) === 0) {
-    return (
-      <View style={styles.centered}>
-        <Text>No loans found</Text>
-      </View>
-    );
+  // if (!isLoading && Object.keys(loans) === 0) {
+  //   return (
+  //     <View style={styles.centered}>
+  //       <Text>No loans found</Text>
+  //     </View>
+  //   );
+  // }
+
+  const handleSearch = (text) => {
+    setQuery(text)
   }
 
-  const headerComponent = () => {
-    return (
-      <View style={{ marginVertical: 20 }}>
-        <AddOrdersSubSectionHeader
-          header={"Net Debt: $" + netDebt}
-          style={{
-            backgroundColor: netDebt <= 0 ? Colors.blue2 : Colors.lightRed,
-            alignItems: "center",
-          }}
-        />
-      </View>
-    );
-  };
-
   return (
-    <View style={{ alignItems: "center", paddingVertical: 20 }}>
-      <View style={{ width: "90%" }}>
-        <FlatList
-          ItemSeparatorComponent={FlatListItemSeparator}
-          ListHeaderComponent={headerComponent}
+    <View style={{ alignItems: "center", paddingVertical: 20, flex: 1 }}>
+      <TouchableOpacity
+        activeOpacity={0.7}
+        onPress={() => {props.navigation.navigate("ContactsList")}}
+        style={styles.floatingButton}
+      >
+        <Ionicons name="md-add" size={24} color="white" />
+      </TouchableOpacity>
+      <View style={{ width: "90%", flex: 1}}>
+        <View style={styles.searchbar}>
+          <View style={styles.icon}></View>
+          <TextInput value={query} onChangeText={handleSearch} placeholder="Finding someone?"/>
+        </View>
+        <SectionList
           onRefresh={loadLoans}
           refreshing={isRefreshing}
-          keyExtractor={(item, index) => index.toString()}
-          data={Object.keys(loans)}
-          renderItem={({ item }) => (
-            <LoanDisplay
-              friendMobileNumber={item}
-              debt={loans[item]}
-              navigate={props.navigation.navigate}
-            />
+          // ListHeaderComponent={headerComponent}
+          sections={[
+            {
+              type: "borrowedFrom",
+              data: [Object.keys(borrowedFrom)],
+            },
+            {
+              type: "loanedTo",
+              data: [Object.keys(loanedTo)],
+            },
+          ]}
+          keyExtractor={(item, index) => item.toString()}
+          renderItem={({ item, section: { type } }) => (
+            <LoanSectionDisplay item={item} type={type} navigation={props.navigation} query={query}/>
           )}
         />
       </View>
@@ -163,6 +166,30 @@ const styles = StyleSheet.create({
   buttonContainer: {
     marginTop: 10,
   },
+  searchbar:{
+    height: 40,
+    borderRadius: 20,
+    alignItems:"center",
+    backgroundColor: '#fff',
+    flexDirection:'row',
+    paddingHorizontal:10,
+    borderWidth:1,
+    borderColor: Colors.gray,
+    marginBottom: 10
+    },
+    floatingButton: {
+      backgroundColor: Colors.blue1,
+      position: "absolute",
+      width: 60,
+      height: 60,
+      alignItems: "center",
+      justifyContent: "center",
+      right: 30,
+      bottom: 30,
+      borderRadius: 30,
+      zIndex: 1,
+      flexDirection: "row",
+    },
 });
 
-export default LoansScreen;
+export default React.memo(LoansScreen);

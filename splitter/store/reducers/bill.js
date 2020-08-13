@@ -41,11 +41,12 @@ export default (state = initialState, action) => {
   };
 
   const updateUnpaidAmount = (updatedAttendees, netBill) => {
-    console.log('update unpaid amount', netBill)
     var unpaidAmount = netBill
     Object.keys(updatedAttendees).forEach((key) => {
       unpaidAmount -= updatedAttendees[key].paidAmount
-    });
+    });    
+    console.log('update unpaid amount', unpaidAmount.toFixed(2))
+
     return unpaidAmount.toFixed(2)
   }
 

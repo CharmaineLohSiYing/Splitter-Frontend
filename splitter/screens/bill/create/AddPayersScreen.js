@@ -84,8 +84,9 @@ const AddPayersScreen = (props) => {
     setPayerToUpdate(id);
   };
 
-  const createBillHandler = useCallback(async () => {
-    if (unpaidAmount != 0) {
+  const createBillHandler = async () => {
+    if (unpaidAmount > 0) {
+      console.log('unpaid amount',unpaidAmount)
       setError("Numbers do not tally");
     } else {
       setError(null);
@@ -106,7 +107,7 @@ const AddPayersScreen = (props) => {
       }
       setIsLoading(false);
     }
-  }, [dispatch, props.navigation, isEdit]);
+  }
 
   const PayerHeader = () => {
     return <View

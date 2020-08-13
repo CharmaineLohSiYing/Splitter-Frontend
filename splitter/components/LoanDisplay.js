@@ -17,10 +17,11 @@ import { useSelector, useDispatch } from "react-redux";
 import CurrencyInput from "./UI/CurrencyInput";
 import loan from "../store/reducers/loan";
 import Colors from "../constants/Colors";
+import Avatar from "./Avatar"
 
 const LoanDisplay = (props) => {
   const [matchedName, setMatchedName] = useState("");
-  const {debt, userId} = props.debt;
+  const {debt, friendUserId, friendName} = props;
   const { contacts } = useSelector((state) => state.auth);
 
   useEffect(() => {
@@ -36,17 +37,24 @@ const LoanDisplay = (props) => {
 
   return (
     <TouchableOpacity
-      style={[styles.container, debt <= 0 ? styles.notInDebt : styles.inDebt]}
+      style={[styles.container]}
       onPress={() =>
         props.navigate("ViewContactLoans", {
-          matchedName,
-          friendUserId: userId,
+          matchedName: friendName,
+          friendUserId: friendUserId,
           debt: debt,
         })
       }
     >
-      <Text style={styles.friend}>{matchedName}</Text>
-      <Text style={styles.friend}>DEBT: ${debt}</Text>
+      <View style={{flexDirection:'row', alignItems: 'center', flex: 1}}>
+        <Avatar height={30}/>
+        <Text style={[styles.friend, {color: props.nameColor}]}>{friendName}</Text>
+      </View>
+      <View style={{flex: 1, alignItems:'center'}}>
+        <Text style={styles.friend}>${debt.toFixed(2)}</Text>
+      </View>
+      
+      
     </TouchableOpacity>
   );
 };
@@ -54,20 +62,13 @@ const LoanDisplay = (props) => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    backgroundColor: "#ccc",
     alignItems: "center",
     justifyContent: "space-between",
     height: 50,
-    paddingHorizontal: 10,
+    padding: 10,
   },
   friend: {
-    textDecorationStyle: "solid",
-  },
-  notInDebt: {
-    backgroundColor: Colors.blue2,
-  },
-  inDebt: {
-    backgroundColor: Colors.lightRed,
+    fontWeight:'bold'
   },
 });
 

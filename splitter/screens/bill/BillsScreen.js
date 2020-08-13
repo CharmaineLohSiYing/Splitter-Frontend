@@ -27,7 +27,6 @@ const BillsScreen = (props) => {
   const [error, setError] = useState();
   const [text, setText] = useState("hello");
   const userBills = useSelector((state) => state.bill.userBills);
-  console.log(userBills)
   const dispatch = useDispatch();
 
   var contactsFromStore = useSelector((state) => state.auth.contacts);
@@ -128,9 +127,9 @@ const BillsScreen = (props) => {
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={addBillHandler}
-        style={styles.addBillButton}
+        style={styles.floatingButton}
       >
-        <Ionicons name="md-add" size={40} color="white" />
+        <Ionicons name="md-add" size={24} color="white" />
       </TouchableOpacity>
       {/* <TouchableOpacity
         style={{ height: 40, backgroundColor: "yellow", width: "100%" }}
@@ -196,17 +195,18 @@ const styles = StyleSheet.create({
   noBillsAddText: {
     color: "white",
   },
-  addBillButton: {
+  floatingButton: {
     backgroundColor: Colors.blue1,
     position: "absolute",
-    width: 80,
-    height: 80,
+    width: 60,
+    height: 60,
     alignItems: "center",
     justifyContent: "center",
     right: 30,
     bottom: 30,
-    borderRadius: 40,
+    borderRadius: 30,
     zIndex: 1,
+    flexDirection: "row",
   },
 });
 

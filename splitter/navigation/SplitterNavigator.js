@@ -34,8 +34,8 @@ import TestScreen from "../screens/bill/create/TestScreen";
 
 import LoansScreen from "../screens/loan/LoansScreen";
 import ViewContactLoansScreen from "../screens/loan/ViewContactLoansScreen";
-import CreateTransactionScreen from "../screens/loan/CreateTransactionScreen";
-import CreateLoanScreen from "../screens/loan/CreateLoanScreen";
+import ContactsListScreen from "../screens/loan/ContactsListScreen";
+
 
 import SettingsScreen from "../screens/user/account/SettingsScreen";
 import UpdateEmailScreen from "../screens/user/account/UpdateEmailScreen";
@@ -170,12 +170,8 @@ export const LoansNavigator = ({ navigation }) => {
         component={ViewContactLoansScreen}
       />
       <LoansStackNavigator.Screen
-        name="CreateTransaction"
-        component={CreateTransactionScreen}
-      />
-      <LoansStackNavigator.Screen
-        name="CreateLoan"
-        component={CreateLoanScreen}
+        name="ContactsList"
+        component={ContactsListScreen}
       />
     </LoansStackNavigator.Navigator>
   );

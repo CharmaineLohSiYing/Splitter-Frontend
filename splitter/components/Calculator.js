@@ -34,10 +34,9 @@ class Calculator extends React.PureComponent {
     };
   }
 
-  componentDidUpdate(){
-    this.setState({
-      currentOperand: this.props.initialAmount
-    })
+  updateValues = () => {
+    this.props.getValuesFromCalculator(this.state.currentOperand, this.state.previousOperand, this.state.operation)
+    this.updateDisplay();
   }
 
 
@@ -48,17 +47,20 @@ class Calculator extends React.PureComponent {
     } else if (value === "0" && this.state.currentOperand === "") {
       return;
     } else if (this.state.currentOperand.toString() === "0" && value !== ".") {
-      await this.setState({
+      this.setState({
         currentOperand: value.toString(),
+      }, () => {
+        this.updateValues();
       });
+      console.log('here', value.toString(), this.state.currentOperand)
     } else {
-      await this.setState({
+      this.setState({
         currentOperand: this.state.currentOperand.toString() + value.toString(),
+      }, () => {
+        this.updateValues();
       });
-      this.props.getValuesFromCalculator(this.state.currentOperand, this.state.previousOperand, this.state.operation)
     }
-    this.props.getValuesFromCalculator(this.state.currentOperand, this.state.previousOperand, this.state.operation)
-    this.updateDisplay();
+    
   }
 
   pressEqualHandler = (value) => {
@@ -105,14 +107,14 @@ class Calculator extends React.PureComponent {
   };
 
   updateDisplay = () => {
-    this.setState({
-      currentOperand: this.getDisplayNumber(this.state.currentOperand),
-    });
+    // this.setState({
+    //   currentOperand: this.getDisplayNumber(this.state.currentOperand),
+    // });
     if (this.state.operation !== "") {
       let symbol = this.state.operation
       this.setState({
-        previousOperandDisplay:
-          this.getDisplayNumber(this.state.previousOperand) + " " + symbol,
+        previousOperandDisplay: this.state.previousOperand + " " + symbol
+          // this.getDisplayNumber(this.state.previousOperand) + " " + symbol,
       });
     } else {
       //this.setState({previousOperandDisplay: this.getDisplayNumber(this.state.previousOperand)})

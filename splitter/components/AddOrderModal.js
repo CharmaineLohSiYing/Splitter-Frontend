@@ -226,7 +226,6 @@ const AddOrderModal = (props) => {
   };
 
   const CalculatorComponent = useCallback(() => {
-    console.log('initialamount', initialAmount)
     return (
       <View
         style={{
@@ -256,7 +255,6 @@ const AddOrderModal = (props) => {
 
   const onSubmit = async () => {
     let finalValue = 0;
-    console.log("current", currentOperand);
     if (previousOperand && operation) {
       finalValue = compute(currentOperand, previousOperand, operation);
     } else {
