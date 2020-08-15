@@ -16,11 +16,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSelector, useDispatch } from "react-redux";
 import { matchUsersWithContacts } from "../../utils/initialiseContacts";
+import Screen from "../../components/UI/Screen";
 
 import BillItemDisplay from "../../components/BillItemDisplay";
 import * as authActions from "../../store/actions/auth";
 import * as billActions from "../../store/actions/bill";
 import Colors from "../../constants/Colors";
+import GlobalStyles from "../../assets/style";
 
 const BillsScreen = (props) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -114,50 +116,35 @@ const BillsScreen = (props) => {
     );
   }
 
-  const change = () => {
-    if (text == "hello") {
-      setText("bye");
-    } else {
-      setText("hello");
-    }
-  };
-
   return (
-    <View style={styles.screen}>
+    <Screen>
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={addBillHandler}
-        style={styles.floatingButton}
+        style={GlobalStyles.floatingButton}
       >
         <Ionicons name="md-add" size={24} color="white" />
       </TouchableOpacity>
-      {/* <TouchableOpacity
-        style={{ height: 40, backgroundColor: "yellow", width: "100%" }}
-        onPress={change}
-      >
-        <Text>{text}</Text>
-      </TouchableOpacity> */}
-      <View style={styles.billsContainer}>
-        <FlatList
-          keyExtractor={(item, index) => index.toString()}
-          data={userBills}
-          renderItem={({ item }) => (
-            <BillItemDisplay
-              onSelect={() =>
-                props.navigation.navigate("ViewBill", {
-                  billId: item.bill._id,
-                })
-              }
-              billName={item.bill.name}
-              date={item.bill.date}
-              netBill={item.bill.netBill}
-              sharedOrders={item.sharedOrders}
-              individualOrderAmount={item.individualOrderAmount}
-            />
-          )}
-        />
-      </View>
-    </View>
+      <FlatList
+        style={GlobalStyles.flatlist}
+        keyExtractor={(item, index) => index.toString()}
+        data={userBills}
+        renderItem={({ item }) => (
+          <BillItemDisplay
+            onSelect={() =>
+              props.navigation.navigate("ViewBill", {
+                billId: item.bill._id,
+              })
+            }
+            billName={item.bill.name}
+            date={item.bill.date}
+            netBill={item.bill.netBill}
+            sharedOrders={item.sharedOrders}
+            individualOrderAmount={item.individualOrderAmount}
+          />
+        )}
+      />
+    </Screen>
   );
 };
 
@@ -169,9 +156,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-  },
-  billsContainer: {
-    flex: 1,
   },
   noBillsContainer: {
     borderWidth: 1,

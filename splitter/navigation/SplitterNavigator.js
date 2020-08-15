@@ -62,7 +62,7 @@ const toggleHeaderButton = (navigation) => {
 
 const defaultNavOptions = {
   headerStyle: {
-    backgroundColor: Platform.OS === "android" ? Colors.blue : "",
+    backgroundColor: Platform.OS === "android" ? Colors.blue3 : "",
   },
   headerTitleContainerStyle: {
     left: 0, // THIS RIGHT HERE
@@ -164,6 +164,7 @@ export const LoansNavigator = ({ navigation }) => {
       <LoansStackNavigator.Screen
         name="Loans"
         component={LoansScreen}
+        headerTitle="Track Loans"
       />
       <LoansStackNavigator.Screen
         name="ViewContactLoans"
@@ -172,6 +173,7 @@ export const LoansNavigator = ({ navigation }) => {
       <LoansStackNavigator.Screen
         name="ContactsList"
         component={ContactsListScreen}
+        headerTitle="dd"
       />
     </LoansStackNavigator.Navigator>
   );
@@ -231,7 +233,7 @@ export const SplitterNavigator = () => {
 
           // You can return any component that you like here!
           return <Ionicons name={iconName} size={size} color={color} />;
-        },
+        }
       })}
       tabBarOptions={{
         activeTintColor: Colors.blue1,

@@ -41,15 +41,11 @@ const styles = StyleSheet.create({
     fontFamily: "roboto-bold",
     fontSize: 16,
   },
-  mobileNumber: {},
-  selected: {
-    paddingHorizontal: 5
-  },
   container: {
     flexDirection: "row",
     alignItems: "center",
     height: 60,
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
     backgroundColor: "#D4DBED",
   },
   avatar:{

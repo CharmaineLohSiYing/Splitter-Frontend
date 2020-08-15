@@ -101,7 +101,7 @@ class OrderDisplay extends Component {
           {!this.props.sharers ? (
             <View style={styles.individualOrderContainer}>
               <Avatar />
-              <Text>{this.props.name}</Text>
+              <Text style={{color: this.props.nameTextColor}}>{this.props.name}</Text>
             </View>
           ) : (
             <View>

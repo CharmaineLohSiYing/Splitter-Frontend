@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View
 } from "react-native";
+import Colors from "../../constants/Colors"
 
 const App = (props) => {
   const [modalVisible, setModalVisible] = useState(true);
@@ -16,12 +17,9 @@ const App = (props) => {
         animationType="fade"
         transparent={true}
         visible={modalVisible}
-        onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
-        }}
       >
         <View style={styles.centeredView}>
-          <View style={styles.modalView}>
+          <View style={[styles.modalView, props.modalViewStyle]}>
             <View style={styles.header}>
               <Text style={styles.headerText}>{props.title}</Text>
             </View>
@@ -34,7 +32,7 @@ const App = (props) => {
                 setModalVisible(!modalVisible);
                 props.onClose()
               }}>
-                <Text style={styles.buttonText}>{props.leftButton ? props.leftButton : "Cancel"}</Text>
+                <Text style={{...styles.buttonText, color:Colors.blue1}}>{props.leftButton ? props.leftButton : "Cancel"}</Text>
               </TouchableOpacity>
               <TouchableOpacity  style={styles.button} onPress={props.onSubmit}>
                 <Text style={styles.buttonText}>{props.rightButton ? props.rightButton : "Submit"}</Text>
@@ -47,34 +45,23 @@ const App = (props) => {
 };
 
 const styles = StyleSheet.create({
-  // centeredView: {
-  //   flex: 1,
-  //   justifyContent: "center",
-  //   alignItems: "center",
-  //   backgroundColor: 'rgba(0, 0, 0, 0.5)'
-  // },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: 'rgba(0, 0, 0, 0.5)'
+  },
   modalView: {
+    // flex: 1,
+    maxHeight: '80%',
     width: '80%',
-    minHeight:'70%',
     backgroundColor: "white",
     borderRadius: 20,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
     elevation: 5,
-    overflow:'hidden'
+    overflow:'hidden',
+    alignSelf:'center',
   },
-  // openButton: {
-  //   backgroundColor: "#F194FF",
-  //   borderRadius: 20,
-  //   padding: 10,
-  //   elevation: 2
-  // },
   textStyle: {
     color: "white",
     fontWeight: "bold",
@@ -91,9 +78,6 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems:'center',
     justifyContent:'center'    
-  },
-  headerText:{
-
   },
   bottomBar:{
     height: 50,
@@ -115,8 +99,6 @@ const styles = StyleSheet.create({
     borderRightColor:'#ccc'
   },
   contents:{
-    paddingVertical: 20,
-    flex:1,
     width:'90%',
   }
 });

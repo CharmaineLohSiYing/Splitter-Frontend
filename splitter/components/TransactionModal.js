@@ -20,15 +20,13 @@ import Colors from "../constants/Colors";
 import Avatar from "./Avatar";
 import AppModal from "./UI/AppModal";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
+import GlobalStyles from "../assets/style"
 
 const TransactionModal = (props) => {
   const [error, setError] = useState(null);
   const currUserId = useSelector((state) => state.auth.userId);
   const [amount, setAmount] = useState(null)
   const { friendUserId } = props;
-  const toggle = (isBorrower) => {
-    setUserIsBorrower(isBorrower);
-  };
 
   useEffect(() => {
     if (error) {
@@ -69,16 +67,17 @@ const TransactionModal = (props) => {
   }
   return (
     <AppModal title={"Transfer to " + props.matchedName} onClose={props.onClose} onSubmit={createTransaction} rightButton="OK">
-      <View>
-        <View style={styles.textInput}>
-          <TextInput
+      <View style={{paddingVertical: 20}}>
+         <TextInput
+            autoFocus={true}
+            style={GlobalStyles.modalTextInput}
             placeholder="$0.00"
             value={amount}
             onChangeText={setAmount}
             keyboardType="number-pad"
           />
-        </View>
       </View>
+         
     </AppModal>
   );
 };
@@ -100,9 +99,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingVertical: 10,
   },
-  textInput: {
-    justifyContent: "center",
-  },
+
 });
 
 export default TransactionModal;

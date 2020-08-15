@@ -32,6 +32,8 @@ import OrderDisplay from "../../../components/OrderDisplay";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import ProceedBottomButton from "../../../components/UI/ProceedBottomButton";
 import AddOrderModal from '../../../components/AddOrderModal'
+import Screen from "../../../components/UI/Screen"
+import GlobalStyles from "../../../assets/style"
 
 
 const EmptyListComponent = (props) => (
@@ -159,8 +161,15 @@ const AddOrdersScreen = (props) => {
     );
   }
 
+  let sharedOrdersTitle = 'Any Shared Orders?'
+  if (orders.length === 1){
+    sharedOrdersTitle = '1 Shared Order'
+  } else if (orders.length > 1) {
+    sharedOrdersTitle = orders.length + ' Shared Orders'
+  }
+
   return (
-    <View style={{ flex: 1}}>
+    <Screen style={{paddingTop: 0}}>
       <CreateBillHeader
         displayProceed={true}
         progress={2}
@@ -169,7 +178,8 @@ const AddOrdersScreen = (props) => {
         subtitle="Don’t worry about the GST and service charges, we will get to that later"
       />
         <SectionList
-          contentContainerStyle={{paddingHorizontal:'5%', paddingVertical:20}}
+          style={GlobalStyles.flatlist}
+          contentContainerStyle={{paddingBottom:20}}
           ItemSeparatorComponent={ItemSeparator}
           renderSectionFooter={({ section }) => {
             if (section.data.length === 0) {
@@ -197,10 +207,7 @@ const AddOrdersScreen = (props) => {
           )}
           sections={[
             {
-              title:
-                orders.length > 0
-                  ? orders.length + " shared orders"
-                  : "Any shared orders?",
+              title: sharedOrdersTitle,
               type: "Shared",
               data: orders,
               renderItem: ({ item }) => (
@@ -232,15 +239,12 @@ const AddOrdersScreen = (props) => {
         {(sharedOrderToUpdate) && <AddOrderModal onClose={closeUpdateSharedOrderModal} orderId={sharedOrderToUpdate}/>}
         {(createSharedOrder) && <AddOrderModal onClose={closeCreateSharedOrderModal} newSharedOrder={true}/>}
         {(individualOrderToUpdate) && <AddOrderModal onClose={closeUpdateIndividualOrderModal} user={individualOrderToUpdate}/>}
-    </View>
+    </Screen>
   );
 };
 
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-  },
   emptyFlatlist: {
     padding: 20,
     backgroundColor: "#ccc",
@@ -251,7 +255,9 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: "row",
+    paddingTop: 20,
     paddingBottom: 10,
+    
   },
   addSharedOrderButton: {
     backgroundColor: Colors.blue4Rgba,

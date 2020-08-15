@@ -19,7 +19,7 @@ import Colors from "../../constants/Colors";
 const ProgressConnector = (props) => {
     const {active, width} = props;
   return (
-    <View style={{ ...styles.connector, backgroundColor: active ? Colors.blue1 : Colors.lightGray, width: width }}>
+    <View style={{ ...styles.connector, backgroundColor: active ? Colors.blue1 : Colors.gray1, width: width }}>
     </View>
   );
 };

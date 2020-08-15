@@ -10,6 +10,7 @@ import {
 import DateTimePicker from "@react-native-community/datetimepicker";
 import moment from "moment";
 import { Ionicons } from "@expo/vector-icons";
+import Colors from "../../constants/Colors"
 
 
 const DatePicker = (props) => {
@@ -67,7 +68,10 @@ const styles = StyleSheet.create({
   container: {
     flexDirection:'row',
     alignItems:'center',
-    justifyContent:'space-between'
+    justifyContent:'space-between',
+    backgroundColor: Colors.gray4,
+    borderRadius: 15,
+    paddingHorizontal: 10   
   },
   icon:{
     paddingHorizontal: 5

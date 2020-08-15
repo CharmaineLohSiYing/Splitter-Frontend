@@ -20,7 +20,7 @@ const OverlappingAvatar = (props) => {
   const {num} = props
   return (
     <View style={styles.overlappingAvatars}>
-      {num > 3 && <Avatar style={{ left: 35, ...styles.avatar }} numExcess={num-5}/>}
+      {num > 3 && <Avatar style={{ left: 35, ...styles.avatar }} numExcess={num-3}/>}
       {num >= 3 && <Avatar style={{ left: 2 * avatarHalfWidth, ...styles.avatar}}/>}
       <Avatar style={{ left: avatarHalfWidth, ...styles.avatar }}/>
       <Avatar style={styles.avatar}/>

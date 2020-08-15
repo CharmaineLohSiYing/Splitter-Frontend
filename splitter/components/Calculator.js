@@ -376,17 +376,14 @@ class Calculator extends React.PureComponent {
 
 const styles = StyleSheet.create({
   container: {
-    // width:'70%',
-    // height: 300,
     borderWidth:1,
     borderColor:Colors.blue3,
-    // backgroundColor:'blue'
   },
   calculator: {
     height: "80%",
     width: "100%",
     flexDirection: "row",
-    backgroundColor:Colors.blue5
+    backgroundColor:Colors.blue5,
   },
   delete: {
     backgroundColor: Colors.blue2,

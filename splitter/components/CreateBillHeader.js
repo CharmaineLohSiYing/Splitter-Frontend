@@ -22,17 +22,25 @@ import Colors from "../constants/Colors";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 
 const screenWidth = Dimensions.get("window").width;
-let HEADER_HEIGHT = 160;
+
 
 const CreateBillHeader = (props) => {
+  const {children, subtitle, progress, displayProceed, title, proceedHandler} = props
 
-  if (!props.children && !props.subtitle){
-    HEADER_HEIGHT = 120
-  }
+  const [headerHeight, setHeaderHeight] = useState(160)
+
+  useEffect(() => {
+    if (!children && !subtitle){
+      setHeaderHeight(120)
+      console.log('set height to 120', progress)
+    }
+  }, [])
+
+  
 
   const shadowOpt = {
     width: screenWidth,
-    height: HEADER_HEIGHT,
+    height: headerHeight,
     color: "#000",
     border: 2,
     radius: 3,
@@ -42,16 +50,16 @@ const CreateBillHeader = (props) => {
   };
   return (
     <BoxShadow setting={shadowOpt}>
-      <View style={{...styles.header, height: HEADER_HEIGHT}}>
-        <AddBillProgress progress={props.progress} />
+      <View style={{...styles.header, height: headerHeight, ...props.headerStyle}}>
+        <AddBillProgress progress={progress} />
         <View
           style={{
             flexDirection: "row",
             justifyContent: "space-between",
           }}
         >
-          <MyAppText style={styles.numSelectedText}>{props.title}</MyAppText>
-          {props.displayProceed && (
+          <MyAppText style={styles.numSelectedText}>{title}</MyAppText>
+          {displayProceed && (
             <TouchableOpacity
               style={{
                 flexDirection: "row",
@@ -59,12 +67,12 @@ const CreateBillHeader = (props) => {
                 justifyContent: "space-around",
                 width: 50,
               }}
-              onPress={props.proceedHandler}
+              onPress={proceedHandler}
             >
               <Text style={{ fontStyle: "italic", color: Colors.blue1 }}>
-                {props.progress < 4 ? "Next" : "Create"}
+                {progress < 4 ? "Next" : "Create"}
               </Text>
-              {props.progress != 4 && (
+              {progress != 4 && (
                 <Ionicons
                   name="md-arrow-forward"
                   size={16}
@@ -74,14 +82,14 @@ const CreateBillHeader = (props) => {
             </TouchableOpacity>
           )}
         </View>
-        {props.subtitle && (
+        {subtitle && (
           <View style={{ marginVertical: 5 }}>
             <MyAppText style={{ fontSize: 12, fontStyle: "italic" }}>
-              {props.subtitle}
+              {subtitle}
             </MyAppText>
           </View>
         )}
-        {props.children}
+        {children}
       </View>
     </BoxShadow>
   );

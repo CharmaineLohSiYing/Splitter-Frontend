@@ -17,6 +17,9 @@ import { useSelector, useDispatch } from "react-redux";
 import moment from "moment";
 import LoanModal from "../../components/LoanModal";
 import TransactionModal from "../../components/TransactionModal";
+import Screen from "../../components/UI/Screen";
+import Content from "../../components/UI/Content";
+import GlobalStyles from "../../assets/style";
 
 import BillItemDisplay from "../../components/BillItemDisplay";
 import * as authActions from "../../store/actions/auth";
@@ -96,12 +99,12 @@ const ViewContactLoansScreen = (props) => {
     }
 
     const resData = await response.json();
-    const {loans, debt} = resData;
-    if (!friendUserId && resData.friendUserId){
-      setFriendUserId(resData.friendUserId)
+    const { loans, debt } = resData;
+    if (!friendUserId && resData.friendUserId) {
+      setFriendUserId(resData.friendUserId);
     }
     setLoans(loans);
-    setDebt(debt)
+    setDebt(debt);
     setIsRefreshing(false);
   }, []);
 
@@ -143,11 +146,15 @@ const ViewContactLoansScreen = (props) => {
       // display loan
       return (
         <Container
-          style={styles.loanContainer}
+          activeOpacity={0.8}
+          style={[
+            styles.loanContainer,
+            billId ? styles.loanContainerTouchable : {},
+          ]}
           onPress={() => viewBillHandler(billId)}
         >
           {payerId === currUserId ? (
-            <Text style={[styles.text, { color: Colors.darkRed }]}>
+            <Text style={[styles.text, { color: Colors.red1 }]}>
               You owe {matchedName} ${amount}
             </Text>
           ) : (
@@ -204,66 +211,68 @@ const ViewContactLoansScreen = (props) => {
   }
 
   return (
-    <View style={styles.screen}>
-      <View style={styles.headerContainer}>
-        <Avatar />
-        <Text style={{ fontWeight: "bold", fontStyle: "italic", fontSize: 18 }}>
-          {matchedName}
-        </Text>
-      </View>
-      <View
-        style={[
-          styles.netDebt,
-          { backgroundColor: debt > 0 ? Colors.lightRed : Colors.blue3 },
-        ]}
-      >
-        {debt < 0 && (
-          <Text>
-            {matchedName} owes you ${-debt.toFixed(2)}
+    <Screen>
+      <Content style={{ flex: 0 }}>
+        <View style={styles.headerContainer}>
+          <Avatar />
+          <Text
+            style={{ fontWeight: "bold", fontStyle: "italic", fontSize: 18 }}
+          >
+            {matchedName}
           </Text>
-        )}
-        {debt > 0 && (
-          <Text>
-            You owe {matchedName} ${debt.toFixed(2)}
-          </Text>
-        )}
-        {debt === 0 && <Text>No debt</Text>}
-      </View>
-      <View style={styles.headerButtons}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => setCreateNewLoan(true)}
+        </View>
+        <View
+          style={[
+            styles.netDebt,
+            { backgroundColor: debt > 0 ? Colors.red2 : Colors.blue3 },
+          ]}
         >
-          <Text style={{ color: Colors.blue1 }}>Create New Loan</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => setCreateNewTransaction(true)}
-        >
-          <Text style={{ color: Colors.blue1 }}>Transfer $</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.loansContainer}>
-        <FlatList
-          onRefresh={loadLoans}
-          refreshing={isRefreshing}
-          keyExtractor={(item, index) => index.toString()}
-          // data={loans.slice(0, 3)}
-          data={loans}
-          renderItem={({ item }) =>
-            LoanDisplay(
-              item.date,
-              item.amount,
-              matchedName,
-              item.from,
-              item.payer,
-              item.isCancelled,
-              item.bill
-            )
-          }
-        />
-      </View>
+          {debt < 0 && (
+            <Text>
+              {matchedName} owes you ${-debt.toFixed(2)}
+            </Text>
+          )}
+          {debt > 0 && (
+            <Text>
+              You owe {matchedName} ${debt.toFixed(2)}
+            </Text>
+          )}
+          {debt === 0 && <Text>No debt</Text>}
+        </View>
+        <View style={styles.headerButtons}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => setCreateNewLoan(true)}
+          >
+            <Text style={{ color: Colors.blue1 }}>Create New Loan</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => setCreateNewTransaction(true)}
+          >
+            <Text style={{ color: Colors.blue1 }}>Transfer $</Text>
+          </TouchableOpacity>
+        </View>
+      </Content>
+      <FlatList
+        style={{ ...GlobalStyles.flatlist, flex: 1, marginTop: 20 }}
+        onRefresh={loadLoans}
+        refreshing={isRefreshing}
+        keyExtractor={(item, index) => index.toString()}
+        // data={loans.slice(0, 3)}
+        data={loans}
+        renderItem={({ item }) =>
+          LoanDisplay(
+            item.date,
+            item.amount,
+            matchedName,
+            item.from,
+            item.payer,
+            item.isCancelled,
+            item.bill
+          )
+        }
+      />
       {createNewLoan && (
         <LoanModal
           matchedName={matchedName}
@@ -288,39 +297,38 @@ const ViewContactLoansScreen = (props) => {
           }}
         />
       )}
-    </View>
+    </Screen>
   );
 };
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
   loansContainer: {
     flex: 1,
   },
   headerContainer: {
     flexDirection: "row",
     alignItems: "center",
-    paddingTop: 30,
+    paddingTop: 10,
     paddingBottom: 20,
+    width: "100%",
   },
   loanContainer: {
-    paddingHorizontal: 5,
-    backgroundColor: Colors.gray3,
-    borderRadius: 10,
-    marginTop: 10,
-    height: 40,
+    paddingHorizontal: 10,
+    marginBottom: 10,
+    height: 30,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+  },
+  loanContainerTouchable: {
+    backgroundColor: Colors.gray3,
+    borderRadius: 20,
+    height: 40,
   },
   headerButtons: {
     marginTop: 10,
     flexDirection: "row",
     justifyContent: "space-between",
-    height: 50,
   },
   button: {
     height: 30,

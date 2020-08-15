@@ -32,22 +32,13 @@ import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import MyAppText from "../../../components/UI/MyAppText";
 import CreateBillHeader from "../../../components/CreateBillHeader";
 const screenWidth = Dimensions.get("window").width;
+import FlatListLineSeparator from "../../../components/UI/FlatListLineSeparator"
 
 const HEADER_HEIGHT = 160;
 
 // height of each contact container + flatlist separator
 const ITEM_HEIGHT = 61;
-const ContactListItemSeparator = () => {
-  return (
-    <View
-      style={{
-        height: 1,
-        width: "100%",
-        backgroundColor: "#ccc",
-      }}
-    />
-  );
-};
+
 const SelectedContactListItemSeparator = () => {
   return (
     <View
@@ -246,11 +237,10 @@ const AddAttendeesScreen = (props) => {
             : selectedContacts.length + " friends selected"
         }
       >
-        <View>
           {displaySearchBar && (
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <View style={{ flexDirection: "row", alignItems: "center",flex: 1}}>
               <TouchableOpacity
-                style={{ paddingRight: 5 }}
+                style={{ paddingRight: 5}}
                 onPress={closeSearchbar}
               >
                 <Ionicons name="md-arrow-back" size={20} />
@@ -303,12 +293,11 @@ const AddAttendeesScreen = (props) => {
               )}
             />
           )}
-        </View>
       </CreateBillHeader>
       <SearchableFlatList
         data={contactsArr}
         keyboardShouldPersistTaps={"handled"}
-        ItemSeparatorComponent={ContactListItemSeparator}
+        ItemSeparatorComponent={FlatListLineSeparator}
         searchTerm={query}
         searchAttribute="name"
         ignoreCase={true}
@@ -355,16 +344,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#619995",
   },
   searchBar: {
-    // borderBottomWidth: 1,
-    // borderBottomColor: Colors.blue1,
-    padding: 10,
-    height: 50,
-  },
-  selected: {
-    backgroundColor: "yellow",
-  },
-  notSelected: {
-    backgroundColor: "white",
+    alignItems:'center',
+    paddingLeft: 10,
+    flex: 1,
+    height: '100%'
   },
   container: {
     height: 40,

@@ -51,11 +51,11 @@ const BillItemDisplay = (props) => {
           {props.billName ? props.billName : "Bill"}
         </Text>
         <View style={styles.netBillContainer}>
-          <Text>${props.netBill.toFixed(2)}</Text>
+          <Text>${totalExpenditure.toFixed(2)}</Text>
         </View>
-      </View>
+      </View> 
       <Text>
-        Spent ${totalExpenditure} on{" "}
+        Net Bill: <Text style={{fontWeight:'bold'}}>${props.netBill.toFixed(2)}</Text> on{" "}
         {moment(new Date(props.date)).format("D MMM YYYY")}
       </Text>
     </TouchableOpacity>
@@ -64,13 +64,13 @@ const BillItemDisplay = (props) => {
 
 const styles = StyleSheet.create({
   container: {
-    margin: 20,
     padding: 10,
+    paddingHorizontal:15,
     backgroundColor: Colors.blue5,
-    elevation: 1,
+    elevation: 3,
+    marginBottom: 20
   },
   billName: {
-    fontWeight: "bold",
     fontSize: 18,
   },
   firstRow: {
@@ -82,10 +82,11 @@ const styles = StyleSheet.create({
   },
   netBillContainer: {
     minWidth: 100,
-    padding: 5,
-    backgroundColor: Colors.blue2,
+    paddingHorizontal: 5,
+    paddingVertical:3,
+    backgroundColor: Colors.blue3,
     alignItems: "center",
-    borderRadius: 10,
+    borderRadius: 15,
   },
 });
 

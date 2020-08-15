@@ -48,10 +48,10 @@ const LoanDisplay = (props) => {
     >
       <View style={{flexDirection:'row', alignItems: 'center', flex: 1}}>
         <Avatar height={30}/>
-        <Text style={[styles.friend, {color: props.nameColor}]}>{friendName}</Text>
+        <Text style={[styles.text, {color: props.nameColor}]}>{friendName}</Text>
       </View>
-      <View style={{flex: 1, alignItems:'center'}}>
-        <Text style={styles.friend}>${debt.toFixed(2)}</Text>
+      <View style={{flex: 1, paddingLeft: 70}}>
+          <Text style={styles.text}>${debt.toFixed(2)}</Text>
       </View>
       
       
@@ -67,9 +67,10 @@ const styles = StyleSheet.create({
     height: 50,
     padding: 10,
   },
-  friend: {
-    fontWeight:'bold'
-  },
+  text: {
+    fontWeight:'bold',
+    textAlign:'left'
+  }
 });
 
 export default LoanDisplay;

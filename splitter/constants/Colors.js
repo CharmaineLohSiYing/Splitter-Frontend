@@ -5,14 +5,16 @@ export default {
     blue4:'#DDEBFF',
     blue5:'#F8FBFF',
     blue4Rgba: 'rgba(221, 235, 255, 0.62)',
-    gray: '#707070',
-    lightGray:'#8E8E8F',
+    gray1: '#707070',
+    gray2:'#8E8E8F',
     gray3:'#EAEAEA',
     gray4:'#FAFAFA',
     gray5:"rgba(242, 242, 242, 0.57)",
-    lightestRed: '#FFF8F8',
-    lightRed: '#FFEFEF',
-    darkRed: '#B46464',
-    darkGreen:'#0C3B09',
-    lightGreen:'#D0F2E3'
+    gray6: '#C1C1C1',
+    red4: '#FCD5D5',
+    red3: '#FFF8F8',
+    red2: '#FFEFEF',
+    red1: '#B46464',
+    green1:'#0C3B09',
+    green2:'#D0F2E3'
 };

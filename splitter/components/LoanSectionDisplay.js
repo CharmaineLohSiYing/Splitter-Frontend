@@ -60,7 +60,7 @@ const LoanSectionDisplay = (props) => {
               : "They still owe you..."}
           </Text>
         </View>
-        <View style={[styles.totalContainer, {backgroundColor: type === "borrowedFrom" ? Colors.lightRed : Colors.blue3}]}>
+        <View style={[styles.totalContainer, {backgroundColor: type === "borrowedFrom" ? Colors.red4 : Colors.blue3}]}>
           <Text style={styles.total}>
             ${total.toFixed(2)}
           </Text>
@@ -84,7 +84,7 @@ const LoanSectionDisplay = (props) => {
         styles.container,
         {
           backgroundColor:
-            type === "borrowedFrom" ? Colors.lightestRed : Colors.blue5,
+            type === "borrowedFrom" ? Colors.red3 : Colors.blue5,
         },
       ]}
       ListHeaderComponent={Header}
@@ -94,7 +94,7 @@ const LoanSectionDisplay = (props) => {
       initialNumToRender={5}
       renderItem={({ item }) => (
         <LoanDisplay
-          nameColor={type === "borrowedFrom" ? Colors.darkRed : Colors.blue1}
+          nameColor={type === "borrowedFrom" ? Colors.red1 : Colors.blue1}
           friendName={item.name}
           debt={item.debt}
           friendUserId={item.userId}
@@ -107,16 +107,16 @@ const LoanSectionDisplay = (props) => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 20,
-    margin: 5,
-    elevation: 2,
+    paddingTop: 15,
+    elevation: 3,
+    marginBottom: 20
   },
   friend: {
     textDecorationStyle: "solid",
   },
   headerContainer: {
     paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingBottom: 5,
     flexDirection: "row",
     justifyContent: "space-between",
   },

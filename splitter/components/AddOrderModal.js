@@ -89,7 +89,7 @@ const AddOrderModal = (props) => {
   };
 
   const HeaderComponent = () => (
-    <View style={{ paddingBottom: 10, paddingHorizontal: 5 }}>
+    <View style={{ paddingVertical: 10, paddingHorizontal: 5 }}>
       <Text style={styles.selectSharersTitle}>Who shared?</Text>
     </View>
   );
@@ -290,6 +290,7 @@ const AddOrderModal = (props) => {
         onClose={props.onClose}
         onSubmit={onSubmit}
         contentsStyle={styles.individualOrderModalContents}
+        modalViewStyle={{flex:1}}
       >
         <CalculatorComponent />
       </AppModal>
@@ -297,6 +298,7 @@ const AddOrderModal = (props) => {
   } else if (updatePayer) {
     return (
       <AppModal
+        modalViewStyle={{flex:1}}
         title={
           matchedUser.name === "Me"
             ? "How Much I Paid"
@@ -311,9 +313,9 @@ const AddOrderModal = (props) => {
     );
   }
 
+  // add/update shared order
   return (
-    <AppModal title="Add Order" onClose={props.onClose} onSubmit={onSubmit}>
-      <View style={styles.selectSharers}>
+    <AppModal title="Add Order" onClose={props.onClose} onSubmit={onSubmit} contentsStyle={{flex: 1}} modalViewStyle={{flex:1}}>
         <FlatList
           ItemSeparatorComponent={ItemSeparator}
           ListHeaderComponent={HeaderComponent}
@@ -332,7 +334,6 @@ const AddOrderModal = (props) => {
             />
           )}
         />
-      </View>
     </AppModal>
   );
 };
@@ -341,19 +342,18 @@ const styles = StyleSheet.create({
   sharedOrderCalculator: {
     width: "70%",
     height: 300,
+    marginBottom: 10
   },
   individualOrderCalculator: {
     width: "100%",
-    height: 400,
+    // height: 400,
     borderWidth: 0,
   },
   individualOrderModalContents: {
-    paddingVertical: 0,
     height: "100%",
     width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-    // backgroundColor:'yellow'
+    justifyContent: "flex-end",
+    flex: 1,
   },
 });
 

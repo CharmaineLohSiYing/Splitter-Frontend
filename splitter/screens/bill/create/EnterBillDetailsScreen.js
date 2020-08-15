@@ -33,6 +33,7 @@ import DatePicker from "../../../components/UI/DatePicker";
 import { Layout, Radio, CheckBox } from "@ui-kitten/components";
 import CurrencyInput from "../../../components/UI/CurrencyInput";
 import CreateBillHeader from "../../../components/CreateBillHeader";
+import Screen from "../../../components/UI/Screen"
 
 const EnterBillDetailsScreen = (props) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -175,7 +176,7 @@ const EnterBillDetailsScreen = (props) => {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <Screen style={{paddingTop: 0}}>
       <CreateBillHeader
         displayProceed={true}
         progress={3}
@@ -189,7 +190,7 @@ const EnterBillDetailsScreen = (props) => {
               <LabelLeft label="Event Name" />
               <InputRight style={{ flex: 2 }}>
                 <TextInput
-                  style={{ flex: 1, textAlign: "right" }}
+                  style={{ flex: 1, textAlign: "right", borderRadius: 15, paddingHorizontal: 10 }}
                   value={billName}
                   onChangeText={setBillName}
                   placeholder="Optional"
@@ -211,16 +212,16 @@ const EnterBillDetailsScreen = (props) => {
             </FormRow>
             <FormRow>
               <LabelLeft label="Total Bill before taxes" />
-              <InputRight>
+              <InputRight style={{paddingRight: 15}}>
                 <Text>$ {totalBill}</Text>
               </InputRight>
             </FormRow>
             <FormRow>
               <LabelLeft label="GST" />
-              <InputRight>
+              <InputRight style={{paddingRight: 15}}>
                 <Switch
                   trackColor={{ false: "#767577", true: "#81b0ff" }}
-                  thumbColor={addGST ? "#f5dd4b" : "#f4f3f4"}
+                  thumbColor={addGST ?  Colors.blue1 : "#f4f3f4"}
                   ios_backgroundColor="#3e3e3e"
                   onValueChange={() => setAddGST((prev) => !prev)}
                   value={addGST}
@@ -229,10 +230,10 @@ const EnterBillDetailsScreen = (props) => {
             </FormRow>
             <FormRow>
               <LabelLeft label="Service Charge" />
-              <InputRight>
+              <InputRight style={{paddingRight: 15}}>
                 <Switch
                   trackColor={{ false: "#767577", true: "#81b0ff" }}
-                  thumbColor={addServiceCharge ? "#f5dd4b" : "#f4f3f4"}
+                  thumbColor={addServiceCharge ? Colors.blue1 : "#f4f3f4"}
                   ios_backgroundColor="#3e3e3e"
                   onValueChange={() => setAddServiceCharge((prev) => !prev)}
                   value={addServiceCharge}
@@ -255,14 +256,14 @@ const EnterBillDetailsScreen = (props) => {
               <View style={{flex: 1, padding: 10}}>
                 <Text style={{fontStyle:'italic', fontSize: 16, fontWeight:'bold'}}>Total Paid</Text>
               </View>
-              <View style={{flex: 1, padding: 10, alignItems:'flex-end'}}>
+              <View style={{flex: 1, paddingVertical: 10, paddingHorizontal: 15, alignItems:'flex-end'}}>
                 <Text style={{fontStyle:'italic', fontSize: 16, fontWeight:'bold'}}>$ {netBill}</Text>
               </View>
             </FormRow>
           </View>
         </View>
       </View>
-    </View>
+    </Screen>
   );
 };
 

@@ -26,20 +26,10 @@ import AddOrderModal from "../../../components/AddOrderModal";
 import FormRow from "../../../components/UI/FormRow";
 import LabelLeft from "../../../components/UI/LabelLeft";
 import InputRight from "../../../components/UI/InputRight";
+import Screen from "../../../components/UI/Screen"
+import FlatListLineSeparator from "../../../components/UI/FlatListLineSeparator"
 
 import { useSelector, useDispatch } from "react-redux";
-
-const ItemSeparator = () => {
-  return (
-    <View
-      style={{
-        height: 1,
-        width: "100%",
-        backgroundColor: Colors.blue3,
-      }}
-    ></View>
-  );
-};
 
 const AddPayersScreen = (props) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -145,7 +135,7 @@ const AddPayersScreen = (props) => {
   }
 
   return (
-    <SafeAreaView style={styles.screen}>
+    <Screen style={{paddingTop: 0}}>
       <CreateBillHeader
         progress={4}
         displayProceed={true}
@@ -158,7 +148,7 @@ const AddPayersScreen = (props) => {
         ListHeaderComponent={PayerHeader}
         style={{width:'100%'}}
         contentContainerStyle={{paddingHorizontal:'5%', paddingVertical:20 }}
-        ItemSeparatorComponent={ItemSeparator}
+        ItemSeparatorComponent={FlatListLineSeparator}
         keyExtractor={(item, index) => index.toString()}
         data={Object.keys(attendees)}
         renderItem={({ item }) => (
@@ -166,8 +156,8 @@ const AddPayersScreen = (props) => {
             style={{
               backgroundColor:
                 attendees[item].paidAmount > 0 ? "white" : Colors.gray5,
-              // width:'90%'
             }}
+            nameTextColor={attendees[item].paidAmount > 0 ? "black" : Colors.gray2}
             onSelect={updatePaidAmountHandler}
             id={item}
             name={attendees[item].name}
@@ -186,7 +176,7 @@ const AddPayersScreen = (props) => {
           }}
         />
       )}
-    </SafeAreaView>
+    </Screen>
   );
 };
 
