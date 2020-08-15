@@ -15,6 +15,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { useSelector, useDispatch } from "react-redux";
 import moment from "moment";
+import Colors from "../constants/Colors"
 
 const ViewLogDisplay = (props) => {
   const date = moment(new Date(props.updatedAt)).format("D MMM YYYY");
@@ -33,10 +34,10 @@ const styles = StyleSheet.create({
   container: {
     borderWidth: 1,
     height: 30,
-    borderColor:'#ccc',
+    borderRadius: 15,
+    borderColor:Colors.blue3,
     alignItems:'center',
-    marginHorizontal:10,
-    paddingHorizontal:10,
+    padding:10,
     flexDirection:'row',
     justifyContent:'space-between'
   },

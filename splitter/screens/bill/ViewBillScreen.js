@@ -24,6 +24,9 @@ import { bindActionCreators } from "redux";
 import { Item, HeaderButtons } from "react-navigation-header-buttons";
 import CustomHeaderButton from "../../components/UI/CustomHeaderButton";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
+import Screen from "../../components/UI/Screen";
+import GlobalStyles from "../../assets/style";
+import FlatListLineSeparator from "../../components/UI/FlatListLineSeparator"
 
 const FlatListItemSeparator = () => {
   return (
@@ -35,7 +38,7 @@ const FlatListItemSeparator = () => {
       }}
     />
   );
-}
+};
 
 class ViewBillScreen extends React.Component {
   constructor(props) {
@@ -140,27 +143,30 @@ class ViewBillScreen extends React.Component {
       return (
         <View>
           <View style={styles.billDetailsContainer}>
-            <Text style={styles.billName}>
-              {this.state.bill.billName
-                ? this.state.bill.billName
-                : "Bill"}
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Text style={styles.billName}>
+                {this.state.bill.billName ? this.state.bill.billName : "Bill"}
+              </Text>
+              <Text style={styles.netBillText}>${this.state.bill.netBill.toFixed(2)}</Text>
+            </View>
+
+            <Text>
+              {moment(new Date(this.state.bill.date)).format("D MMM YYYY")}
             </Text>
-            <View style={styles.netBillContainer}>
-              <Text>${this.state.bill.netBill.toFixed(2)}</Text>
-            </View>
-            <View style={styles.subtitle}>
-              <Text>
-                {moment(new Date(this.state.bill.date)).format("D MMM YYYY")}
-              </Text>
-              <Text> | </Text>
-              <Text>
-                Created By{" "}
-                {this.state.matchedContacts[this.state.bill.createdBy]}
-              </Text>
-            </View>
+            <Text>
+              Created By {this.state.matchedContacts[this.state.bill.createdBy]}
+            </Text>
           </View>
-          <View style={styles.numAttendees}>
-              <Text style={styles.numAttendeesText}>{this.state.userBills.length} Attendees</Text>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionHeaderText}>
+              {this.state.userBills.length} Attendees
+            </Text>
           </View>
         </View>
       );
@@ -176,12 +182,12 @@ class ViewBillScreen extends React.Component {
   renderFooter = () => {
     return (
       <View style={styles.logsContainer}>
-        <View style={styles.numAttendees}>
-            <Text style={styles.numAttendeesText}>Logs</Text>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionHeaderText}>Bill Logs</Text>
         </View>
         <FlatList
           keyExtractor={(item, index) => index.toString()}
-          ItemSeparatorComponent = { FlatListItemSeparator }
+          ItemSeparatorComponent={FlatListItemSeparator}
           data={this.state.logs}
           renderItem={({ item }) => (
             <LogDisplay
@@ -202,53 +208,50 @@ class ViewBillScreen extends React.Component {
           <Item
             iconName="edit"
             onPress={this.editBillHandler}
-            color="white"
             iconSize={28}
             IconComponent={MaterialIcons}
           />
         </HeaderButtons>
       ),
-      headerLeft: () => (
-        <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
-          <Item
-            iconName="md-arrow-back"
-            onPress={() => this.props.navigation.goBack()}
-            color="white"
-            iconSize={28}
-            IconComponent={Ionicons}
-          />
-        </HeaderButtons>
-      ),
+      // headerLeft: () => (
+      //   <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+      //     <Item
+      //       iconName="md-arrow-back"
+      //       onPress={() => this.props.navigation.goBack()}
+      //       iconSize={28}
+      //       IconComponent={Ionicons}
+      //     />
+      //   </HeaderButtons>
+      // ),
     });
 
     return (
-      <View>
+      <Screen>
         {!this.state.isLoading && this.state.bill ? (
-          <View>
-              <FlatList
-                keyExtractor={(item, index) => index.toString()}
-                data={this.state.userBills}
-                ListHeaderComponent={this.renderHeader}
-                ListFooterComponent={this.renderFooter}
-                ItemSeparatorComponent = { FlatListItemSeparator }
-                renderItem={({ item }) => (
-                  <ViewUserBillDisplay
-                    sharedOrders={item.sharedOrders}
-                    editBill={this.editBillHandler}
-                    billId={item.bill._id}
-                    individualOrderAmount={item.individualOrderAmount}
-                    amountPaid={item.amountPaid}
-                    loans={this.state.loans}
-                    userId={item.user._id}
-                    matchedContacts={this.state.matchedContacts}
-                  />
-                )}
+          <FlatList
+            ItemSeparatorComponent={FlatListLineSeparator}
+            style={{...GlobalStyles.flatlist}}
+            keyExtractor={(item, index) => index.toString()}
+            data={this.state.userBills.concat(this.state.userBills)}
+            ListHeaderComponent={this.renderHeader}
+            ListFooterComponent={this.renderFooter}
+            renderItem={({ item }) => (
+              <ViewUserBillDisplay
+                sharedOrders={item.sharedOrders}
+                editBill={this.editBillHandler}
+                billId={item.bill._id}
+                individualOrderAmount={item.individualOrderAmount}
+                amountPaid={item.amountPaid}
+                loans={this.state.loans}
+                userId={item.user._id}
+                matchedContacts={this.state.matchedContacts}
               />
-          </View>
+            )}
+          />
         ) : (
           <ActivityIndicator size="small" color={Colors.blue1} />
         )}
-      </View>
+      </Screen>
     );
   }
 }
@@ -257,15 +260,14 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
   },
-  numAttendees:{
-    marginHorizontal: 20,
-    marginVertical:10
-  },  
-  numAttendeesText:{
-    fontWeight:'bold',
+  sectionHeader: {
+    marginVertical: 10,
+    paddingHorizontal: 10
+  },
+  sectionHeaderText: {
+    fontWeight: "bold",
     fontSize: 18,
-    color:'#008F85'
-  },  
+  },
   gradient: {
     flex: 1,
     justifyContent: "center",
@@ -273,17 +275,13 @@ const styles = StyleSheet.create({
   },
   billDetailsContainer: {
     marginVertical: 20,
-    alignItems: "center",
+    paddingTop: 10,
+    paddingHorizontal:10
   },
-  netBillContainer: {
-    height: 30,
-    justifyContent:'center',
-    borderWidth: 2,
-    width: "50%",
-    alignItems: "center",
-    paddingHorizontal: 10,
-    marginVertical: 3,
-    borderColor: '#008F85',
+  netBillText:{
+    fontSize: 24,
+    fontWeight: "bold",
+    fontStyle:'italic'
   },
   buttonContainer: {
     marginTop: 10,
@@ -295,14 +293,13 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     fontSize: 22,
     fontWeight: "bold",
-    color: "#008F85",
   },
   subtitle: {
     flexDirection: "row",
   },
   logsContainer: {
-    marginVertical:10
-  }
+    marginVertical: 10,
+  },
 });
 const mapStateToProps = (state) => {
   const { userId, contacts } = state.auth;

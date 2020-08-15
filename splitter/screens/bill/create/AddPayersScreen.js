@@ -135,7 +135,7 @@ const AddPayersScreen = (props) => {
   }
 
   return (
-    <Screen style={{paddingTop: 0}}>
+    <Screen>
       <CreateBillHeader
         progress={4}
         displayProceed={true}

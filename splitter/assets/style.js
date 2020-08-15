@@ -36,7 +36,7 @@ export default StyleSheet.create({
   flatListLineSeparator: {
     height: 1,
     width: "100%",
-    backgroundColor: "#ccc",
+    backgroundColor: Colors.gray3,
     opacity: 0.5,
   },
   modalTextInput:{
@@ -44,5 +44,13 @@ export default StyleSheet.create({
     borderRadius: 15,
     height: 40,
     paddingHorizontal: 10
+  },
+  amountContainer:{
+    minWidth: 100,
+    paddingHorizontal: 5,
+    paddingVertical:3,
+    backgroundColor: Colors.blue3,
+    alignItems: "center",
+    borderRadius: 15,
   }
 });

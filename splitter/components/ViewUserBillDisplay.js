@@ -15,30 +15,35 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { useSelector, useDispatch } from "react-redux";
 import { MaterialIcons, Ionicons, Feather } from "@expo/vector-icons";
+import Colors from "../constants/Colors";
+import Avatar from "../components/Avatar";
+import GlobalStyles from "../assets/style"
 
 const ViewUserBillDisplay = (props) => {
   const [expanded, setExpanded] = useState(false);
+  const {loans, amountPaid} = props
 
-  var individualTotal = props.individualOrderAmount;
+  let individualTotal = props.individualOrderAmount;
   props.sharedOrders.forEach((sharedOrder) => {
     individualTotal += parseFloat(
       (sharedOrder.amount / sharedOrder.users.length).toFixed(2)
     );
   });
 
-  const loans = props.loans;
+  const netDebt = individualTotal - amountPaid;
+  
   const matchedContacts = props.matchedContacts;
 
   const userName = matchedContacts[props.userId];
 
   const LoanDisplay = (amount, payerId, payeeId) => {
-    var payer = matchedContacts[payerId];
-    var payee = matchedContacts[payeeId];
+    let payer = matchedContacts[payerId];
+    let payee = matchedContacts[payeeId];
     if (props.userId === payerId) {
       return (
         <View>
           <Text>
-            To pay {payee} ${amount.toString()}
+            To pay {payee} <Text style={{fontWeight:'bold'}}>${amount.toString()}</Text>
           </Text>
         </View>
       );
@@ -46,7 +51,7 @@ const ViewUserBillDisplay = (props) => {
       return (
         <View>
           <Text>
-            To receive ${amount.toString()} from {payer}
+            To collect from {payer} <Text style={{fontWeight:'bold'}}>${amount.toString()} </Text>
           </Text>
         </View>
       );
@@ -58,10 +63,37 @@ const ViewUserBillDisplay = (props) => {
   };
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity style={styles.mainContainer} onPress={toggle} activeOpacity={0.9}>
-        <Text>{userName}</Text>
-        {expanded ? (
+    <TouchableOpacity
+      style={[
+        styles.container,
+        { backgroundColor: expanded ? "white" : Colors.gray4 },
+      ]}
+      onPress={toggle}
+      activeOpacity={0.9}
+    >
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          paddingVertical: 10,
+          justifyContent: "space-between",
+        }}
+      >
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <Avatar />
+          <Text style={{ fontWeight: "bold" }}>{userName}</Text>
+        </View>
+        <View style={[GlobalStyles.amountContainer, {borderWidth: 1, borderColor: netDebt > 0 ? Colors.red1 : Colors.green1, backgroundColor: netDebt > 0 ? Colors.red2 : Colors.green2}]}>
+          <Text style={[{fontWeight: 'bold', color: netDebt > 0 ? Colors.red1 : Colors.green1}]}>${netDebt}</Text>
+        </View>
+      </View>
+
+      {/* {expanded ? (
           <Feather name="minus" size={24} color="black" style={styles.toggle} />
         ) : (
           <Ionicons
@@ -70,12 +102,12 @@ const ViewUserBillDisplay = (props) => {
             color="black"
             style={styles.toggle}
           />
-        )}
-      </TouchableOpacity>
+        )} */}
+
       {expanded && (
         <View style={styles.detailsContainer}>
-          <Text>Expenditure: ${individualTotal}</Text>
-          <Text>Amount paid: ${props.amountPaid}</Text>
+          {individualTotal > 0 && <Text>Spent ${individualTotal}</Text>}
+          {props.amountPaid > 0 && <Text>Settled the bill ${props.amountPaid}</Text>}
           <FlatList
             keyExtractor={(item, index) => index.toString()}
             data={loans}
@@ -85,31 +117,23 @@ const ViewUserBillDisplay = (props) => {
           />
         </View>
       )}
-    </View>
+    </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: 10,
-    borderColor: "#A9B7DB",
-    borderWidth: 2,
-  },
-  mainContainer: {
-    paddingLeft: 10,
-    backgroundColor: "#A9B7DB",
-    height: 30,
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "space-between",
+    paddingHorizontal: 10,
   },
   detailsContainer: {
     paddingVertical: 10,
-    paddingLeft: 10,
+    paddingLeft: 50,
   },
-  toggle: {
-    paddingRight: 10,
-  },
+  netAmount:{
+    borderRadius: 15,
+    borderWidth: 2,
+
+  }
 });
 
 export default ViewUserBillDisplay;

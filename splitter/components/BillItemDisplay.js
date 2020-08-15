@@ -17,19 +17,10 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useSelector, useDispatch } from "react-redux";
 import moment from "moment";
 import Colors from "../constants/Colors";
+import GlobalStyles from "../assets/style"
 import { BoxShadow } from "react-native-shadow";
 const screenWidth = Dimensions.get("window").width;
 
-const shadowOpt = {
-  width: screenWidth,
-  height: 40,
-  color: "#000",
-  border: 2,
-  radius: 3,
-  opacity: 0.1,
-  x: 0,
-  y: 1,
-};
 
 const BillItemDisplay = (props) => {
   let totalExpenditure = props.individualOrderAmount;
@@ -50,7 +41,7 @@ const BillItemDisplay = (props) => {
         <Text style={styles.billName}>
           {props.billName ? props.billName : "Bill"}
         </Text>
-        <View style={styles.netBillContainer}>
+        <View style={GlobalStyles.amountContainer}>
           <Text>${totalExpenditure.toFixed(2)}</Text>
         </View>
       </View> 
@@ -79,14 +70,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 5,
-  },
-  netBillContainer: {
-    minWidth: 100,
-    paddingHorizontal: 5,
-    paddingVertical:3,
-    backgroundColor: Colors.blue3,
-    alignItems: "center",
-    borderRadius: 15,
   },
 });
 

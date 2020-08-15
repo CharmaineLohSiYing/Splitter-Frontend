@@ -169,7 +169,7 @@ const AddOrdersScreen = (props) => {
   }
 
   return (
-    <Screen style={{paddingTop: 0}}>
+    <Screen>
       <CreateBillHeader
         displayProceed={true}
         progress={2}
