@@ -18,6 +18,9 @@ import Input from "../../../components/UI/Input";
 import Card from "../../../components/UI/Card";
 import Colors from "../../../constants/Colors";
 import * as authActions from "../../../store/actions/auth";
+import Screen from "../../../components/UI/Screen";
+import Content from "../../../components/UI/Content";
+import LongButton from "../../../components/UI/LongButton";
 
 const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
 
@@ -44,19 +47,17 @@ const formReducer = (state, action) => {
   return state;
 };
 
-
 const UpdateDetailsScreen = (props) => {
-
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
 
   const userId = useSelector((state) => state.auth.userId);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const [formState, dispatchFormState] = useReducer(formReducer, {
     inputValues: {
       firstName: props.route.params.firstName,
-      lastName:props.route.params.lastName,
+      lastName: props.route.params.lastName,
     },
     inputValidities: {
       firstName: true,
@@ -64,7 +65,6 @@ const UpdateDetailsScreen = (props) => {
     },
     formIsValid: true,
   });
-
 
   const inputChangeHandler = useCallback(
     (inputIdentifier, inputValue, inputValidity) => {
@@ -78,7 +78,6 @@ const UpdateDetailsScreen = (props) => {
     [dispatchFormState]
   );
 
-
   useEffect(() => {
     if (error) {
       Alert.alert("An Error Occurred!", error, [{ text: "Okay" }]);
@@ -89,59 +88,61 @@ const UpdateDetailsScreen = (props) => {
     setError(null);
     setIsLoading(true);
     try {
-      await dispatch(authActions.updateDetails(formState.inputValues.firstName, formState.inputValues.lastName))
-      setIsLoading(false)
-      props.navigation.goBack()
+      await dispatch(
+        authActions.updateDetails(
+          formState.inputValues.firstName,
+          formState.inputValues.lastName
+        )
+      );
+      setIsLoading(false);
+      props.navigation.goBack();
     } catch (err) {
-      setIsLoading(false)
+      setIsLoading(false);
       setError(err.message);
     }
-  }
-
+  };
 
   return (
-    <KeyboardAvoidingView
+    <Screen
       // behavior="padding"
       keyboardVerticalOffset={0}
       style={styles.screen}
     >
-      <LinearGradient colors={["#ffedff", "#ffe3ff"]} style={styles.gradient}>
-        <Card style={styles.authContainer}>
+      <Content style={{ justifyContent: "space-between", paddingVertical: 20 }}>
+        <View>
           <Input
-              id="firstName"
-              label="First Name"
-              required
-              autoCapitalize="words"
-              errorText="Please enter a valid first name."
-              onInputChange={inputChangeHandler}
-              initialValue={props.route.params.firstName}
-              initiallyValid={true}
-            />
+            horizontal={true}
+            id="firstName"
+            label="First Name"
+            required
+            autoCapitalize="words"
+            errorText="Please enter a valid first name."
+            onInputChange={inputChangeHandler}
+            initialValue={props.route.params.firstName}
+            initiallyValid={true}
+          />
           <Input
-              id="lastName"
-              label="Last Name"
-              required
-              autoCapitalize="words"
-              errorText="Please enter a valid last name."
-              onInputChange={inputChangeHandler}
-              initialValue={props.route.params.lastName}
-              initiallyValid={true}
-            />
-          <View style={styles.buttonContainer}>
-            {isLoading ? (
-              <ActivityIndicator size="small" color={Colors.blue1} />
-            ) : (
-              <Button
-                title="Update"
-                color={Colors.blue1}
-                onPress={submitHandler}
-                disabled={!formState.formIsValid}
-              />
-            )}
-          </View>
-        </Card>
-      </LinearGradient>
-    </KeyboardAvoidingView>
+            horizontal={true}
+            id="lastName"
+            label="Last Name"
+            required
+            autoCapitalize="words"
+            errorText="Please enter a valid last name."
+            onInputChange={inputChangeHandler}
+            initialValue={props.route.params.lastName}
+            initiallyValid={true}
+          />
+        </View>
+
+        <LongButton
+          text="Save Changes"
+          onPress={submitHandler}
+          isLoading={isLoading}
+          disabled={!formState.formIsValid}
+          containerStyle={{marginBottom: 10}}
+        />
+      </Content>
+    </Screen>
   );
 };
 
@@ -163,9 +164,6 @@ const styles = StyleSheet.create({
     maxWidth: 400,
     maxHeight: 400,
     padding: 20,
-  },
-  buttonContainer: {
-    marginTop: 10,
   },
 });
 

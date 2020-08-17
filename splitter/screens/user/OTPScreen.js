@@ -50,7 +50,7 @@ const OTPScreen = (props) => {
       try {
         setError(null);
         setIsLoading(true);
-        const response = await fetch("http://192.168.1.190:5000/auth/verifyotp", {
+        const response = await fetch("http://192.168.1.231:5000/auth/verifyotp", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

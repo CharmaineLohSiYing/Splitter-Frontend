@@ -131,7 +131,7 @@ const ContactsListScreen = (props) => {
 
   return (
     <Screen>
-      <SearchBar handleSearch={handleSearch} query={query} />
+      <SearchBar handleSearch={handleSearch} query={query} style={{marginTop: 20}}/>
       <SearchableFlatList
         style={GlobalStyles.flatlist}
         data={contactsArr}

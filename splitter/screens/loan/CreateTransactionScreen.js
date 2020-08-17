@@ -25,7 +25,7 @@ const CreateTransactionScreen = (props) => {
     setError(null);
     try {
       const response = await fetch(
-        "http://192.168.1.190:5000/transaction/" +
+        "http://192.168.1.231:5000/transaction/" +
           currUserId +
           "/" +
           friendUserId,

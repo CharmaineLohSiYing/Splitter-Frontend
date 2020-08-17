@@ -17,6 +17,10 @@ import { useDispatch } from "react-redux";
 import Input from "../../../components/UI/Input";
 import Card from "../../../components/UI/Card";
 import Colors from "../../../constants/Colors";
+import LongButton from "../../../components/UI/LongButton";
+import ErrorMessage from "../../../components/UI/ErrorMessage";
+import Screen from "../../../components/UI/Screen";
+import Content from "../../../components/UI/Content";
 import * as authActions from "../../../store/actions/auth";
 
 const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
@@ -44,7 +48,6 @@ const formReducer = (state, action) => {
   return state;
 };
 
-
 const UpdateMobileNumberScreen = (props) => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
@@ -62,7 +65,6 @@ const UpdateMobileNumberScreen = (props) => {
     formIsValid: true,
   });
 
-
   const inputChangeHandler = useCallback(
     (inputIdentifier, inputValue, inputValidity) => {
       dispatchFormState({
@@ -74,7 +76,6 @@ const UpdateMobileNumberScreen = (props) => {
     },
     [dispatchFormState]
   );
-
 
   useEffect(() => {
     if (error) {
@@ -88,7 +89,7 @@ const UpdateMobileNumberScreen = (props) => {
     setIsLoading(true);
     try {
       const response = await fetch(
-        "http://192.168.1.190:5000/auth/requestOTP",
+        "http://192.168.1.231:5000/auth/requestOTP",
         {
           method: "POST",
           headers: {
@@ -96,62 +97,50 @@ const UpdateMobileNumberScreen = (props) => {
           },
           body: JSON.stringify({
             userId,
-            mobileNumber: formState.inputValues.mobileNumber
+            mobileNumber: formState.inputValues.mobileNumber,
           }),
         }
       );
-      
-      if (!response.ok){
-        setIsLoading(false)
-        setError(await response.json())
+
+      if (!response.ok) {
+        setIsLoading(false);
+        setError(await response.json());
       } else {
-        setIsLoading(false)
-        props.navigation.navigate('AccountOTP', {changeMobileNumber: true})
-      } 
-    
+        setIsLoading(false);
+        props.navigation.navigate("AccountOTP", { changeMobileNumber: true, mobileNumber: formState.inputValues.mobileNumber });
+      }
     } catch (err) {
-      setIsLoading(false)
+      setIsLoading(false);
       setError(err.message);
     }
-  }
-
+  };
 
   return (
-    <KeyboardAvoidingView
-      // behavior="padding"
-      keyboardVerticalOffset={0}
-      style={styles.screen}
-    >
-      <LinearGradient colors={["#ffedff", "#ffe3ff"]} style={styles.gradient}>
-        <Card style={styles.authContainer}>
+    <Screen>
+      <Content style={{paddingVertical:20, justifyContent: 'space-between'}}>
         <Input
-              id="mobileNumber"
-              label="Mobile Number"
-              keyboardType="number-pad"
-              required
-              numbers
-              minLength={8}
-              maxLength={8}
-              errorText="Please enter a valid mobile number."
-              onInputChange={inputChangeHandler}
-              initialValue={props.route.params.mobileNumber.toString()}
-              initiallyValid={true}
-            />
-          <View style={styles.buttonContainer}>
-            {isLoading ? (
-              <ActivityIndicator size="small" color={Colors.blue1} />
-            ) : (
-              <Button
-                title="Update"
-                color={Colors.blue1}
-                onPress={submitHandler}
-                disabled={!formState.formIsValid}
-              />
-            )}
-          </View>
-        </Card>
-      </LinearGradient>
-    </KeyboardAvoidingView>
+          horizontal={true}
+          id="mobileNumber"
+          label="New Number"
+          keyboardType="number-pad"
+          required
+          numbers
+          minLength={8}
+          maxLength={8}
+          errorText="Please enter a valid mobile number."
+          onInputChange={inputChangeHandler}
+          initialValue={props.route.params.mobileNumber.toString()}
+          initiallyValid={true}
+        />
+        <LongButton
+          containerStyle={{marginBottom: 10}}
+          text="Send OTP to new number"
+          onPress={submitHandler}
+          isLoading={isLoading}
+          disabled={!formState.formIsValid}
+        />
+      </Content>
+    </Screen>
   );
 };
 
@@ -160,23 +149,6 @@ UpdateMobileNumberScreen.navigationOptions = {
 };
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-  },
-  gradient: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  authContainer: {
-    width: "80%",
-    maxWidth: 400,
-    maxHeight: 400,
-    padding: 20,
-  },
-  buttonContainer: {
-    marginTop: 10,
-  },
 });
 
 export default UpdateMobileNumberScreen;

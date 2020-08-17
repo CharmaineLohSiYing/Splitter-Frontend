@@ -126,6 +126,7 @@ const BillsScreen = (props) => {
         <Ionicons name="md-add" size={24} color="white" />
       </TouchableOpacity>
       <FlatList
+      contentContainerStyle={{marginTop: 20}}
         style={GlobalStyles.flatlist}
         keyExtractor={(item, index) => index.toString()}
         data={userBills}

@@ -13,22 +13,29 @@ import {
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { LinearGradient } from "expo-linear-gradient";
-import * as authActions from "../../../store/actions/auth"
-
+import * as authActions from "../../../store/actions/auth";
+import Screen from "../../../components/UI/Screen";
+import AvatarName from "../../../components/AvatarName";
 
 import Card from "../../../components/UI/Card";
+import Avatar from "../../../components/Avatar";
+import Content from "../../../components/UI/Content";
+import Colors from "../../../constants/Colors"
+import { MaterialIcons, Ionicons } from "@expo/vector-icons";
+import LongButton from "../../../components/UI/LongButton"
+
 
 const SettingsScreen = (props) => {
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.auth.user)
+  const user = useSelector((state) => state.auth.user);
   const options = (text, screenName) => {
     var param = {};
     switch (screenName) {
       case "UpdateDetails":
         param = {
           firstName: user.firstName,
-          lastName: user.lastName
-        }
+          lastName: user.lastName,
+        };
         break;
       case "UpdateEmail":
         param = {
@@ -50,33 +57,34 @@ const SettingsScreen = (props) => {
         onPress={() => props.navigation.navigate(screenName, param)}
         style={styles.buttonContainer}
       >
-        <Card style={styles.authContainer}>
-          <View>
-            <Text>{text}</Text>
-          </View>
-        </Card>
+        <View style={styles.optionContainer}>
+          <Ionicons name="md-person" size={22} color="black" style={{flex: 1}}/>
+          <Text style={styles.nameText}>{text}</Text>
+        </View>
       </TouchableOpacity>
     );
   };
 
   return (
-    <KeyboardAvoidingView
+    <Screen
       // behavior="padding"
       keyboardVerticalOffset={0}
       style={styles.screen}
     >
-      <LinearGradient colors={["#ffedff", "#ffe3ff"]} style={styles.gradient}>
-        <Text>Account Settings</Text>
-        <TouchableOpacity onPress={() => {dispatch(authActions.logout())}} style={{height: 50, width: '100%'}}>
-          <Text>Log Out</Text>
-        </TouchableOpacity>
-        {options("Update Details", "UpdateDetails")}
-        {options("Update Password", "UpdatePassword")}
-        {options("Update Mobile Number", "UpdateMobileNumber")}
-        {options("Update Email", "UpdateEmail")}
-        
-      </LinearGradient>
-    </KeyboardAvoidingView>
+      <Content>
+        <AvatarName
+          name={user.firstName + " " + user.lastName}
+          style={{ padding: 10, width: "100%", marginTop: 10}}
+          avatarContainerStyle={{flex: 1}}
+          textStyle={{fontStyle:'italic', fontWeight: 'bold', fontSize: 20, flex: 4}}
+        />
+        {options("Update Account Details", "UpdateDetails")}
+        {options("Change Password", "UpdatePassword")}
+        {options("Change Mobile Number", "UpdateMobileNumber")}
+        {options("Change Email Address", "UpdateEmail")}
+        <LongButton onPress={() => {dispatch(authActions.logout())}} text="Log Out"/>
+      </Content>
+    </Screen>
   );
 };
 
@@ -99,10 +107,21 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   buttonContainer: {
-    width: "90%",
     marginTop: 10,
     justifyContent: "center",
   },
+  optionContainer:{
+    borderBottomWidth: 1,
+    borderBottomColor:Colors.gray3,
+    height: 50,
+    flexDirection:'row',
+    alignItems:'center',
+    paddingHorizontal: 20
+  },
+  nameText:{
+    flex: 4,
+  },
+
 });
 
 export default SettingsScreen;

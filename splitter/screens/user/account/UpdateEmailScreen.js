@@ -17,6 +17,10 @@ import { useDispatch } from "react-redux";
 import Input from "../../../components/UI/Input";
 import Card from "../../../components/UI/Card";
 import Colors from "../../../constants/Colors";
+import LongButton from "../../../components/UI/LongButton";
+import ErrorMessage from "../../../components/UI/ErrorMessage";
+import Screen from "../../../components/UI/Screen";
+import Content from "../../../components/UI/Content";
 import * as authActions from "../../../store/actions/auth";
 
 const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
@@ -47,7 +51,7 @@ const formReducer = (state, action) => {
 const UpdateEmailScreen = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const userId = useSelector((state) => state.auth.userId);
 
   const [formState, dispatchFormState] = useReducer(formReducer, {
@@ -82,75 +86,43 @@ const UpdateEmailScreen = (props) => {
     setError(null);
     setIsLoading(true);
     try {
-      await dispatch(authActions.updateEmail(formState.inputValues.email))
-      setIsLoading(false)
-      props.navigation.goBack()
+      await dispatch(authActions.updateEmail(formState.inputValues.email));
+      setIsLoading(false);
+      props.navigation.goBack();
     } catch (err) {
-      setIsLoading(false)
+      setIsLoading(false);
       setError(err.message);
     }
-  }
+  };
 
   return (
-    <KeyboardAvoidingView
-      // behavior="padding"
-      keyboardVerticalOffset={0}
-      style={styles.screen}
-    >
-      <LinearGradient colors={["#ffedff", "#ffe3ff"]} style={styles.gradient}>
-        <Card style={styles.authContainer}>
-          <Input
-            id="email"
-            label="E-Mail"
-            keyboardType="email-address"
-            required
-            email
-            autoCapitalize="none"
-            errorText="Please enter a valid email address."
-            onInputChange={inputChangeHandler}
-            initialValue={props.route.params.email}
-            initiallyValid={true}
-          />
-          <View style={styles.buttonContainer}>
-            {isLoading ? (
-              <ActivityIndicator size="small" color={Colors.blue1} />
-            ) : (
-              <Button
-                title="Update"
-                color={Colors.blue1}
-                onPress={submitHandler}
-                disabled={!formState.formIsValid}
-              />
-            )}
-          </View>
-        </Card>
-      </LinearGradient>
-    </KeyboardAvoidingView>
+    <Screen>
+      <Content style={{ paddingVertical: 20, justifyContent: "space-between" }}>
+        <Input
+          id="email"
+          horizontal={true}
+          label="New Email"
+          keyboardType="email-address"
+          required
+          email
+          autoCapitalize="none"
+          errorText="Please enter a valid email address."
+          onInputChange={inputChangeHandler}
+          initialValue={props.route.params.email}
+          initiallyValid={true}
+        />
+        <LongButton
+          containerStyle={{marginBottom: 10}}
+          text="Save Changes "
+          onPress={submitHandler}
+          isLoading={isLoading}
+          disabled={!formState.formIsValid}
+        />
+      </Content>
+    </Screen>
   );
 };
 
-UpdateEmailScreen.navigationOptions = {
-  headerTitle: "Authenticate",
-};
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-  },
-  gradient: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  authContainer: {
-    width: "80%",
-    maxWidth: 400,
-    maxHeight: 400,
-    padding: 20,
-  },
-  buttonContainer: {
-    marginTop: 10,
-  },
-});
+const styles = StyleSheet.create({});
 
 export default UpdateEmailScreen;

@@ -4,7 +4,7 @@ import GlobalStyles from "../../assets/style"
 
 const SearchBar = (props) => {
   return (
-    <View style={GlobalStyles.searchBar}>
+    <View style={[GlobalStyles.searchBar, props.style]}>
         <View style={GlobalStyles.searchBarIcon}></View>
         <TextInput
           style={{flex: 1}}

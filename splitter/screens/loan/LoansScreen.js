@@ -123,8 +123,9 @@ const LoansScreen = (props) => {
         <Ionicons name="md-add" size={24} color="white" />
       </TouchableOpacity>
 
-      <SearchBar handleSearch={handleSearch} query={query}/>
+      <SearchBar handleSearch={handleSearch} query={query} style={{marginTop: 20}}/>
       <SectionList
+        contentContainerStyle={{paddingTop: 10}}
         style={GlobalStyles.flatlist}
         onRefresh={loadLoans}
         refreshing={isRefreshing}
