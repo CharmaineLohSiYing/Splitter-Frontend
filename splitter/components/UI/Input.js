@@ -69,6 +69,26 @@ const Input = (props) => {
     dispatch({ type: INPUT_BLUR });
   };
 
+  if (props.login){
+    return (
+      <View style={props.style}>
+          <TextInput
+            placeholder={props.label}
+            placeholderTextColor='rgba(25,4,4,0.5)'
+            {...props}
+            value={inputState.value}
+            onChangeText={textChangeHandler}
+            onFocus={lostFocusHandler}
+          />
+  
+        {!inputState.isValid && inputState.touched && (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>{props.errorText}</Text>
+          </View>
+        )}
+      </View>
+    );
+  }
   if (props.horizontal){
     return (
       <View>
@@ -98,7 +118,7 @@ const Input = (props) => {
       {props.label && <MyAppText style={styles.label}>{props.label}</MyAppText>}
       <TextInput
         {...props}
-        style={styles.input}
+        style={styles.inputHorizontal}
         value={inputState.value}
         onChangeText={textChangeHandler}
         onFocus={lostFocusHandler}

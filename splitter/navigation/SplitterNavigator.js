@@ -86,12 +86,13 @@ export const AuthNavigator = ({ navigation }) => {
   return (
     <AuthStackNavigator.Navigator screenOptions={{ headerShown: false }}>
       <AuthStackNavigator.Screen name="Login" component={LoginScreen} />
-      <AuthStackNavigator.Screen name="Register" component={RegisterScreen} />
+      <AuthStackNavigator.Screen name="Register" component={RegisterScreen} options={{headerShown: true, headerTitle: '', headerTransparent: true}}/>
       <AuthStackNavigator.Screen
         name="Verify"
         component={VerifyMobileNumberScreen}
+        options={{headerShown: true, headerTitle: '', headerTransparent: true}}
       />
-      <AuthStackNavigator.Screen name="OTP" component={OTPScreen} />
+      <AuthStackNavigator.Screen name="OTP" component={OTPScreen} options={{headerShown: true, headerTitle: '', headerTransparent: true}}/>
     </AuthStackNavigator.Navigator>
   );
 };

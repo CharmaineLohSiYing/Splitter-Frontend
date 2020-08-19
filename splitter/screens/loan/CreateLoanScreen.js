@@ -40,7 +40,7 @@ const CreateLoanScreen = (props) => {
     setError(null);
     try {
       const response = await fetch(
-        "http://192.168.1.231:5000/loan/" +
+        "http://192.168.1.190:5000/loan/" +
           currUserId +
           "/" +
           friendUserId,

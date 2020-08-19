@@ -2,19 +2,21 @@ import React, { useState, useEffect, useReducer, useCallback } from "react";
 import {
   ScrollView,
   View,
-  KeyboardAvoidingView,
   StyleSheet,
   Button,
   ActivityIndicator,
   Alert,
+  Text,
+  TextInput,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { useDispatch } from "react-redux";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 import Input from "../../components/UI/Input";
-import Card from "../../components/UI/Card";
 import Colors from "../../constants/Colors";
 import * as authActions from "../../store/actions/auth";
+import Content from "../../components/UI/Content";
+import LongButton from "../../components/UI/LongButton"
 
 const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
 
@@ -73,12 +75,13 @@ const AuthScreen = (props) => {
   }, [error]);
 
   const authHandler = () => {
-
     // console.log(formState.inputValues.retypePassword)
 
-    if (formState.inputValues.password !== formState.inputValues.retypePassword){
-      setError("Passwords do not match")
-      return; 
+    if (
+      formState.inputValues.password !== formState.inputValues.retypePassword
+    ) {
+      setError("Passwords do not match");
+      return;
     }
 
     setError(null);
@@ -92,11 +95,11 @@ const AuthScreen = (props) => {
       formState.inputValues.password,
       formState.inputValues.mobileNumber
     );
-    
+
     try {
       dispatch(action);
       setIsLoading(false);
-      props.navigation.navigate('OTP');
+      props.navigation.navigate("OTP", {mobileNumber: formState.inputValues.mobileNumber});
     } catch (err) {
       setError(err.message);
       setIsLoading(false);
@@ -116,14 +119,23 @@ const AuthScreen = (props) => {
   );
 
   return (
-    <KeyboardAvoidingView
+    <KeyboardAwareScrollView
       // behavior="padding"
-      keyboardVerticalOffset={0}
       style={styles.screen}
+      contentContainerStyle={{ alignItems: "center" }}
     >
-      <LinearGradient colors={["#ffedff", "#ffe3ff"]} style={styles.gradient}>
-        <Card style={styles.authContainer}>
-          <ScrollView>
+      <Content
+        style={{
+          width: "80%",
+          marginTop: 50,
+          justifyContent: "space-between",
+        }}
+      >
+        <View>
+          <View style={styles.header}>
+            <Text style={styles.headerTitle}>Hello there.</Text>
+          </View>
+          <View>
             <Input
               id="firstName"
               label="First Name"
@@ -187,46 +199,30 @@ const AuthScreen = (props) => {
               onInputChange={inputChangeHandler}
               initialValue=""
             />
-            <View style={styles.buttonContainer}>
-              {isLoading ? (
-                <ActivityIndicator size="small" color={Colors.blue1} />
-              ) : (
-                <Button
-                  title="Sign Up"
-                  color={Colors.blue1}
-                  onPress={authHandler}
-                />
-              )}
-            </View>
-          </ScrollView>
-        </Card>
-      </LinearGradient>
-    </KeyboardAvoidingView>
+          </View>
+        </View>
+        <LongButton isLoading={isLoading} text="Next" onPress={authHandler} containerStyle={{marginTop: 30}}/>
+      </Content>
+    </KeyboardAwareScrollView>
   );
-};
-
-AuthScreen.navigationOptions = {
-  headerTitle: "Sign Up",
 };
 
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
+    paddingTop: 40,
   },
-  gradient: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+  header:{
+    alignItems:'center',
+    justifyContent:'center',
+    marginBottom: 20
   },
-  authContainer: {
-    width: "80%",
-    maxWidth: 400,
-    maxHeight: 400,
-    padding: 20,
-  },
-  buttonContainer: {
-    marginTop: 10,
-  },
+  headerTitle:{
+    color: Colors.blue1,
+    fontStyle:'italic',
+    fontWeight:'bold',
+    fontSize: 24
+  }
 });
 
 export default AuthScreen;
