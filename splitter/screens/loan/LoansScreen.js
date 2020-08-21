@@ -77,7 +77,7 @@ const LoansScreen = (props) => {
     }
 
     if (!contactsFromStore) {
-      console.log("calling initialiseContacts");
+      console.log("loans screen - calling initialiseContacts");
       initialiseContacts();
     }
   }, [contactsFromStore]);

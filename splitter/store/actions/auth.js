@@ -12,23 +12,21 @@ export const setDidTryAutoLogin = () => {
   return { type: SET_DID_TRY_AUTOLOGIN };
 };
 
-export const authenticate = (userId, token, user) => {
+export const authenticate = (userId, token, user, accessTokenExpiration) => {
   return (dispatch) => {
-    dispatch({ type: AUTHENTICATE, userId, token, user});
+    dispatch({ type: AUTHENTICATE, userId, token, user, accessTokenExpiration});
   };
 };
 
 export const setContacts = (contacts) => {
-  return (dispatch) => {
-    dispatch({ type: SET_CONTACTS, contacts });
-  };
+  return { type: SET_CONTACTS, contacts };
 };
 
 
 
 export const signup = (firstName, lastName, email, password, mobileNumber) => {
   return async (dispatch) => {
-    const response = await fetch("http://192.168.1.190:5000/auth/signup", {
+    const response = await fetch("http://192.168.1.190:5000/api/auth/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -54,14 +52,14 @@ export const signup = (firstName, lastName, email, password, mobileNumber) => {
     }
 
     const resData = await response.json();
-    dispatch({ type: SIGN_UP, userId: resData.userId });
+    dispatch({ type: SIGN_UP, userId: resData._id });
   };
 };
 
 export const login = (email, password) => {
   const email1 = email
   return async (dispatch) => {
-    const response = await fetch("http://192.168.1.190:5000/auth/login", {
+    const response = await fetch("http://192.168.1.190:5000/api/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -93,21 +91,22 @@ export const login = (email, password) => {
       throw new Error('NOT_VERIFIED');
     }
 
-    const {userId, firstName, lastName, email, mobileNumber, accessToken} = resData
+    const {userId, firstName, lastName, email, mobileNumber, accessToken, accessTokenExpiration} = resData
     const user = {
       firstName,
       lastName,
       email,
-      mobileNumber
+      mobileNumber,
+      accessTokenExpiration
     }
-    dispatch(authenticate(userId, accessToken, user));
-    saveDataToStorage(accessToken, userId, firstName, lastName, mobileNumber, email);
+    dispatch(authenticate(userId, accessToken, user, accessTokenExpiration));
+    saveDataToStorage(accessToken, userId, firstName, lastName, mobileNumber, email, accessTokenExpiration);
   };
 };
 
 export const verifyOTP = (otp, user_id) => {
   return async (dispatch) => {
-    const response = await fetch("http://192.168.1.190:5000/auth/verifyotp", {
+    const response = await fetch("http://192.168.1.190:5000/api/auth/verifyotp", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -129,21 +128,21 @@ export const verifyOTP = (otp, user_id) => {
     }
 
     const resData = await response.json();
-    const {userId, firstName, lastName, email, mobileNumber, accessToken} = resData
+    const {userId, firstName, lastName, email, mobileNumber, accessToken, accessTokenExpiration} = resData
     const user = {
       firstName,
       lastName,
       email,
       mobileNumber
     }
-    dispatch(authenticate(userId, accessToken, user));
-    saveDataToStorage(accessToken, userId, firstName, lastName, mobileNumber, email);
+    dispatch(authenticate(userId, accessToken, user, accessTokenExpiration));
+    saveDataToStorage(accessToken, userId, firstName, lastName, mobileNumber, email, accessTokenExpiration);
   };
 };
 export const updateDetails = (inputFirstName, inputLastName) => {
   return async (dispatch, getState) => {
     const response = await fetch(
-      "http://192.168.1.190:5000/user/name/" + getState().auth.userId,
+      "http://192.168.1.190:5000/api/user/name/" + getState().auth.userId,
       {
         method: "PUT",
         headers: {
@@ -174,7 +173,7 @@ export const updateDetails = (inputFirstName, inputLastName) => {
 export const updateEmail = (email) => {
   return async (dispatch, getState) => {
     const response = await fetch(
-      "http://192.168.1.190:5000/user/email/" + getState().auth.userId,
+      "http://192.168.1.190:5000/api/user/email/" + getState().auth.userId,
       {
         method: "PUT",
         headers: {
@@ -203,7 +202,7 @@ export const updateEmail = (email) => {
 };
 export const updateMobileNumber = (inputOTP) => {
   return async (dispatch, getState) => {
-    const response = await fetch("http://192.168.1.190:5000/auth/verifyotp", {
+    const response = await fetch("http://192.168.1.190:5000/api/auth/verifyotp", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -237,7 +236,7 @@ export const logout = () => {
   return { type: LOG_OUT };
 };
 
-const saveDataToStorage = (token, userId, firstName, lastName, mobileNumber, email) => {
+const saveDataToStorage = (token, userId, firstName, lastName, mobileNumber, email, accessTokenExpiration) => {
   AsyncStorage.setItem(
     "userData",
     JSON.stringify({
@@ -246,7 +245,8 @@ const saveDataToStorage = (token, userId, firstName, lastName, mobileNumber, ema
       token,
       userId,
       mobileNumber,
-      email
+      email,
+      accessTokenExpiration
     })
   );
 };

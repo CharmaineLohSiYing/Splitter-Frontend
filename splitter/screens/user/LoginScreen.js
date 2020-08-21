@@ -145,7 +145,7 @@ const LoginScreen = (props) => {
                   required
                   email
                   autoCapitalize="none"
-                  errorText="Please enter a valid email address."
+                  // errorText="Please enter a valid email address."
                   onInputChange={inputChangeHandler}
                   initialValue=""
                 />
@@ -167,7 +167,7 @@ const LoginScreen = (props) => {
                   required
                   minLength={5}
                   autoCapitalize="none"
-                  errorText="Please enter a valid password."
+                  // errorText="Please enter a valid password."
                   onInputChange={inputChangeHandler}
                   initialValue=""
                 />

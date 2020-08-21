@@ -53,7 +53,7 @@ const ViewContactLoansScreen = (props) => {
       try {
         console.log("have friend id");
         response = await fetch(
-          "http://192.168.1.190:5000/loan/friend/" +
+          "http://192.168.1.190:5000/api/loan/friend/" +
             currUserId +
             "/" +
             friendUserId,
@@ -71,7 +71,7 @@ const ViewContactLoansScreen = (props) => {
       try {
         console.log("no friend id", friendUserId);
         response = await fetch(
-          "http://192.168.1.190:5000/loan/friend/mobileNumber/" +
+          "http://192.168.1.190:5000/api/loan/friend/mobileNumber/" +
             currUserId +
             "/" +
             friendMobileNumber,

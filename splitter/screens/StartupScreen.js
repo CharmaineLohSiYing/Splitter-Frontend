@@ -28,13 +28,14 @@ const StartupScreen = (props) => {
       const {
         token,
         userId,
-        expiryDate,
+        accessTokenExpiration,
         firstName,
         lastName,
         email,
         mobileNumber,
       } = transformedData;
-      const expirationDate = new Date(expiryDate);
+      const expirationDate = new Date(accessTokenExpiration);
+      console.log('token expiration date', expirationDate)
 
       if (expirationDate <= new Date() || !token || !userId) {
         dispatch(authActions.setDidTryAutoLogin());
@@ -42,7 +43,6 @@ const StartupScreen = (props) => {
       }
 
       const expirationTime = expirationDate.getTime() - new Date().getTime();
-      const matchedContacts = matchUsersWithContacts();
       const user = {
         firstName,
         lastName,
@@ -50,12 +50,10 @@ const StartupScreen = (props) => {
         mobileNumber,
       };
       dispatch(authActions.authenticate(userId, token, user));
-      dispatch(authActions.setContacts(matchedContacts));
     };
     setTimeout(() => {
       tryLogin();
     }, 2000);
-    //  tryLogin();
   }, [dispatch]);
 
   return (

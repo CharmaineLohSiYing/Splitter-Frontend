@@ -80,7 +80,6 @@ const OTPScreen = (props) => {
   }, [error]);
 
   const otpSubmitHandler = async () => {
-    if (!props.route.params){
       let action = authActions.verifyOTP(formState.inputValues.otp, userId);
       setError(null);
       setIsLoading(true);
@@ -90,30 +89,6 @@ const OTPScreen = (props) => {
         setError(err.message);
         setIsLoading(false);
       }
-    } else {
-      try {
-        setError(null);
-        setIsLoading(true);
-        const response = await fetch("http://192.168.1.190:5000/auth/verifyotp", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userId,
-            otp: formState.inputValues.otp,
-          }),
-        });
-        if (!response.ok){
-          setError(await response.json())
-          setIsLoading(false)
-        } else {
-          props.navigation.navigate('Settings')
-        }
-      } catch (err) {
-        setError(err.message);
-      }
-    }
   }
     
    

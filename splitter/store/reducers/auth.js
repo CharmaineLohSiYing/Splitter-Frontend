@@ -11,11 +11,13 @@ const initialState = {
 export default (state = initialState, action) => {
   switch (action.type) {
     case AUTHENTICATE:
+      console.log('reducer-authenticate')
       return {
         token: action.token,
         userId: action.userId,
         user: action.user,
-        didTryAutoLogin: true
+        didTryAutoLogin: true,
+        accessTokenExpiration: action.accessTokenExpiration
       };
     case LOG_OUT:
       return {token: null, userId: null, didTryAutoLogin: true};
@@ -30,6 +32,7 @@ export default (state = initialState, action) => {
         userId: action.userId
       };
     case SET_CONTACTS:
+      console.log('reducer - set contacts')
       return{
         ...state,
         contacts: action.contacts

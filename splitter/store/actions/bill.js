@@ -89,7 +89,7 @@ export const createBill = () => {
       sharedOrders,
     } = getState().bill;
 
-    const response = await fetch("http://192.168.1.190:5000/bill/add", {
+    const response = await fetch("http://192.168.1.190:5000/api/bill", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -131,8 +131,8 @@ export const editBill = () => {
 
 
     var currUserId = getState().auth.userId
-    const response = await fetch("http://192.168.1.190:5000/bill/edit", {
-      method: "POST",
+    const response = await fetch("http://192.168.1.190:5000/api/bill", {
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
@@ -168,7 +168,7 @@ export const fetchUserBills = () => {
   console.log('fetch user bills')
   return async (dispatch, getState) => {
     const response = await fetch(
-      "http://192.168.1.190:5000/bill/user/" + getState().auth.userId,
+      "http://192.168.1.190:5000/api/bill/user/" + getState().auth.userId,
       {
         method: "GET",
         headers: {
@@ -196,7 +196,7 @@ export const retrieveForEdit = (billId, matchedContacts) => {
   console.log('retrieveForEdit')
   return async (dispatch, getState) => {
     const response = await fetch(
-      "http://192.168.1.190:5000/bill/retrieveForEdit/" + billId,
+      "http://192.168.1.190:5000/api/bill/retrieveForEdit/" + billId,
       {
         method: "GET",
         headers: {

@@ -81,7 +81,7 @@ const Input = (props) => {
             onFocus={lostFocusHandler}
           />
   
-        {!inputState.isValid && inputState.touched && (
+        {!inputState.isValid && inputState.touched && props.errorText && (
           <View style={styles.errorContainer}>
             <Text style={styles.errorText}>{props.errorText}</Text>
           </View>

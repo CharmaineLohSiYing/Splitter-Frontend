@@ -100,7 +100,7 @@ class ViewBillScreen extends React.Component {
   componentDidMount() {
     this.setState({ isLoading: true });
     fetch(
-      "http://192.168.1.190:5000/bill/details/" +
+      "http://192.168.1.190:5000/api/bill/details/" +
         this.props.route.params.billId,
       {
         method: "GET",
