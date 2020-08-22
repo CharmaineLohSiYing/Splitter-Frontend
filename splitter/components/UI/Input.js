@@ -5,6 +5,7 @@ import Colors from "../../constants/Colors"
 
 const INPUT_CHANGE = "INPUT_CHANGE";
 const INPUT_BLUR = "INPUT_BLUR";
+const VALIDATE = "VALIDATE";
 
 const inputReducer = (state, action) => {
   switch (action.type) {
@@ -12,13 +13,18 @@ const inputReducer = (state, action) => {
       return {
         ...state,
         value: action.value,
-        isValid: action.isValid,
+        // isValid: action.isValid,
       };
     case INPUT_BLUR:
       return {
         ...state,
         touched: true,
       };
+    case VALIDATE:
+      return {
+        ...state,
+        isValid: action.isValid
+      }
     default:
       return state;
   }
@@ -40,6 +46,12 @@ const Input = (props) => {
   }, [inputState, onInputChange, id]);
 
   const textChangeHandler = (text) => {
+
+    dispatch({ type: INPUT_CHANGE, value: text });
+  };
+
+  const validateInput = (value) => {
+    let text = value.nativeEvent.text;
     const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     let isValid = true;
 
@@ -62,8 +74,10 @@ const Input = (props) => {
       isValid = false;
     }
 
-    dispatch({ type: INPUT_CHANGE, value: text, isValid: isValid });
-  };
+    dispatch({ type: VALIDATE, isValid });
+    
+    
+  }
 
   const lostFocusHandler = () => {
     dispatch({ type: INPUT_BLUR });
@@ -73,6 +87,7 @@ const Input = (props) => {
     return (
       <View style={props.style}>
           <TextInput
+            onEndEditing={validateInput}
             placeholder={props.label}
             placeholderTextColor='rgba(25,4,4,0.5)'
             {...props}
@@ -90,12 +105,14 @@ const Input = (props) => {
     );
   }
   if (props.horizontal){
+    
     return (
       <View>
         <View style={{flexDirection:'row', alignItems:'center', paddingVertical: 10}}>
           {props.label && <MyAppText style={styles.label}>{props.label}</MyAppText>}
           <TextInput
             {...props}
+            onEndEditing={validateInput}
             style={styles.inputHorizontal}
             value={inputState.value}
             onChangeText={textChangeHandler}
@@ -118,6 +135,7 @@ const Input = (props) => {
       {props.label && <MyAppText style={styles.label}>{props.label}</MyAppText>}
       <TextInput
         {...props}
+        onEndEditing={validateInput}
         style={styles.inputHorizontal}
         value={inputState.value}
         onChangeText={textChangeHandler}

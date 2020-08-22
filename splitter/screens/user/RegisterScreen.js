@@ -137,6 +137,7 @@ const AuthScreen = (props) => {
           </View>
           <View>
             <Input
+              autoFocus={true}
               id="firstName"
               label="First Name"
               required

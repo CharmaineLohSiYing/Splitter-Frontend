@@ -48,6 +48,7 @@ const formReducer = (state, action) => {
 const LoginScreen = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
+  const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch();
 
   const [formState, dispatchFormState] = useReducer(formReducer, {
@@ -64,7 +65,13 @@ const LoginScreen = (props) => {
 
   useEffect(() => {
     if (error) {
-      Alert.alert("An Error Occurred!", error, [{ text: "Okay" }]);
+      if (error === "INVALID_CREDENTIALS"){
+        Alert.alert("Incorrect password", "The password you entered for " + formState.inputValues.email + " is incorrect.", [{ text: "Try Again" }]);
+      } else {
+        Alert.alert("Oh no", "Something went wrong!", [{ text: "Okay" }]);
+      }
+
+      
     }
   }, [error]);
 
@@ -163,7 +170,7 @@ const LoginScreen = (props) => {
                   id="password"
                   label="Password"
                   keyboardType="default"
-                  secureTextEntry
+                  secureTextEntry={!showPassword}
                   required
                   minLength={5}
                   autoCapitalize="none"
@@ -171,8 +178,15 @@ const LoginScreen = (props) => {
                   onInputChange={inputChangeHandler}
                   initialValue=""
                 />
+                <Ionicons
+                  name={showPassword ? "md-eye" : "md-eye-off"}
+                  onPress={() => {setShowPassword(prev => !prev)}}
+                  size={18}
+                  color='black'
+                  style={{ width: "10%"}}
+                />
               </View>
-              <View style={{ alignItems: "center"}}>
+              <View style={{ alignItems: "center" }}>
                 <LongButton
                   isLoading={isLoading}
                   onPress={authHandler}
@@ -184,7 +198,7 @@ const LoginScreen = (props) => {
                   }}
                   textStyle={{ color: "white" }}
                 />
-                <TouchableOpacity style={{marginTop: 10}} onPress={()=> {}}>
+                <TouchableOpacity style={{ marginTop: 10 }} onPress={() => {}}>
                   <Text>Forgot your password?</Text>
                 </TouchableOpacity>
               </View>
@@ -204,7 +218,7 @@ const LoginScreen = (props) => {
           </TouchableOpacity>
         </Content>
       </LinearGradient>
-    </KeyboardAvoidingView> 
+    </KeyboardAvoidingView>
   );
 };
 
@@ -220,6 +234,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     height: 40,
     paddingLeft: 20,
+    paddingRight: 10,
     marginVertical: 10,
   },
   screen: {

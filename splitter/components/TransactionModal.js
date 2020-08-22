@@ -58,7 +58,7 @@ const TransactionModal = (props) => {
         setError(errorResData);
         return;
       } else {
-        props.onClose()
+        props.onCreateTransactionSuccess();
       }
 
     } catch (err) {

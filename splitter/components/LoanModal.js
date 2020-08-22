@@ -81,7 +81,7 @@ const LoanModal = (props) => {
           console.log("RETURNED ID", returnedId);
           props.setFriendUserId(returnedId);
         }
-        props.onClose();
+        props.onCreateLoanSuccess();
       }
     } catch (err) {
       setError(err.message);

@@ -20,6 +20,7 @@ import TransactionModal from "../../components/TransactionModal";
 import Screen from "../../components/UI/Screen";
 import Content from "../../components/UI/Content";
 import GlobalStyles from "../../assets/style";
+import FlashMessage from "../../components/FlashMessage";
 
 import BillItemDisplay from "../../components/BillItemDisplay";
 import * as authActions from "../../store/actions/auth";
@@ -32,6 +33,9 @@ const ViewContactLoansScreen = (props) => {
   const [error, setError] = useState();
   const [debt, setDebt] = useState();
   const [loans, setLoans] = useState([]);
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
+
   const dispatch = useDispatch();
 
   const { matchedName, friendMobileNumber } = props.route.params;
@@ -41,6 +45,19 @@ const ViewContactLoansScreen = (props) => {
   );
   const [createNewLoan, setCreateNewLoan] = useState(false);
   const [createNewTransaction, setCreateNewTransaction] = useState(false);
+  
+  useEffect(() => {
+    if (successMessage || errorMessage){
+      setTimeout(() => {
+        setSuccessMessage(null)
+      }, 3000)
+    }
+    if (errorMessage){
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 3000)
+    }
+  }, [successMessage, errorMessage])
 
   const loadLoans = useCallback(async () => {
     console.log(friendUserId, props.route.params.friendUserId);
@@ -185,6 +202,17 @@ const ViewContactLoansScreen = (props) => {
     // setFriendUserId(friendId)
   };
 
+  const onCreateLoanSuccess = () => {
+    setSuccessMessage("Loan has been created");
+    setCreateNewLoan(false);
+    loadLoans();
+  }
+  const onCreateTransactionSuccess = () => {
+    setSuccessMessage("Transaction has been created");
+    setCreateNewTransaction(false);
+    loadLoans();
+  }
+
   if (error) {
     return (
       <View style={styles.centered}>
@@ -279,6 +307,7 @@ const ViewContactLoansScreen = (props) => {
           friendUserId={friendUserId}
           friendMobileNumber={friendMobileNumber}
           setFriendUserId={updateFriendId}
+          onCreateLoanSuccess={onCreateLoanSuccess}
           onClose={() => {
             setCreateNewLoan(false);
             loadLoans();
@@ -291,10 +320,17 @@ const ViewContactLoansScreen = (props) => {
           friendUserId={friendUserId}
           friendMobileNumber={friendMobileNumber}
           setFriendUserId={updateFriendId}
+          onCreateTransactionSuccess={onCreateTransactionSuccess}
           onClose={() => {
             setCreateNewTransaction(false);
             loadLoans();
           }}
+        />
+      )}
+      {(successMessage || errorMessage) && (
+        <FlashMessage
+          text={successMessage ? successMessage : errorMessage}
+          type="success"
         />
       )}
     </Screen>
@@ -308,7 +344,7 @@ const styles = StyleSheet.create({
   headerContainer: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical:20,
+    paddingVertical: 20,
     width: "100%",
   },
   loanContainer: {

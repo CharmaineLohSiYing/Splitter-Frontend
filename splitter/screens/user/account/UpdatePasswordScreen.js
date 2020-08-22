@@ -121,11 +121,13 @@ const UpdatePasswordScreen = (props) => {
     }
   };
 
+
   return (
     <Screen>
       <Content style={{ paddingVertical: 20, justifyContent: 'space-between' }}>
         <View>
           <Input
+            autoFocus = {true}
             horizontal={true}
             id="oldPassword"
             label="Current Password"
