@@ -1,11 +1,10 @@
 import React, { useReducer, useEffect } from "react";
 import { View, Text, TextInput, StyleSheet } from "react-native";
 import MyAppText from "../../components/UI/MyAppText";
-import Colors from "../../constants/Colors"
+import Colors from "../../constants/Colors";
 
 const INPUT_CHANGE = "INPUT_CHANGE";
 const INPUT_BLUR = "INPUT_BLUR";
-const VALIDATE = "VALIDATE";
 
 const inputReducer = (state, action) => {
   switch (action.type) {
@@ -13,45 +12,36 @@ const inputReducer = (state, action) => {
       return {
         ...state,
         value: action.value,
-        // isValid: action.isValid,
+        isValid: action.isValid,
       };
     case INPUT_BLUR:
       return {
         ...state,
         touched: true,
       };
-    case VALIDATE:
-      return {
-        ...state,
-        isValid: action.isValid
-      }
     default:
       return state;
   }
 };
 
 const Input = (props) => {
+
   const [inputState, dispatch] = useReducer(inputReducer, {
     value: props.initialValue ? props.initialValue : "",
-    isValid: true,
+    isValid: false,
     touched: false,
   });
 
-  const { onInputChange, id } = props;
+  const { onInputChange, id, touched } = props;
 
   useEffect(() => {
+    
     if (inputState.touched) {
       onInputChange(id, inputState.value, inputState.isValid);
     }
   }, [inputState, onInputChange, id]);
 
   const textChangeHandler = (text) => {
-
-    dispatch({ type: INPUT_CHANGE, value: text });
-  };
-
-  const validateInput = (value) => {
-    let text = value.nativeEvent.text;
     const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     let isValid = true;
 
@@ -73,29 +63,31 @@ const Input = (props) => {
     if (props.minLength != null && text.length < props.minLength) {
       isValid = false;
     }
-
-    dispatch({ type: VALIDATE, isValid });
-    
-    
-  }
+    dispatch({ type: INPUT_CHANGE, value: text, isValid });
+  };
 
   const lostFocusHandler = () => {
     dispatch({ type: INPUT_BLUR });
   };
 
-  if (props.login){
+  useEffect(() => {
+    if (touched){
+      lostFocusHandler()
+    }
+  }, [touched])
+
+  if (props.login) {
     return (
       <View style={props.style}>
-          <TextInput
-            onEndEditing={validateInput}
-            placeholder={props.label}
-            placeholderTextColor='rgba(25,4,4,0.5)'
-            {...props}
-            value={inputState.value}
-            onChangeText={textChangeHandler}
-            onFocus={lostFocusHandler}
-          />
-  
+        <TextInput
+          placeholder={props.label}
+          placeholderTextColor="rgba(25,4,4,0.5)"
+          {...props}
+          value={inputState.value}
+          onChangeText={textChangeHandler}
+          onBlur={lostFocusHandler}
+        />
+
         {!inputState.isValid && inputState.touched && props.errorText && (
           <View style={styles.errorContainer}>
             <Text style={styles.errorText}>{props.errorText}</Text>
@@ -104,23 +96,28 @@ const Input = (props) => {
       </View>
     );
   }
-  if (props.horizontal){
-    
+  if (props.horizontal) {
     return (
       <View>
-        <View style={{flexDirection:'row', alignItems:'center', paddingVertical: 10}}>
-          {props.label && <MyAppText style={styles.label}>{props.label}</MyAppText>}
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            paddingVertical: 10,
+          }}
+        >
+          {props.label && (
+            <MyAppText style={styles.label}>{props.label}</MyAppText>
+          )}
           <TextInput
             {...props}
-            onEndEditing={validateInput}
             style={styles.inputHorizontal}
             value={inputState.value}
             onChangeText={textChangeHandler}
-            onFocus={lostFocusHandler}
+            onBlur={lostFocusHandler}
           />
         </View>
-        
-  
+
         {!inputState.isValid && inputState.touched && (
           <View style={styles.errorContainer}>
             <Text style={styles.errorText}>{props.errorText}</Text>
@@ -135,11 +132,10 @@ const Input = (props) => {
       {props.label && <MyAppText style={styles.label}>{props.label}</MyAppText>}
       <TextInput
         {...props}
-        onEndEditing={validateInput}
         style={styles.inputHorizontal}
         value={inputState.value}
         onChangeText={textChangeHandler}
-        onFocus={lostFocusHandler}
+        onBlur={lostFocusHandler}
       />
 
       {!inputState.isValid && inputState.touched && (
@@ -154,7 +150,7 @@ const Input = (props) => {
 const styles = StyleSheet.create({
   label: {
     marginVertical: 10,
-    flex: 1
+    flex: 1,
   },
   input: {
     borderBottomColor: "#ccc",
@@ -165,7 +161,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.gray3,
     borderRadius: 10,
     height: 40,
-    paddingHorizontal: 10
+    paddingHorizontal: 10,
   },
   errorContainer: {
     marginVertical: 5,

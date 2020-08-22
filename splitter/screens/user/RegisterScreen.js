@@ -16,9 +16,10 @@ import Input from "../../components/UI/Input";
 import Colors from "../../constants/Colors";
 import * as authActions from "../../store/actions/auth";
 import Content from "../../components/UI/Content";
-import LongButton from "../../components/UI/LongButton"
+import LongButton from "../../components/UI/LongButton";
 
 const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
+const SET_ALL_TOUCHED = "SET_ALL_TOUCHED";
 
 const formReducer = (state, action) => {
   if (action.type === FORM_INPUT_UPDATE) {
@@ -30,6 +31,10 @@ const formReducer = (state, action) => {
       ...state.inputValidities,
       [action.input]: action.isValid,
     };
+    const updatedTouched = {
+      ...state.touched,
+      [action.input]: true,
+    };
     let updatedFormIsValid = true;
     for (const key in updatedValidities) {
       updatedFormIsValid = updatedFormIsValid && updatedValidities[key];
@@ -38,6 +43,16 @@ const formReducer = (state, action) => {
       formIsValid: updatedFormIsValid,
       inputValidities: updatedValidities,
       inputValues: updatedValues,
+      touched: updatedTouched,
+    };
+  } else if (action.type === SET_ALL_TOUCHED) {
+    const updatedTouched = { ...state.touched };
+    for (const key in updatedTouched) {
+      updatedTouched[key] = true;
+    }
+    return {
+      ...state,
+      touched: updatedTouched,
     };
   }
   return state;
@@ -65,6 +80,14 @@ const AuthScreen = (props) => {
       password: false,
       retypePassword: false,
     },
+    touched: {
+      firstName: false,
+      lastName: false,
+      mobileNumber: false,
+      email: false,
+      password: false,
+      retypePassword: false,
+    },
     formIsValid: false,
   });
 
@@ -75,34 +98,40 @@ const AuthScreen = (props) => {
   }, [error]);
 
   const authHandler = () => {
-    // console.log(formState.inputValues.retypePassword)
+    if (!formState.formIsValid) {
+      dispatchFormState({
+        type: SET_ALL_TOUCHED,
+      });
+    } else {
+      if (
+        formState.inputValues.password !== formState.inputValues.retypePassword
+      ) {
+        setError("Passwords do not match");
+        return;
+      }
 
-    if (
-      formState.inputValues.password !== formState.inputValues.retypePassword
-    ) {
-      setError("Passwords do not match");
-      return;
-    }
+      setError(null);
+      setIsLoading(true);
 
-    setError(null);
-    setIsLoading(true);
+      let action;
+      action = authActions.signup(
+        formState.inputValues.firstName,
+        formState.inputValues.lastName,
+        formState.inputValues.email,
+        formState.inputValues.password,
+        formState.inputValues.mobileNumber
+      );
 
-    let action;
-    action = authActions.signup(
-      formState.inputValues.firstName,
-      formState.inputValues.lastName,
-      formState.inputValues.email,
-      formState.inputValues.password,
-      formState.inputValues.mobileNumber
-    );
-
-    try {
-      dispatch(action);
-      setIsLoading(false);
-      props.navigation.navigate("OTP", {mobileNumber: formState.inputValues.mobileNumber});
-    } catch (err) {
-      setError(err.message);
-      setIsLoading(false);
+      try {
+        dispatch(action);
+        setIsLoading(false);
+        props.navigation.navigate("OTP", {
+          mobileNumber: formState.inputValues.mobileNumber,
+        });
+      } catch (err) {
+        setError(err.message);
+        setIsLoading(false);
+      }
     }
   };
 
@@ -123,10 +152,12 @@ const AuthScreen = (props) => {
       // behavior="padding"
       style={styles.screen}
       contentContainerStyle={{ alignItems: "center" }}
+      keyboardShouldPersistTaps={"always"}
     >
       <Content
         style={{
           width: "80%",
+          paddingTop: 40,
           marginTop: 50,
           justifyContent: "space-between",
         }}
@@ -141,8 +172,9 @@ const AuthScreen = (props) => {
               id="firstName"
               label="First Name"
               required
+              touched={formState.touched["firstName"]}
               autoCapitalize="words"
-              errorText="Please enter a valid first name."
+              errorText="Please enter your first name."
               onInputChange={inputChangeHandler}
               initialValue=""
             />
@@ -151,7 +183,8 @@ const AuthScreen = (props) => {
               label="Last Name"
               required
               autoCapitalize="words"
-              errorText="Please enter a valid last name."
+              touched={formState.touched["lastName"]}
+              errorText="Please enter your last name."
               onInputChange={inputChangeHandler}
               initialValue=""
             />
@@ -159,6 +192,7 @@ const AuthScreen = (props) => {
               id="email"
               label="E-Mail"
               keyboardType="email-address"
+              touched={formState.touched["email"]}
               required
               email
               autoCapitalize="none"
@@ -172,6 +206,7 @@ const AuthScreen = (props) => {
               keyboardType="number-pad"
               required
               numbers
+              touched={formState.touched["mobileNumber"]}
               minLength={8}
               maxLength={8}
               errorText="Please enter a valid mobile number."
@@ -181,28 +216,35 @@ const AuthScreen = (props) => {
             <Input
               id="password"
               label="Password"
+              touched={formState.touched["password"]}
               secureTextEntry
               required
               minLength={5}
               autoCapitalize="none"
-              errorText="Please enter a valid password."
+              errorText="Please enter a password of at least 5 characters."
               onInputChange={inputChangeHandler}
               initialValue=""
             />
             <Input
               id="retypePassword"
               label="Retype Password"
+              touched={formState.touched["retypePassword"]}
               retypePassword
               secureTextEntry
               required
               autoCapitalize="none"
-              errorText="Please enter a valid password"
+              errorText="Please enter a password of at least 5 characters."
               onInputChange={inputChangeHandler}
               initialValue=""
             />
           </View>
         </View>
-        <LongButton isLoading={isLoading} text="Next" onPress={authHandler} containerStyle={{marginTop: 30}}/>
+        <LongButton
+          isLoading={isLoading}
+          text="Next"
+          onPress={authHandler}
+          containerStyle={{ marginTop: 30, marginBottom: 20 }}
+        />
       </Content>
     </KeyboardAwareScrollView>
   );
@@ -211,19 +253,19 @@ const AuthScreen = (props) => {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    paddingTop: 40,
+    // paddingTop: 40,
   },
-  header:{
-    alignItems:'center',
-    justifyContent:'center',
-    marginBottom: 20
+  header: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 20,
   },
-  headerTitle:{
+  headerTitle: {
     color: Colors.blue1,
-    fontStyle:'italic',
-    fontWeight:'bold',
-    fontSize: 24
-  }
+    fontStyle: "italic",
+    fontWeight: "bold",
+    fontSize: 24,
+  },
 });
 
 export default AuthScreen;

@@ -21,6 +21,7 @@ import * as authActions from "../../store/actions/auth";
 import LongButton from "../../components/UI/LongButton";
 
 const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
+const SET_ALL_TOUCHED = "SET_ALL_TOUCHED";
 
 const formReducer = (state, action) => {
   if (action.type === FORM_INPUT_UPDATE) {
@@ -32,6 +33,10 @@ const formReducer = (state, action) => {
       ...state.inputValidities,
       [action.input]: action.isValid,
     };
+    const updatedTouched = {
+      ...state.touched,
+      [action.input]: true,
+    };
     let updatedFormIsValid = true;
     for (const key in updatedValidities) {
       updatedFormIsValid = updatedFormIsValid && updatedValidities[key];
@@ -40,6 +45,16 @@ const formReducer = (state, action) => {
       formIsValid: updatedFormIsValid,
       inputValidities: updatedValidities,
       inputValues: updatedValues,
+      touched: updatedTouched,
+    };
+  } else if (action.type === SET_ALL_TOUCHED) {
+    const updatedTouched = { ...state.touched };
+    for (const key in updatedTouched) {
+      updatedTouched[key] = true;
+    }
+    return {
+      ...state,
+      touched: updatedTouched,
     };
   }
   return state;
@@ -60,40 +75,54 @@ const LoginScreen = (props) => {
       email: false,
       password: false,
     },
+    touched: {
+      email: false,
+      password: false,
+    },
     formIsValid: false,
   });
 
   useEffect(() => {
     if (error) {
-      if (error === "INVALID_CREDENTIALS"){
-        Alert.alert("Incorrect password", "The password you entered for " + formState.inputValues.email + " is incorrect.", [{ text: "Try Again" }]);
+      if (error === "INVALID_CREDENTIALS") {
+        Alert.alert(
+          "Incorrect password",
+          "The password you entered for " +
+            formState.inputValues.email +
+            " is incorrect.",
+          [{ text: "Try Again" }]
+        );
       } else {
         Alert.alert("Oh no", "Something went wrong!", [{ text: "Okay" }]);
       }
-
-      
     }
   }, [error]);
 
   const authHandler = async () => {
-    let action;
+    if (!formState.formIsValid) {
+      dispatchFormState({
+        type: SET_ALL_TOUCHED,
+      });
+    } else {
+      let action;
 
-    action = authActions.login(
-      formState.inputValues.email,
-      formState.inputValues.password
-    );
+      action = authActions.login(
+        formState.inputValues.email,
+        formState.inputValues.password
+      );
 
-    setError(null);
-    setIsLoading(true);
-    try {
-      await dispatch(action);
-    } catch (err) {
-      // console.log('catch error', err)
-      setIsLoading(false);
-      if (err.message === "NOT_VERIFIED") {
-        return props.navigation.navigate("Verify");
-      } else {
-        setError(err.message);
+      setError(null);
+      setIsLoading(true);
+      try {
+        await dispatch(action);
+      } catch (err) {
+        // console.log('catch error', err)
+        setIsLoading(false);
+        if (err.message === "NOT_VERIFIED") {
+          return props.navigation.navigate("Verify");
+        } else {
+          setError(err.message);
+        }
       }
     }
   };
@@ -136,11 +165,27 @@ const LoginScreen = (props) => {
               <View style={styles.logo}></View>
             </View>
             <View style={styles.loginForm}>
-              <View style={styles.field}>
+              <View
+                style={[
+                  styles.field,
+                  {
+                    borderWidth:
+                      !formState.inputValidities["email"] &&
+                      formState.touched["email"]
+                        ? 2
+                        : 0,
+                  },
+                ]}
+              >
                 <Ionicons
-                  name="md-phone-portrait"
+                  name="md-mail"
                   size={18}
-                  color={Colors.blue1}
+                  color={
+                    !formState.inputValidities["email"] &&
+                    formState.touched["email"]
+                      ? Colors.red1
+                      : Colors.blue1
+                  }
                   style={{ width: "10%" }}
                 />
                 <Input
@@ -152,11 +197,18 @@ const LoginScreen = (props) => {
                   required
                   email
                   autoCapitalize="none"
+                  touched={formState.touched["email"]}
                   // errorText="Please enter a valid email address."
                   onInputChange={inputChangeHandler}
                   initialValue=""
                 />
               </View>
+              {!formState.inputValidities["email"] &&
+                formState.touched["email"] && (
+                  <Text style={styles.errorText}>
+                    Please enter a valid email address.
+                  </Text>
+                )}
               <View style={styles.field}>
                 <Ionicons
                   name="md-key"
@@ -172,18 +224,18 @@ const LoginScreen = (props) => {
                   keyboardType="default"
                   secureTextEntry={!showPassword}
                   required
-                  minLength={5}
                   autoCapitalize="none"
-                  // errorText="Please enter a valid password."
                   onInputChange={inputChangeHandler}
                   initialValue=""
                 />
                 <Ionicons
                   name={showPassword ? "md-eye" : "md-eye-off"}
-                  onPress={() => {setShowPassword(prev => !prev)}}
+                  onPress={() => {
+                    setShowPassword((prev) => !prev);
+                  }}
                   size={18}
-                  color='black'
-                  style={{ width: "10%"}}
+                  color="black"
+                  style={{ width: "10%" }}
                 />
               </View>
               <View style={{ alignItems: "center" }}>
@@ -236,6 +288,7 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     paddingRight: 10,
     marginVertical: 10,
+    borderColor: Colors.red1,
   },
   screen: {
     flex: 1,
@@ -270,6 +323,13 @@ const styles = StyleSheet.create({
   },
   loginForm: {
     marginTop: 40,
+  },
+  errorText: {
+    fontSize: 13,
+    color: Colors.red1,
+    marginTop: -10,
+    paddingLeft: 20,
+    marginBottom: 10,
   },
 });
 
