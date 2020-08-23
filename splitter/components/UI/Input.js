@@ -24,7 +24,7 @@ const inputReducer = (state, action) => {
   }
 };
 
-const Input = (props) => {
+const Input = React.forwardRef((props, ref) => {
   const [inputState, dispatch] = useReducer(inputReducer, {
     value: props.initialValue ? props.initialValue : "",
     isValid: false,
@@ -78,6 +78,7 @@ const Input = (props) => {
     return (
       <View style={props.style}>
         <TextInput
+          ref={ref}
           placeholder={props.label}
           placeholderTextColor="rgba(25,4,4,0.5)"
           {...props}
@@ -107,6 +108,7 @@ const Input = (props) => {
             <MyAppText style={styles.label}>{props.label}</MyAppText>
           )}
           <TextInput
+            ref={ref}
             {...props}
             style={styles.inputHorizontal}
             value={inputState.value}
@@ -129,6 +131,7 @@ const Input = (props) => {
       {props.label && <MyAppText style={styles.label}>{props.label}</MyAppText>}
       <TextInput
         {...props}
+        ref={ref}
         style={styles.inputHorizontal}
         value={inputState.value}
         onChangeText={textChangeHandler}
@@ -142,7 +145,7 @@ const Input = (props) => {
       )}
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   label: {

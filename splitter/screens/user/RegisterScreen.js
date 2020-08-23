@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer, useCallback } from "react";
+import React, { useState, useEffect, useReducer, useCallback, useRef } from "react";
 import {
   ScrollView,
   View,
@@ -82,6 +82,35 @@ const AuthScreen = (props) => {
     formIsValid: false,
   });
 
+  const lastNameRef = useRef(null)
+  const emailRef = useRef(null)
+  const mobileNumRef = useRef(null)
+  const passwordRef = useRef(null)
+  const retypePasswordRef = useRef(null)
+
+  const focusNextTextInput = (type) => {
+    switch (type){
+      case "lastName":
+        lastNameRef.current.focus();
+        break;
+      case "email":
+        emailRef.current.focus();
+        break;
+      case "mobileNum":
+        mobileNumRef.current.focus();
+        break;
+      case "password":
+        passwordRef.current.focus();
+        break;
+      case "retypePassword":
+        retypePasswordRef.current.focus();
+        break;
+      default:
+        return;
+    }
+    
+  }
+
   useEffect(() => {
     if (error) {
       Alert.alert("An Error Occurred!", error, [{ text: "Okay" }]);
@@ -160,6 +189,7 @@ const AuthScreen = (props) => {
               id="firstName"
               label="First Name"
               required
+              onSubmitEditing={() => focusNextTextInput("lastName")}
               displayError={displayError}
               touched={formState.touched["firstName"]}
               autoCapitalize="words"
@@ -170,6 +200,8 @@ const AuthScreen = (props) => {
             <Input
               id="lastName"
               label="Last Name"
+              onSubmitEditing={() => focusNextTextInput("email")}
+              ref={lastNameRef}
               required
               displayError={displayError}
               autoCapitalize="words"
@@ -182,6 +214,8 @@ const AuthScreen = (props) => {
               id="email"
               label="E-Mail"
               keyboardType="email-address"
+              onSubmitEditing={() => focusNextTextInput("mobileNum")}
+              ref={emailRef}
               displayError={displayError}
               touched={formState.touched["email"]}
               required
@@ -196,6 +230,8 @@ const AuthScreen = (props) => {
               label="Mobile Number"
               keyboardType="number-pad"
               displayError={displayError}
+              onSubmitEditing={() => focusNextTextInput("password")}
+              ref={mobileNumRef}
               required
               numbers
               touched={formState.touched["mobileNumber"]}
@@ -208,6 +244,8 @@ const AuthScreen = (props) => {
             <Input
               id="password"
               label="Password"
+              onSubmitEditing={() => focusNextTextInput("retypePassword")}
+              ref={passwordRef}
               touched={formState.touched["password"]}
               secureTextEntry
               required
@@ -221,6 +259,7 @@ const AuthScreen = (props) => {
             <Input
               id="retypePassword"
               label="Retype Password"
+              ref={retypePasswordRef}
               touched={formState.touched["retypePassword"]}
               retypePassword
               displayError={displayError}
