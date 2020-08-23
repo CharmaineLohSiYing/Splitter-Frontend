@@ -21,7 +21,6 @@ import * as authActions from "../../store/actions/auth";
 import LongButton from "../../components/UI/LongButton";
 
 const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
-const SET_ALL_TOUCHED = "SET_ALL_TOUCHED";
 
 const formReducer = (state, action) => {
   if (action.type === FORM_INPUT_UPDATE) {
@@ -33,10 +32,6 @@ const formReducer = (state, action) => {
       ...state.inputValidities,
       [action.input]: action.isValid,
     };
-    const updatedTouched = {
-      ...state.touched,
-      [action.input]: true,
-    };
     let updatedFormIsValid = true;
     for (const key in updatedValidities) {
       updatedFormIsValid = updatedFormIsValid && updatedValidities[key];
@@ -45,16 +40,6 @@ const formReducer = (state, action) => {
       formIsValid: updatedFormIsValid,
       inputValidities: updatedValidities,
       inputValues: updatedValues,
-      touched: updatedTouched,
-    };
-  } else if (action.type === SET_ALL_TOUCHED) {
-    const updatedTouched = { ...state.touched };
-    for (const key in updatedTouched) {
-      updatedTouched[key] = true;
-    }
-    return {
-      ...state,
-      touched: updatedTouched,
     };
   }
   return state;
@@ -64,6 +49,7 @@ const LoginScreen = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
   const [showPassword, setShowPassword] = useState(false);
+  const [displayErrors, setDisplayErrors] = useState(false);
   const dispatch = useDispatch();
 
   const [formState, dispatchFormState] = useReducer(formReducer, {
@@ -72,10 +58,6 @@ const LoginScreen = (props) => {
       password: "",
     },
     inputValidities: {
-      email: false,
-      password: false,
-    },
-    touched: {
       email: false,
       password: false,
     },
@@ -99,31 +81,29 @@ const LoginScreen = (props) => {
   }, [error]);
 
   const authHandler = async () => {
-    if (!formState.formIsValid) {
-      dispatchFormState({
-        type: SET_ALL_TOUCHED,
-      });
-    } else {
-      let action;
+    setDisplayErrors(true);
+    if (formState.formIsValid){
+      console.log('SUBMIT');
+    //   let action;
 
-      action = authActions.login(
-        formState.inputValues.email,
-        formState.inputValues.password
-      );
+    //   action = authActions.login(
+    //     formState.inputValues.email,
+    //     formState.inputValues.password
+    //   );
 
-      setError(null);
-      setIsLoading(true);
-      try {
-        await dispatch(action);
-      } catch (err) {
-        // console.log('catch error', err)
-        setIsLoading(false);
-        if (err.message === "NOT_VERIFIED") {
-          return props.navigation.navigate("Verify");
-        } else {
-          setError(err.message);
-        }
-      }
+    //   setError(null);
+    //   setIsLoading(true);
+    //   try {
+    //     await dispatch(action);
+    //   } catch (err) {
+    //     // console.log('catch error', err)
+    //     setIsLoading(false);
+    //     if (err.message === "NOT_VERIFIED") {
+    //       return props.navigation.navigate("Verify");
+    //     } else {
+    //       setError(err.message);
+    //     }
+    //   }
     }
   };
 
@@ -171,7 +151,7 @@ const LoginScreen = (props) => {
                   {
                     borderWidth:
                       !formState.inputValidities["email"] &&
-                      formState.touched["email"]
+                      displayErrors
                         ? 2
                         : 0,
                   },
@@ -182,7 +162,7 @@ const LoginScreen = (props) => {
                   size={18}
                   color={
                     !formState.inputValidities["email"] &&
-                    formState.touched["email"]
+                    displayErrors
                       ? Colors.red1
                       : Colors.blue1
                   }
@@ -194,26 +174,42 @@ const LoginScreen = (props) => {
                   id="email"
                   label="E-Mail"
                   keyboardType="email-address"
+                  displayErrors={displayErrors}
                   required
                   email
                   autoCapitalize="none"
-                  touched={formState.touched["email"]}
                   // errorText="Please enter a valid email address."
                   onInputChange={inputChangeHandler}
                   initialValue=""
                 />
               </View>
               {!formState.inputValidities["email"] &&
-                formState.touched["email"] && (
+                displayErrors && (
                   <Text style={styles.errorText}>
                     Please enter a valid email address.
                   </Text>
                 )}
-              <View style={styles.field}>
+              <View
+                style={[
+                  styles.field,
+                  {
+                    borderWidth:
+                      !formState.inputValidities["password"] &&
+                      displayErrors
+                        ? 2
+                        : 0,
+                  },
+                ]}
+              >
                 <Ionicons
                   name="md-key"
                   size={18}
-                  color={Colors.blue1}
+                  color={
+                    !formState.inputValidities["password"] &&
+                    displayErrors
+                      ? Colors.red1
+                      : Colors.blue1
+                  }
                   style={{ width: "10%" }}
                 />
                 <Input
@@ -221,6 +217,7 @@ const LoginScreen = (props) => {
                   login
                   id="password"
                   label="Password"
+                  displayErrors={displayErrors}
                   keyboardType="default"
                   secureTextEntry={!showPassword}
                   required
@@ -238,6 +235,12 @@ const LoginScreen = (props) => {
                   style={{ width: "10%" }}
                 />
               </View>
+              {!formState.inputValidities["password"] &&
+                displayErrors && (
+                  <Text style={styles.errorText}>
+                    Please enter a password.
+                  </Text>
+                )}
               <View style={{ alignItems: "center" }}>
                 <LongButton
                   isLoading={isLoading}

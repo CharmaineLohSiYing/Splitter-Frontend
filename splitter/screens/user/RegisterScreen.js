@@ -19,7 +19,6 @@ import Content from "../../components/UI/Content";
 import LongButton from "../../components/UI/LongButton";
 
 const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
-const SET_ALL_TOUCHED = "SET_ALL_TOUCHED";
 
 const formReducer = (state, action) => {
   if (action.type === FORM_INPUT_UPDATE) {
@@ -45,15 +44,6 @@ const formReducer = (state, action) => {
       inputValues: updatedValues,
       touched: updatedTouched,
     };
-  } else if (action.type === SET_ALL_TOUCHED) {
-    const updatedTouched = { ...state.touched };
-    for (const key in updatedTouched) {
-      updatedTouched[key] = true;
-    }
-    return {
-      ...state,
-      touched: updatedTouched,
-    };
   }
   return state;
 };
@@ -61,6 +51,7 @@ const formReducer = (state, action) => {
 const AuthScreen = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
+  const [displayError, setDisplayError] = useState(false);
   const dispatch = useDispatch();
 
   const [formState, dispatchFormState] = useReducer(formReducer, {
@@ -98,11 +89,8 @@ const AuthScreen = (props) => {
   }, [error]);
 
   const authHandler = () => {
-    if (!formState.formIsValid) {
-      dispatchFormState({
-        type: SET_ALL_TOUCHED,
-      });
-    } else {
+    setDisplayError(true);
+    if (formState.formIsValid) {
       if (
         formState.inputValues.password !== formState.inputValues.retypePassword
       ) {
@@ -172,6 +160,7 @@ const AuthScreen = (props) => {
               id="firstName"
               label="First Name"
               required
+              displayError={displayError}
               touched={formState.touched["firstName"]}
               autoCapitalize="words"
               errorText="Please enter your first name."
@@ -182,6 +171,7 @@ const AuthScreen = (props) => {
               id="lastName"
               label="Last Name"
               required
+              displayError={displayError}
               autoCapitalize="words"
               touched={formState.touched["lastName"]}
               errorText="Please enter your last name."
@@ -192,6 +182,7 @@ const AuthScreen = (props) => {
               id="email"
               label="E-Mail"
               keyboardType="email-address"
+              displayError={displayError}
               touched={formState.touched["email"]}
               required
               email
@@ -204,6 +195,7 @@ const AuthScreen = (props) => {
               id="mobileNumber"
               label="Mobile Number"
               keyboardType="number-pad"
+              displayError={displayError}
               required
               numbers
               touched={formState.touched["mobileNumber"]}
@@ -219,6 +211,7 @@ const AuthScreen = (props) => {
               touched={formState.touched["password"]}
               secureTextEntry
               required
+              displayError={displayError}
               minLength={5}
               autoCapitalize="none"
               errorText="Please enter a password of at least 5 characters."
@@ -230,6 +223,7 @@ const AuthScreen = (props) => {
               label="Retype Password"
               touched={formState.touched["retypePassword"]}
               retypePassword
+              displayError={displayError}
               secureTextEntry
               required
               autoCapitalize="none"

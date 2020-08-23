@@ -41,10 +41,10 @@ const LoanModal = (props) => {
   const createLoan = async () => {
     var borrowerId = currUserId;
     let url =
-      "http://192.168.1.190:5000/api/loan/" + currUserId + "/" + friendUserId;
+      "http://192.168.1.231:5000/api/loan/" + currUserId + "/" + friendUserId;
     if (!friendUserId) {
       url =
-        "http://192.168.1.190:5000/api/loan/" +
+        "http://192.168.1.231:5000/api/loan/" +
         currUserId +
         "/" +
         friendMobileNumber;

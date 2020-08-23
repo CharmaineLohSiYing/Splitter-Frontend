@@ -26,7 +26,7 @@ export const setContacts = (contacts) => {
 
 export const signup = (firstName, lastName, email, password, mobileNumber) => {
   return async (dispatch) => {
-    const response = await fetch("http://192.168.1.190:5000/api/auth/signup", {
+    const response = await fetch("http://192.168.1.231:5000/api/auth/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -59,7 +59,7 @@ export const signup = (firstName, lastName, email, password, mobileNumber) => {
 export const login = (email, password) => {
   const email1 = email
   return async (dispatch) => {
-    const response = await fetch("http://192.168.1.190:5000/api/auth/login", {
+    const response = await fetch("http://192.168.1.231:5000/api/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -97,7 +97,7 @@ export const login = (email, password) => {
 
 export const verifyOTP = (otp, user_id) => {
   return async (dispatch) => {
-    const response = await fetch("http://192.168.1.190:5000/api/auth/verifyotp", {
+    const response = await fetch("http://192.168.1.231:5000/api/auth/verifyotp", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -133,7 +133,7 @@ export const verifyOTP = (otp, user_id) => {
 export const updateDetails = (inputFirstName, inputLastName) => {
   return async (dispatch, getState) => {
     const response = await fetch(
-      "http://192.168.1.190:5000/api/user/name/" + getState().auth.userId,
+      "http://192.168.1.231:5000/api/user/name/" + getState().auth.userId,
       {
         method: "PUT",
         headers: {
@@ -164,7 +164,7 @@ export const updateDetails = (inputFirstName, inputLastName) => {
 export const updateEmail = (email) => {
   return async (dispatch, getState) => {
     const response = await fetch(
-      "http://192.168.1.190:5000/api/user/email/" + getState().auth.userId,
+      "http://192.168.1.231:5000/api/user/email/" + getState().auth.userId,
       {
         method: "PUT",
         headers: {
@@ -193,7 +193,7 @@ export const updateEmail = (email) => {
 };
 export const updateMobileNumber = (inputOTP) => {
   return async (dispatch, getState) => {
-    const response = await fetch("http://192.168.1.190:5000/api/auth/verifyotp", {
+    const response = await fetch("http://192.168.1.231:5000/api/auth/verifyotp", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

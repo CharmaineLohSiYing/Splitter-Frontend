@@ -25,20 +25,17 @@ const inputReducer = (state, action) => {
 };
 
 const Input = (props) => {
-
   const [inputState, dispatch] = useReducer(inputReducer, {
     value: props.initialValue ? props.initialValue : "",
     isValid: false,
     touched: false,
   });
 
-  const { onInputChange, id, touched } = props;
+  const { onInputChange, id, displayError } = props;
+
 
   useEffect(() => {
-    
-    if (inputState.touched) {
-      onInputChange(id, inputState.value, inputState.isValid);
-    }
+    onInputChange(id, inputState.value, inputState.isValid);
   }, [inputState, onInputChange, id]);
 
   const textChangeHandler = (text) => {
@@ -71,10 +68,11 @@ const Input = (props) => {
   };
 
   useEffect(() => {
-    if (touched){
+    if (displayError){
       lostFocusHandler()
     }
-  }, [touched])
+  }, [displayError])
+
 
   if (props.login) {
     return (
@@ -85,7 +83,6 @@ const Input = (props) => {
           {...props}
           value={inputState.value}
           onChangeText={textChangeHandler}
-          onBlur={lostFocusHandler}
         />
 
         {!inputState.isValid && inputState.touched && props.errorText && (
@@ -138,7 +135,7 @@ const Input = (props) => {
         onBlur={lostFocusHandler}
       />
 
-      {!inputState.isValid && inputState.touched && (
+      {!inputState.isValid && inputState.touched  && (
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>{props.errorText}</Text>
         </View>
