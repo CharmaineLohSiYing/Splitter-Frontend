@@ -47,7 +47,7 @@ const ViewContactLoansScreen = (props) => {
   const [createNewTransaction, setCreateNewTransaction] = useState(false);
   
   useEffect(() => {
-    if (successMessage || errorMessage){
+    if (successMessage){
       setTimeout(() => {
         setSuccessMessage(null)
       }, 3000)
@@ -70,7 +70,7 @@ const ViewContactLoansScreen = (props) => {
       try {
         console.log("have friend id");
         response = await fetch(
-          "http://192.168.1.231:5000/api/loan/friend/" +
+          "http://192.168.1.190:5000/api/loan/friend/" +
             currUserId +
             "/" +
             friendUserId,
@@ -88,7 +88,7 @@ const ViewContactLoansScreen = (props) => {
       try {
         console.log("no friend id", friendUserId);
         response = await fetch(
-          "http://192.168.1.231:5000/api/loan/friend/mobileNumber/" +
+          "http://192.168.1.190:5000/api/loan/friend/mobileNumber/" +
             currUserId +
             "/" +
             friendMobileNumber,

@@ -83,27 +83,23 @@ const LoginScreen = (props) => {
   const authHandler = async () => {
     setDisplayErrors(true);
     if (formState.formIsValid){
-      console.log('SUBMIT');
-    //   let action;
 
-    //   action = authActions.login(
-    //     formState.inputValues.email,
-    //     formState.inputValues.password
-    //   );
-
-    //   setError(null);
-    //   setIsLoading(true);
-    //   try {
-    //     await dispatch(action);
-    //   } catch (err) {
-    //     // console.log('catch error', err)
-    //     setIsLoading(false);
-    //     if (err.message === "NOT_VERIFIED") {
-    //       return props.navigation.navigate("Verify");
-    //     } else {
-    //       setError(err.message);
-    //     }
-    //   }
+      setError(null);
+      setIsLoading(true);
+      try {
+        await dispatch(authActions.login(
+          formState.inputValues.email,
+          formState.inputValues.password
+        ));
+      } catch (err) {
+        // console.log('catch error', err)
+        setIsLoading(false);
+        if (err.message === "NOT_VERIFIED") {
+          return props.navigation.navigate("Verify");
+        } else {
+          setError(err.message);
+        }
+      }
     }
   };
 

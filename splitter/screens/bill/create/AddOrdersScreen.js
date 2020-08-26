@@ -236,7 +236,7 @@ const AddOrdersScreen = (props) => {
           ]}
           keyExtractor={(item, index) => index.toString()}
         />
-        {(sharedOrderToUpdate) && <AddOrderModal onClose={closeUpdateSharedOrderModal} orderId={sharedOrderToUpdate}/>}
+        {(sharedOrderToUpdate) && <AddOrderModal onClose={closeUpdateSharedOrderModal} sharedOrderIdToUpdate={sharedOrderToUpdate}/>}
         {(createSharedOrder) && <AddOrderModal onClose={closeCreateSharedOrderModal} newSharedOrder={true}/>}
         {(individualOrderToUpdate) && <AddOrderModal onClose={closeUpdateIndividualOrderModal} user={individualOrderToUpdate}/>}
     </Screen>

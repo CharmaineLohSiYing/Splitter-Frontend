@@ -45,7 +45,7 @@ const formReducer = (state, action) => {
 const OTPScreen = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
-  const [inputOTP, setInputOTP] = useState("");
+  const [displayError, setdisplayError] = useState(false)
   const dispatch = useDispatch();
 
   const mobileNumber = props.route.params.mobileNumber;
@@ -80,6 +80,7 @@ const OTPScreen = (props) => {
   }, [error]);
 
   const otpSubmitHandler = async () => {
+    if (formState.formIsValid){
       let action = authActions.verifyOTP(formState.inputValues.otp, userId);
       setError(null);
       setIsLoading(true);
@@ -89,6 +90,11 @@ const OTPScreen = (props) => {
         setError(err.message);
         setIsLoading(false);
       }
+    } else {
+      console.log('displayError')
+      setdisplayError(true)
+    }
+     
   }
     
    
@@ -106,11 +112,12 @@ const OTPScreen = (props) => {
             horizontal={true}
             id="otp"
             keyboardType="number-pad"
+            displayError={displayError}
             required
             numbers
             minLength={6}
             maxLength={6}
-            errorText="Please enter a valid otp."
+            errorText="Please enter a valid 6-digit otp."
             onInputChange={inputChangeHandler}
             initialValue={""}
             initiallyValid={false}

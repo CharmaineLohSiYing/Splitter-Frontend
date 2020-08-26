@@ -26,8 +26,9 @@ import AddOrderModal from "../../../components/AddOrderModal";
 import FormRow from "../../../components/UI/FormRow";
 import LabelLeft from "../../../components/UI/LabelLeft";
 import InputRight from "../../../components/UI/InputRight";
-import Screen from "../../../components/UI/Screen"
-import FlatListLineSeparator from "../../../components/UI/FlatListLineSeparator"
+import Screen from "../../../components/UI/Screen";
+import FlatListLineSeparator from "../../../components/UI/FlatListLineSeparator";
+import FlashMessage from "../../../components/FlashMessage";
 
 import { useSelector, useDispatch } from "react-redux";
 
@@ -40,6 +41,7 @@ const AddPayersScreen = (props) => {
   const [payerToUpdate, setPayerToUpdate] = useState(null);
   const unpaidAmount = useSelector((state) => state.bill.unpaidAmount);
   const netBill = useSelector((state) => state.bill.billDetails.netBill);
+  const [flashMessage, setFlashMessage] = useState(null);
 
   useEffect(() => {
     setAttendees(attendeesFromStore);
@@ -75,63 +77,77 @@ const AddPayersScreen = (props) => {
   };
 
   const createBillHandler = async () => {
+    setError(null);
     if (unpaidAmount > 0) {
-      console.log('unpaid amount',unpaidAmount)
-      setError("Numbers do not tally");
+      setError("Please ensure unsettled amount is $0");
     } else {
       setError(null);
       setIsLoading(true);
       try {
-        // console.log("before dispatch");
-        // console.log("isedit", isEdit);
         if (isEdit) {
           await dispatch(billActions.editBill());
         } else {
           await dispatch(billActions.createBill());
         }
         // console.log("after dispatch");
-        props.navigation.navigate("Bills");
+        props.navigation.navigate("Bills", { createBillSuccess: true });
+        setIsLoading(false);
       } catch (err) {
-        setError("Error");
+        setIsLoading(false);
+        if (isEdit) {
+          setFlashMessage("Something went wrong while updating bill");
+        } else {
+          setFlashMessage("Something went wrong while creating bill");
+        }
+
         // console.log("error caught");
       }
-      setIsLoading(false);
     }
-  }
+  };
 
   const PayerHeader = () => {
-    return <View
-    style={{
-      backgroundColor: Colors.blue4Rgba,
-      height: 50,
-      marginBottom: 20,
-    }}
-  >
-    <FormRow>
-      <View style={{ flex: 1, padding: 10 }}>
-        <Text
-          style={{
-            fontStyle: "italic",
-            fontSize: 16,
-            fontWeight: "bold",
-          }}
-        >
-          Unsettled Amount
-        </Text>
+    return (
+      <View
+        style={{
+          backgroundColor: Colors.blue4Rgba,
+          height: 50,
+          marginBottom: 20,
+        }}
+      >
+        <FormRow>
+          <View style={{ flex: 1, padding: 10 }}>
+            <Text
+              style={{
+                fontStyle: "italic",
+                fontSize: 16,
+                fontWeight: "bold",
+              }}
+            >
+              Unsettled Amount
+            </Text>
+          </View>
+          <View style={{ flex: 1, padding: 10, alignItems: "flex-end" }}>
+            <Text
+              style={{
+                fontStyle: "italic",
+                fontSize: 16,
+                fontWeight: "bold",
+              }}
+            >
+              $ {unpaidAmount} / {netBill}
+            </Text>
+          </View>
+        </FormRow>
       </View>
-      <View style={{ flex: 1, padding: 10, alignItems: "flex-end" }}>
-        <Text
-          style={{
-            fontStyle: "italic",
-            fontSize: 16,
-            fontWeight: "bold",
-          }}
-        >
-          $ {unpaidAmount} / {netBill}
-        </Text>
+    );
+  };
+
+  if (isLoading) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color={Colors.blue1} />
       </View>
-    </FormRow>
-  </View>
+    );
   }
 
   return (
@@ -143,11 +159,10 @@ const AddPayersScreen = (props) => {
         title="Last thing, who settled the bill?"
       />
 
-      
       <FlatList
         ListHeaderComponent={PayerHeader}
-        style={{width:'100%'}}
-        contentContainerStyle={{paddingHorizontal:'5%', paddingVertical:20 }}
+        style={{ width: "100%" }}
+        contentContainerStyle={{ paddingHorizontal: "5%", paddingVertical: 20 }}
         ItemSeparatorComponent={FlatListLineSeparator}
         keyExtractor={(item, index) => index.toString()}
         data={Object.keys(attendees)}
@@ -157,7 +172,9 @@ const AddPayersScreen = (props) => {
               backgroundColor:
                 attendees[item].paidAmount > 0 ? "white" : Colors.gray5,
             }}
-            nameTextColor={attendees[item].paidAmount > 0 ? "black" : Colors.gray2}
+            nameTextColor={
+              attendees[item].paidAmount > 0 ? "black" : Colors.gray2
+            }
             onSelect={updatePaidAmountHandler}
             id={item}
             name={attendees[item].name}
@@ -176,6 +193,7 @@ const AddPayersScreen = (props) => {
           }}
         />
       )}
+      {flashMessage && <FlashMessage text={flashMessage} type={"error"} />}
     </Screen>
   );
 };
@@ -192,7 +210,7 @@ const styles = StyleSheet.create({
   },
   screen: {
     flex: 1,
-    alignItems: "center"
+    alignItems: "center",
   },
 });
 export default AddPayersScreen;

@@ -23,15 +23,34 @@ import * as authActions from "../../store/actions/auth";
 import * as billActions from "../../store/actions/bill";
 import Colors from "../../constants/Colors";
 import GlobalStyles from "../../assets/style";
+import FlashMessage from "../../components/FlashMessage";
 
 const BillsScreen = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
-  const [text, setText] = useState("hello");
+  const [flashMessage, setFlashMessage] = useState(null);
   const userBills = useSelector((state) => state.bill.userBills);
   const dispatch = useDispatch();
 
   var contactsFromStore = useSelector((state) => state.auth.contacts);
+  const {params} = props.route;
+
+  useEffect(() => {
+    if (flashMessage){
+      setTimeout(() => {
+        setFlashMessage(null)
+      }, 3000)
+    }
+  }, [flashMessage])
+
+  useEffect(() => {
+    if (params && params.createBillSuccess){
+      setTimeout(() => {
+
+      }, 3000)
+      setFlashMessage("Successfully created bill")
+    }
+  }, [params])
 
   const addBillHandler = () => {
     props.navigation.navigate("AddAttendees");
@@ -145,6 +164,7 @@ const BillsScreen = (props) => {
           />
         )}
       />
+      {flashMessage && <FlashMessage text={flashMessage} type={'success'}/>}
     </Screen>
   );
 };

@@ -30,6 +30,8 @@ const ItemSeparator = () => {
 
 const AddOrderModal = (props) => {
   const dispatch = useDispatch();
+  const [error, setError] = useState(null);
+
   const { sharedOrderIdToUpdate, newSharedOrder, user, updatePayer } = props;
   let sharedOrders;
   let sharedOrder;
@@ -63,7 +65,15 @@ const AddOrderModal = (props) => {
   let initialAmount = 0;
 
   useEffect(() => {
-    
+    if (error) {
+      Alert.alert(
+        "Error",
+        error
+      );
+    }
+  }, [error]);
+
+  useEffect(() => {
     if (sharedOrderIdToUpdate) {
       initialAmount = sharedOrder.amount;
     } else if (updatePayer) {
@@ -76,7 +86,7 @@ const AddOrderModal = (props) => {
       initialAmount = matchedUser.amount;
     }
     console.log("useeffect", initialAmount);
-    
+
     setCurrentOperand(initialAmount);
   }, []);
 
@@ -254,29 +264,37 @@ const AddOrderModal = (props) => {
   }, []);
 
   const onSubmit = async () => {
-    let finalValue = 0;
-    if (previousOperand && operation) {
-      finalValue = compute(currentOperand, previousOperand, operation);
+    setError(null);
+    if (!user && (sharers.length < 2 || currentOperand == "0")) {
+      setError("Select at least 2 people and set spent amount greater than 0");
     } else {
-      finalValue = currentOperand;
-    }
-    if (sharedOrderIdToUpdate) {
-      await dispatch(
-        billActions.updateSharedOrder(
-          sharedOrderIdToUpdate,
-          finalValue,
-          sharers
-        )
-      );
-    } else if (newSharedOrder) {
-      await dispatch(billActions.addSharedOrder(finalValue, sharers));
-    } else if (updatePayer) {
-      await dispatch(billActions.updatePaidAmount(user, finalValue));
-    } else {
-      await dispatch(billActions.updateIndividualOrder(user, finalValue));
-    }
+      let finalValue = 0;
+      if (previousOperand && operation) {
+        finalValue = compute(currentOperand, previousOperand, operation);
+      } else {
+        finalValue = currentOperand;
+      }
+      if (sharedOrderIdToUpdate) {
+        console.log('update shared order')
+        await dispatch(
+          billActions.updateSharedOrder(
+            sharedOrderIdToUpdate,
+            finalValue,
+            sharers
+          )
+        );
+      } else if (newSharedOrder) {
+        
+        await dispatch(billActions.addSharedOrder(finalValue, sharers));
+      } else if (updatePayer) {
+        await dispatch(billActions.updatePaidAmount(user, finalValue));
+      } else {
+        console.log('update individual')
+        await dispatch(billActions.updateIndividualOrder(user, finalValue));
+      }
 
-    props.onClose();
+      props.onClose();
+    }
   };
 
   if (user) {
@@ -290,7 +308,7 @@ const AddOrderModal = (props) => {
         onClose={props.onClose}
         onSubmit={onSubmit}
         contentsStyle={styles.individualOrderModalContents}
-        modalViewStyle={{flex:1}}
+        modalViewStyle={{ flex: 1 }}
       >
         <CalculatorComponent />
       </AppModal>
@@ -298,7 +316,7 @@ const AddOrderModal = (props) => {
   } else if (updatePayer) {
     return (
       <AppModal
-        modalViewStyle={{flex:1}}
+        modalViewStyle={{ flex: 1 }}
         title={
           matchedUser.name === "Me"
             ? "How Much I Paid"
@@ -315,25 +333,31 @@ const AddOrderModal = (props) => {
 
   // add/update shared order
   return (
-    <AppModal title="Add Order" onClose={props.onClose} onSubmit={onSubmit} contentsStyle={{flex: 1}} modalViewStyle={{flex:1}}>
-        <FlatList
-          ItemSeparatorComponent={ItemSeparator}
-          ListHeaderComponent={HeaderComponent}
-          ListFooterComponent={CalculatorComponent}
-          keyExtractor={(item, index) => index.toString()}
-          data={Object.keys(attendees)}
-          initialNumToRender={10}
-          renderItem={({ item, index }) => (
-            <SharerDisplay
-              first={index === 0}
-              last={index === Object.keys(attendees).length - 1}
-              name={attendees[item].name}
-              selected={sharers.includes(item)}
-              id={item}
-              onSelect={toggleSharerHandler}
-            />
-          )}
-        />
+    <AppModal
+      title="Add Order"
+      onClose={props.onClose}
+      onSubmit={onSubmit}
+      contentsStyle={{ flex: 1 }}
+      modalViewStyle={{ flex: 1 }}
+    >
+      <FlatList
+        ItemSeparatorComponent={ItemSeparator}
+        ListHeaderComponent={HeaderComponent}
+        ListFooterComponent={CalculatorComponent}
+        keyExtractor={(item, index) => index.toString()}
+        data={Object.keys(attendees)}
+        initialNumToRender={10}
+        renderItem={({ item, index }) => (
+          <SharerDisplay
+            first={index === 0}
+            last={index === Object.keys(attendees).length - 1}
+            name={attendees[item].name}
+            selected={sharers.includes(item)}
+            id={item}
+            onSelect={toggleSharerHandler}
+          />
+        )}
+      />
     </AppModal>
   );
 };
@@ -342,7 +366,7 @@ const styles = StyleSheet.create({
   sharedOrderCalculator: {
     width: "70%",
     height: 300,
-    marginBottom: 10
+    marginBottom: 10,
   },
   individualOrderCalculator: {
     width: "100%",

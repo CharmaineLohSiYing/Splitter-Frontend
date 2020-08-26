@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useReducer, useCallback, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useReducer,
+  useCallback,
+  useRef,
+} from "react";
 import {
   ScrollView,
   View,
@@ -82,14 +88,14 @@ const AuthScreen = (props) => {
     formIsValid: false,
   });
 
-  const lastNameRef = useRef(null)
-  const emailRef = useRef(null)
-  const mobileNumRef = useRef(null)
-  const passwordRef = useRef(null)
-  const retypePasswordRef = useRef(null)
+  const lastNameRef = useRef(null);
+  const emailRef = useRef(null);
+  const mobileNumRef = useRef(null);
+  const passwordRef = useRef(null);
+  const retypePasswordRef = useRef(null);
 
   const focusNextTextInput = (type) => {
-    switch (type){
+    switch (type) {
       case "lastName":
         lastNameRef.current.focus();
         break;
@@ -108,8 +114,7 @@ const AuthScreen = (props) => {
       default:
         return;
     }
-    
-  }
+  };
 
   useEffect(() => {
     if (error) {
@@ -117,7 +122,7 @@ const AuthScreen = (props) => {
     }
   }, [error]);
 
-  const authHandler = () => {
+  const authHandler = async () => {
     setDisplayError(true);
     if (formState.formIsValid) {
       if (
@@ -140,7 +145,7 @@ const AuthScreen = (props) => {
       );
 
       try {
-        dispatch(action);
+        await dispatch(action);
         setIsLoading(false);
         props.navigation.navigate("OTP", {
           mobileNumber: formState.inputValues.mobileNumber,
@@ -188,6 +193,7 @@ const AuthScreen = (props) => {
               autoFocus={true}
               id="firstName"
               label="First Name"
+              blurOnSubmit={false}
               required
               onSubmitEditing={() => focusNextTextInput("lastName")}
               displayError={displayError}
@@ -202,6 +208,7 @@ const AuthScreen = (props) => {
               label="Last Name"
               onSubmitEditing={() => focusNextTextInput("email")}
               ref={lastNameRef}
+              blurOnSubmit={false}
               required
               displayError={displayError}
               autoCapitalize="words"
@@ -216,6 +223,7 @@ const AuthScreen = (props) => {
               keyboardType="email-address"
               onSubmitEditing={() => focusNextTextInput("mobileNum")}
               ref={emailRef}
+              blurOnSubmit={false}
               displayError={displayError}
               touched={formState.touched["email"]}
               required
@@ -229,6 +237,7 @@ const AuthScreen = (props) => {
               id="mobileNumber"
               label="Mobile Number"
               keyboardType="number-pad"
+              blurOnSubmit={false}
               displayError={displayError}
               onSubmitEditing={() => focusNextTextInput("password")}
               ref={mobileNumRef}
@@ -244,6 +253,7 @@ const AuthScreen = (props) => {
             <Input
               id="password"
               label="Password"
+              blurOnSubmit={false}
               onSubmitEditing={() => focusNextTextInput("retypePassword")}
               ref={passwordRef}
               touched={formState.touched["password"]}
@@ -256,10 +266,12 @@ const AuthScreen = (props) => {
               onInputChange={inputChangeHandler}
               initialValue=""
             />
+
             <Input
               id="retypePassword"
               label="Retype Password"
               ref={retypePasswordRef}
+              blurOnSubmit={false}
               touched={formState.touched["retypePassword"]}
               retypePassword
               displayError={displayError}

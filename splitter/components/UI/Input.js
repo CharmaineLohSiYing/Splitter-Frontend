@@ -2,6 +2,7 @@ import React, { useReducer, useEffect } from "react";
 import { View, Text, TextInput, StyleSheet } from "react-native";
 import MyAppText from "../../components/UI/MyAppText";
 import Colors from "../../constants/Colors";
+import { Ionicons } from "@expo/vector-icons";
 
 const INPUT_CHANGE = "INPUT_CHANGE";
 const INPUT_BLUR = "INPUT_BLUR";
@@ -74,6 +75,7 @@ const Input = React.forwardRef((props, ref) => {
   }, [displayError])
 
 
+
   if (props.login) {
     return (
       <View style={props.style}>
@@ -94,6 +96,7 @@ const Input = React.forwardRef((props, ref) => {
       </View>
     );
   }
+
   if (props.horizontal) {
     return (
       <View>
@@ -125,6 +128,7 @@ const Input = React.forwardRef((props, ref) => {
       </View>
     );
   }
+
 
   return (
     <View>

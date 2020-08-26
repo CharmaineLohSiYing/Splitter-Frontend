@@ -87,7 +87,7 @@ const VerifyMobileNumberScreen = (props) => {
     try {
         
       const response = await fetch(
-        'http://192.168.1.231:5000/api/auth/requestOTP',
+        'http://192.168.1.190:5000/api/auth/requestOTP',
         {
           method: "POST",
           headers: {

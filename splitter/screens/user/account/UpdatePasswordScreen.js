@@ -96,7 +96,7 @@ const UpdatePasswordScreen = (props) => {
       setIsLoading(true);
       try {
         const response = await fetch(
-          "http://192.168.1.231:5000/api/auth/changePassword",
+          "http://192.168.1.190:5000/api/auth/changePassword",
           {
             method: "PUT",
             headers: {

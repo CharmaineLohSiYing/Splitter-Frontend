@@ -3,7 +3,7 @@ export const SET_LOANS = "SET_LOANS";
 export const fetchLoans = () => {
   console.log('fetch loans -------------')
   return async (dispatch, getState) => {
-    const response = await fetch("http://192.168.1.231:5000/api/loan/groupByFriends/" + getState().auth.userId, {
+    const response = await fetch("http://192.168.1.190:5000/api/loan/groupByFriends/" + getState().auth.userId, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

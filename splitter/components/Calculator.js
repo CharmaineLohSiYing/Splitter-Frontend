@@ -75,6 +75,7 @@ class Calculator extends React.PureComponent {
       currentOperand: "0",
       previousOperand: "",
     });
+    this.props.getValuesFromCalculator(0)
   };
 
   pressDeleteHandler = (value) => {
@@ -83,9 +84,11 @@ class Calculator extends React.PureComponent {
       if (length === 1) {
         this.pressClearHandler();
       } else {
+        let newValue = this.state.currentOperand.toString().slice(0, -1);
         this.setState({
-          currentOperand: this.state.currentOperand.toString().slice(0, -1),
+          currentOperand: newValue
         });
+        this.props.getValuesFromCalculator(newValue);
       }
     }
   };

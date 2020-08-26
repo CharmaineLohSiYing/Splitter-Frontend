@@ -5,7 +5,7 @@ import Colors from "../../constants/Colors"
 const LongButton = (props) => {
   return (
     <TouchableOpacity onPress={props.onPress} style={[styles.container, props.containerStyle, {opacity: props.disabled ? 0.5: 1}]} disabled={props.disabled}>
-      {!props.isLoading ? <Text style={[styles.text, props.textStyle]}>{props.text}</Text> : <ActivityIndicator size="small" color={props.textStyle.color ? props.textStyle.color : Colors.blue1} />}
+      {!props.isLoading ? <Text style={[styles.text, props.textStyle]}>{props.text}</Text> : <ActivityIndicator size="small" color={props.textStyle && props.textStyle.color ? props.textStyle.color : Colors.blue1} />}
     </TouchableOpacity>
   );
 };
