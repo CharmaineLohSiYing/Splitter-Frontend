@@ -57,6 +57,14 @@ const AddPayersScreen = (props) => {
   });
 
   useEffect(() => {
+    if (flashMessage){
+      setTimeout(() => {
+        setFlashMessage(null)
+      }, 3000)
+    }
+  }, [flashMessage])
+
+  useEffect(() => {
     if (props.route.params) {
       if (props.route.params.isEdit) {
         setIsEdit(true);
