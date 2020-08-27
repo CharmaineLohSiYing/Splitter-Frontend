@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useReducer, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useReducer,
+  useCallback,
+  useRef,
+} from "react";
 import {
   ScrollView,
   View,
@@ -19,6 +25,7 @@ import Content from "../../components/UI/Content";
 import Colors from "../../constants/Colors";
 import * as authActions from "../../store/actions/auth";
 import LongButton from "../../components/UI/LongButton";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
 
@@ -52,6 +59,8 @@ const LoginScreen = (props) => {
   const [displayErrors, setDisplayErrors] = useState(false);
   const dispatch = useDispatch();
 
+  const passwordRef = useRef(null);
+
   const [formState, dispatchFormState] = useReducer(formReducer, {
     inputValues: {
       email: "",
@@ -82,15 +91,16 @@ const LoginScreen = (props) => {
 
   const authHandler = async () => {
     setDisplayErrors(true);
-    if (formState.formIsValid){
-
+    if (formState.formIsValid) {
       setError(null);
       setIsLoading(true);
       try {
-        await dispatch(authActions.login(
-          formState.inputValues.email,
-          formState.inputValues.password
-        ));
+        await dispatch(
+          authActions.login(
+            formState.inputValues.email,
+            formState.inputValues.password
+          )
+        );
       } catch (err) {
         // console.log('catch error', err)
         setIsLoading(false);
@@ -116,26 +126,26 @@ const LoginScreen = (props) => {
   );
 
   return (
-    <KeyboardAvoidingView
-      // behavior="padding"
-      keyboardVerticalOffset={0}
+    <LinearGradient
+      colors={[
+        "#3E7DD8",
+        "#538BDC",
+        "#81ABE6",
+        "#90B6E9",
+        "#A6C5EE",
+        "#BCD3F2",
+        "#C8DBF4",
+        "#D5E3F7",
+        "#fff",
+      ]}
       style={styles.screen}
     >
-      <LinearGradient
-        colors={[
-          "#3E7DD8",
-          "#538BDC",
-          "#81ABE6",
-          "#90B6E9",
-          "#A6C5EE",
-          "#BCD3F2",
-          "#C8DBF4",
-          "#D5E3F7",
-          "#fff",
-        ]}
-        style={styles.gradient}
+      <KeyboardAwareScrollView
+        // behavior="padding"
+        keyboardVerticalOffset={0}
+        contentContainerStyle={{flexGrow: 1}}
       >
-        <Content style={{ justifyContent: "space-between", width: "80%" }}>
+        <Content style={{ justifyContent: "space-between", width: "80%", alignSelf: 'center', paddingTop: 120, paddingBottom: 50}}>
           <View>
             <View style={styles.logoContainer}>
               <View style={styles.logo}></View>
@@ -146,8 +156,7 @@ const LoginScreen = (props) => {
                   styles.field,
                   {
                     borderWidth:
-                      !formState.inputValidities["email"] &&
-                      displayErrors
+                      !formState.inputValidities["email"] && displayErrors
                         ? 2
                         : 0,
                   },
@@ -157,8 +166,7 @@ const LoginScreen = (props) => {
                   name="md-mail"
                   size={18}
                   color={
-                    !formState.inputValidities["email"] &&
-                    displayErrors
+                    !formState.inputValidities["email"] && displayErrors
                       ? Colors.red1
                       : Colors.blue1
                   }
@@ -171,6 +179,7 @@ const LoginScreen = (props) => {
                   label="E-Mail"
                   keyboardType="email-address"
                   displayErrors={displayErrors}
+                  onSubmitEditing={() => passwordRef.current.focus()}
                   required
                   email
                   autoCapitalize="none"
@@ -179,19 +188,17 @@ const LoginScreen = (props) => {
                   initialValue=""
                 />
               </View>
-              {!formState.inputValidities["email"] &&
-                displayErrors && (
-                  <Text style={styles.errorText}>
-                    Please enter a valid email address.
-                  </Text>
-                )}
+              {!formState.inputValidities["email"] && displayErrors && (
+                <Text style={styles.errorText}>
+                  Please enter a valid email address.
+                </Text>
+              )}
               <View
                 style={[
                   styles.field,
                   {
                     borderWidth:
-                      !formState.inputValidities["password"] &&
-                      displayErrors
+                      !formState.inputValidities["password"] && displayErrors
                         ? 2
                         : 0,
                   },
@@ -201,8 +208,7 @@ const LoginScreen = (props) => {
                   name="md-key"
                   size={18}
                   color={
-                    !formState.inputValidities["password"] &&
-                    displayErrors
+                    !formState.inputValidities["password"] && displayErrors
                       ? Colors.red1
                       : Colors.blue1
                   }
@@ -211,8 +217,10 @@ const LoginScreen = (props) => {
                 <Input
                   style={{ flex: 1 }}
                   login
+                  ref={passwordRef}
                   id="password"
                   label="Password"
+                  onSubmitEditing={() => passwordRef.current.blur()}
                   displayErrors={displayErrors}
                   keyboardType="default"
                   secureTextEntry={!showPassword}
@@ -231,12 +239,9 @@ const LoginScreen = (props) => {
                   style={{ width: "10%" }}
                 />
               </View>
-              {!formState.inputValidities["password"] &&
-                displayErrors && (
-                  <Text style={styles.errorText}>
-                    Please enter a password.
-                  </Text>
-                )}
+              {!formState.inputValidities["password"] && displayErrors && (
+                <Text style={styles.errorText}>Please enter a password.</Text>
+              )}
               <View style={{ alignItems: "center" }}>
                 <LongButton
                   isLoading={isLoading}
@@ -268,8 +273,8 @@ const LoginScreen = (props) => {
             <Ionicons name="md-arrow-forward" size={18} color={Colors.blue1} />
           </TouchableOpacity>
         </Content>
-      </LinearGradient>
-    </KeyboardAvoidingView>
+      </KeyboardAwareScrollView>
+    </LinearGradient>
   );
 };
 
@@ -293,10 +298,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   gradient: {
-    paddingTop: 120,
-    flex: 1,
-    alignItems: "center",
-    paddingBottom: 50,
+    // paddingTop: 120,
+    // flex: 1,
+    // alignItems: "center",
+    // paddingBottom: 50,
   },
   authContainer: {
     width: "80%",

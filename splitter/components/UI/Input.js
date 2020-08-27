@@ -28,7 +28,7 @@ const inputReducer = (state, action) => {
 const Input = React.forwardRef((props, ref) => {
   const [inputState, dispatch] = useReducer(inputReducer, {
     value: props.initialValue ? props.initialValue : "",
-    isValid: false,
+    isValid: props.initiallyValid ? props.initiallyValid : false,
     touched: false,
   });
 

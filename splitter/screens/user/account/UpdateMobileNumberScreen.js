@@ -106,7 +106,6 @@ const UpdateMobileNumberScreen = (props) => {
           }),
         }
       );
-
       if (!response.ok) {
         setIsLoading(false);
         setFlashMessage("Something went wrong while updating your mobile number"); 
@@ -131,6 +130,7 @@ const UpdateMobileNumberScreen = (props) => {
           keyboardType="number-pad"
           required
           numbers
+          autoFocus={true}
           displayError={displayFieldError}
           minLength={8}
           maxLength={8}
@@ -144,7 +144,6 @@ const UpdateMobileNumberScreen = (props) => {
           text="Send OTP to new number"
           onPress={submitHandler}
           isLoading={isLoading}
-          disabled={!formState.formIsValid}
         />
       </Content>
       {flashMessage && <FlashMessage text={flashMessage} type={"error"}/>}

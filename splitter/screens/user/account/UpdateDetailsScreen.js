@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer, useCallback } from "react";
+import React, { useState, useEffect, useReducer, useCallback, useRef } from "react";
 import {
   ScrollView,
   View,
@@ -53,6 +53,8 @@ const UpdateDetailsScreen = (props) => {
   const [flashMessage, setFlashMessage] = useState(null);
   const [displayFieldError, setDisplayFieldError] = useState(false);
 
+  const lastNameRef = useRef(null);
+
   useEffect(() => {
     if (flashMessage) {
       setTimeout(() => {
@@ -100,7 +102,7 @@ const UpdateDetailsScreen = (props) => {
         )
       );
       setIsLoading(false);
-      props.navigation.goBack({editDetailsSuccess: true});
+      props.navigation.navigate('Settings', {editDetailsSuccess: true});
     } catch (err) {
       setIsLoading(false);
       setFlashMessage("Something went wrong while updating your details")
@@ -128,12 +130,15 @@ const UpdateDetailsScreen = (props) => {
             onInputChange={inputChangeHandler}
             initialValue={props.route.params.firstName}
             initiallyValid={true}
+            onSubmitEditing={() => lastNameRef.current.focus()}
           />
           <Input
             horizontal={true}
             id="lastName"
             label="Last Name"
             required
+            ref={lastNameRef}
+            onSubmitEditing={() => lastNameRef.current.blur()}
             displayError={displayFieldError}
             autoCapitalize="words"
             errorText="Please enter a valid last name."
@@ -147,7 +152,6 @@ const UpdateDetailsScreen = (props) => {
           text="Save Changes"
           onPress={submitHandler}
           isLoading={isLoading}
-          disabled={!formState.formIsValid}
           containerStyle={{ marginBottom: 10 }}
         />
       </Content>

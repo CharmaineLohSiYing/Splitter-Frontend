@@ -88,12 +88,11 @@ const UpdateEmailScreen = (props) => {
   const submitHandler = async () => {
     setDisplayFieldError(true);
     if (formState.formIsValid) {
-      setError(null);
       setIsLoading(true);
       try {
         await dispatch(authActions.updateEmail(formState.inputValues.email));
         setIsLoading(false);
-        props.navigation.goBack({editEmailSuccess: true});
+        props.navigation.navigate('Settings', {editEmailSuccess: true});
       } catch (err) {
         setIsLoading(false);
         setFlashMessage("Something went wrong while updating your email address")
@@ -106,6 +105,7 @@ const UpdateEmailScreen = (props) => {
       <Content style={{ paddingVertical: 20, justifyContent: "space-between" }}>
         <Input
           id="email"
+          autoFocus={true}
           horizontal={true}
           label="New Email"
           keyboardType="email-address"
@@ -123,7 +123,6 @@ const UpdateEmailScreen = (props) => {
           text="Save Changes "
           onPress={submitHandler}
           isLoading={isLoading}
-          disabled={!formState.formIsValid}
         />
       </Content>
       {flashMessage && <FlashMessage text={flashMessage} type={"error"} />}

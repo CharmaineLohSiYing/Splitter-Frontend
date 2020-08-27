@@ -272,6 +272,7 @@ const AuthScreen = (props) => {
               label="Retype Password"
               ref={retypePasswordRef}
               blurOnSubmit={false}
+              onSubmitEditing={() => retypePasswordRef.current.blur()}
               touched={formState.touched["retypePassword"]}
               retypePassword
               displayError={displayError}

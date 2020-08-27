@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer, useCallback } from "react";
+import React, { useState, useEffect, useReducer, useCallback, useRef } from "react";
 import {
   ScrollView,
   View,
@@ -21,9 +21,8 @@ import Screen from "../../../components/UI/Screen";
 import Content from "../../../components/UI/Content";
 import * as authActions from "../../../store/actions/auth";
 import LongButton from "../../../components/UI/LongButton";
-import ErrorMessage from "../../../components/UI/ErrorMessage"
+import ErrorMessage from "../../../components/UI/ErrorMessage";
 import FlashMessage from "../../../components/FlashMessage";
-
 
 const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
 
@@ -52,10 +51,12 @@ const formReducer = (state, action) => {
 
 const UpdatePasswordScreen = (props) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState();
   const [displayFieldError, setDisplayFieldError] = useState(false);
   const userId = useSelector((state) => state.auth.userId);
   const [flashMessage, setFlashMessage] = useState(null);
+
+  const newPasswordRef = useRef(null);
+  const retypePasswordRef = useRef(null);
 
   useEffect(() => {
     if (flashMessage) {
@@ -91,19 +92,13 @@ const UpdatePasswordScreen = (props) => {
     [dispatchFormState]
   );
 
-  useEffect(() => {
-    if (error) {
-      Alert.alert("", error, "Okay")
-    }
-  }, [error]);
-
   const submitHandler = async () => {
+    setDisplayFieldError(true);
     if (
-      formState.inputValues.newPassword !== formState.inputValues.passwordRetype
+      formState.inputValues.newPassword ===
+        formState.inputValues.passwordRetype &&
+      formState.formIsValid
     ) {
-      setError("New passwords do not match");
-    } else {
-      setError(null);
       setIsLoading(true);
       try {
         const response = await fetch(
@@ -121,25 +116,29 @@ const UpdatePasswordScreen = (props) => {
           }
         );
         if (!response.ok) {
-          setFlashMessage("Something went wrong while updating your password")
+          const errMessage = await response.json();
+          if (errMessage === 'Input password is incorrect'){
+            setFlashMessage(errMessage);
+          } else {
+            setFlashMessage("Oops, something went wrong! Try again later");
+          }
           setIsLoading(false);
         } else {
-          props.navigation.goBack({editPasswordSuccess: true});
+          props.navigation.navigate("Settings", { editPasswordSuccess: true });
         }
       } catch (err) {
         setIsLoading(false);
-        setFlashMessage("Something went wrong while updating your password")
+        setFlashMessage("Oops, something went wrong! Try again later");
       }
     }
   };
 
-
   return (
     <Screen>
-      <Content style={{ paddingVertical: 20, justifyContent: 'space-between' }}>
+      <Content style={{ paddingVertical: 20, justifyContent: "space-between" }}>
         <View>
           <Input
-            autoFocus = {true}
+            autoFocus={true}
             horizontal={true}
             id="oldPassword"
             label="Current Password"
@@ -151,12 +150,14 @@ const UpdatePasswordScreen = (props) => {
             errorText="Please enter a valid password."
             onInputChange={inputChangeHandler}
             initialValue=""
-            initiallyValid={true}
+            onSubmitEditing={() => newPasswordRef.current.focus()}
           />
           <Input
             horizontal={true}
             id="newPassword"
             label="Password"
+            ref={newPasswordRef}
+            onSubmitEditing={() => retypePasswordRef.current.focus()}
             secureTextEntry
             required
             displayError={displayFieldError}
@@ -165,13 +166,14 @@ const UpdatePasswordScreen = (props) => {
             errorText="Please enter a valid password."
             onInputChange={inputChangeHandler}
             initialValue=""
-            initiallyValid={true}
           />
           <Input
             horizontal={true}
             id="passwordRetype"
             label="Confirm New Password"
             retypePassword
+            ref={retypePasswordRef}
+            onSubmitEditing={() => retypePasswordRef.current.blur()}
             secureTextEntry
             displayError={displayFieldError}
             required
@@ -179,20 +181,21 @@ const UpdatePasswordScreen = (props) => {
             errorText="Please enter a valid password"
             onInputChange={inputChangeHandler}
             initialValue=""
-            initiallyValid={true}
           />
-          {(formState.inputValues.passwordRetype !== formState.inputValues.newPassword )&& <ErrorMessage text="New passwords do not match"/>}
+          {formState.inputValues.passwordRetype !==
+            formState.inputValues.newPassword && (
+            <ErrorMessage text="New passwords do not match" />
+          )}
         </View>
 
         <LongButton
           text="Save Changes"
           onPress={submitHandler}
           isLoading={isLoading}
-          disabled={!formState.formIsValid}
           containerStyle={{ marginBottom: 10 }}
         />
       </Content>
-      {flashMessage && <FlashMessage text={flashMessage} type={"error"}/>}
+      {flashMessage && <FlashMessage text={flashMessage} type={"error"} />}
     </Screen>
   );
 };

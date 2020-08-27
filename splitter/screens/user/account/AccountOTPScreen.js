@@ -104,6 +104,7 @@ const AccountOTPScreen = (props) => {
           <Text style={styles.row}>An OTP has been sent to {mobileNumber}.</Text>
           <Text style={styles.row}>Enter OTP</Text>
           <Input
+            autoFocus={true}
             horizontal={true}
             id="otp"
             keyboardType="number-pad"
