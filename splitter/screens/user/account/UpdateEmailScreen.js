@@ -18,10 +18,10 @@ import Input from "../../../components/UI/Input";
 import Card from "../../../components/UI/Card";
 import Colors from "../../../constants/Colors";
 import LongButton from "../../../components/UI/LongButton";
-import ErrorMessage from "../../../components/UI/ErrorMessage";
 import Screen from "../../../components/UI/Screen";
 import Content from "../../../components/UI/Content";
 import * as authActions from "../../../store/actions/auth";
+import FlashMessage from "../../../components/FlashMessage";
 
 const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
 
@@ -50,9 +50,18 @@ const formReducer = (state, action) => {
 
 const UpdateEmailScreen = (props) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState();
   const dispatch = useDispatch();
   const userId = useSelector((state) => state.auth.userId);
+  const [displayFieldError, setDisplayFieldError] = useState(false);
+  const [flashMessage, setFlashMessage] = useState(null);
+
+  useEffect(() => {
+    if (flashMessage) {
+      setTimeout(() => {
+        setFlashMessage(null);
+      }, 3000);
+    }
+  }, [flashMessage]);
 
   const [formState, dispatchFormState] = useReducer(formReducer, {
     inputValues: {
@@ -76,22 +85,19 @@ const UpdateEmailScreen = (props) => {
     [dispatchFormState]
   );
 
-  useEffect(() => {
-    if (error) {
-      Alert.alert("An Error Occurred!", error, [{ text: "Okay" }]);
-    }
-  }, [error]);
-
   const submitHandler = async () => {
-    setError(null);
-    setIsLoading(true);
-    try {
-      await dispatch(authActions.updateEmail(formState.inputValues.email));
-      setIsLoading(false);
-      props.navigation.goBack();
-    } catch (err) {
-      setIsLoading(false);
-      setError(err.message);
+    setDisplayFieldError(true);
+    if (formState.formIsValid) {
+      setError(null);
+      setIsLoading(true);
+      try {
+        await dispatch(authActions.updateEmail(formState.inputValues.email));
+        setIsLoading(false);
+        props.navigation.goBack({editEmailSuccess: true});
+      } catch (err) {
+        setIsLoading(false);
+        setFlashMessage("Something went wrong while updating your email address")
+      }
     }
   };
 
@@ -104,6 +110,7 @@ const UpdateEmailScreen = (props) => {
           label="New Email"
           keyboardType="email-address"
           required
+          displayError={displayFieldError}
           email
           autoCapitalize="none"
           errorText="Please enter a valid email address."
@@ -112,13 +119,14 @@ const UpdateEmailScreen = (props) => {
           initiallyValid={true}
         />
         <LongButton
-          containerStyle={{marginBottom: 10}}
+          containerStyle={{ marginBottom: 10 }}
           text="Save Changes "
           onPress={submitHandler}
           isLoading={isLoading}
           disabled={!formState.formIsValid}
         />
       </Content>
+      {flashMessage && <FlashMessage text={flashMessage} type={"error"} />}
     </Screen>
   );
 };

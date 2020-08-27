@@ -21,6 +21,7 @@ import * as authActions from "../../../store/actions/auth";
 import Screen from "../../../components/UI/Screen";
 import Content from "../../../components/UI/Content";
 import LongButton from "../../../components/UI/LongButton";
+import FlashMessage from "../../../components/FlashMessage";
 
 const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
 
@@ -49,7 +50,16 @@ const formReducer = (state, action) => {
 
 const UpdateDetailsScreen = (props) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState();
+  const [flashMessage, setFlashMessage] = useState(null);
+  const [displayFieldError, setDisplayFieldError] = useState(false);
+
+  useEffect(() => {
+    if (flashMessage) {
+      setTimeout(() => {
+        setFlashMessage(null);
+      }, 3000);
+    }
+  }, [flashMessage]);
 
   const userId = useSelector((state) => state.auth.userId);
   const dispatch = useDispatch();
@@ -78,14 +88,9 @@ const UpdateDetailsScreen = (props) => {
     [dispatchFormState]
   );
 
-  useEffect(() => {
-    if (error) {
-      Alert.alert("An Error Occurred!", error, [{ text: "Okay" }]);
-    }
-  }, [error]);
-
   const submitHandler = async () => {
-    setError(null);
+    setDisplayFieldError(true);
+    if (formState.formIsValid){
     setIsLoading(true);
     try {
       await dispatch(
@@ -95,11 +100,13 @@ const UpdateDetailsScreen = (props) => {
         )
       );
       setIsLoading(false);
-      props.navigation.goBack();
+      props.navigation.goBack({editDetailsSuccess: true});
     } catch (err) {
       setIsLoading(false);
-      setError(err.message);
+      setFlashMessage("Something went wrong while updating your details")
     }
+    }
+    
   };
 
   return (
@@ -115,6 +122,7 @@ const UpdateDetailsScreen = (props) => {
             id="firstName"
             label="First Name"
             required
+            displayError={displayFieldError}
             autoCapitalize="words"
             errorText="Please enter a valid first name."
             onInputChange={inputChangeHandler}
@@ -126,6 +134,7 @@ const UpdateDetailsScreen = (props) => {
             id="lastName"
             label="Last Name"
             required
+            displayError={displayFieldError}
             autoCapitalize="words"
             errorText="Please enter a valid last name."
             onInputChange={inputChangeHandler}
@@ -139,9 +148,10 @@ const UpdateDetailsScreen = (props) => {
           onPress={submitHandler}
           isLoading={isLoading}
           disabled={!formState.formIsValid}
-          containerStyle={{marginBottom: 10}}
+          containerStyle={{ marginBottom: 10 }}
         />
       </Content>
+      {flashMessage && <FlashMessage text={flashMessage} type={"error"}/>}
     </Screen>
   );
 };

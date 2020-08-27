@@ -22,6 +22,8 @@ import Content from "../../../components/UI/Content";
 import * as authActions from "../../../store/actions/auth";
 import LongButton from "../../../components/UI/LongButton";
 import ErrorMessage from "../../../components/UI/ErrorMessage"
+import FlashMessage from "../../../components/FlashMessage";
+
 
 const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
 
@@ -51,8 +53,17 @@ const formReducer = (state, action) => {
 const UpdatePasswordScreen = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
-
+  const [displayFieldError, setDisplayFieldError] = useState(false);
   const userId = useSelector((state) => state.auth.userId);
+  const [flashMessage, setFlashMessage] = useState(null);
+
+  useEffect(() => {
+    if (flashMessage) {
+      setTimeout(() => {
+        setFlashMessage(null);
+      }, 3000);
+    }
+  }, [flashMessage]);
 
   const [formState, dispatchFormState] = useReducer(formReducer, {
     inputValues: {
@@ -82,7 +93,7 @@ const UpdatePasswordScreen = (props) => {
 
   useEffect(() => {
     if (error) {
-      Alert.alert("An Error Occurred!", error, [{ text: "Okay" }]);
+      Alert.alert("", error, "Okay")
     }
   }, [error]);
 
@@ -110,13 +121,14 @@ const UpdatePasswordScreen = (props) => {
           }
         );
         if (!response.ok) {
-          setError(await response.json());
+          setFlashMessage("Something went wrong while updating your password")
           setIsLoading(false);
         } else {
-          props.navigation.goBack();
+          props.navigation.goBack({editPasswordSuccess: true});
         }
       } catch (err) {
-        setError(err.message);
+        setIsLoading(false);
+        setFlashMessage("Something went wrong while updating your password")
       }
     }
   };
@@ -133,6 +145,7 @@ const UpdatePasswordScreen = (props) => {
             label="Current Password"
             secureTextEntry
             required
+            displayError={displayFieldError}
             minLength={5}
             autoCapitalize="none"
             errorText="Please enter a valid password."
@@ -146,6 +159,7 @@ const UpdatePasswordScreen = (props) => {
             label="Password"
             secureTextEntry
             required
+            displayError={displayFieldError}
             minLength={5}
             autoCapitalize="none"
             errorText="Please enter a valid password."
@@ -159,6 +173,7 @@ const UpdatePasswordScreen = (props) => {
             label="Confirm New Password"
             retypePassword
             secureTextEntry
+            displayError={displayFieldError}
             required
             autoCapitalize="none"
             errorText="Please enter a valid password"
@@ -177,6 +192,7 @@ const UpdatePasswordScreen = (props) => {
           containerStyle={{ marginBottom: 10 }}
         />
       </Content>
+      {flashMessage && <FlashMessage text={flashMessage} type={"error"}/>}
     </Screen>
   );
 };

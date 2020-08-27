@@ -22,6 +22,8 @@ import ErrorMessage from "../../../components/UI/ErrorMessage";
 import Screen from "../../../components/UI/Screen";
 import Content from "../../../components/UI/Content";
 import * as authActions from "../../../store/actions/auth";
+import FlashMessage from "../../../components/FlashMessage";
+
 
 const FORM_INPUT_UPDATE = "FORM_INPUT_UPDATE";
 
@@ -51,7 +53,16 @@ const formReducer = (state, action) => {
 const UpdateMobileNumberScreen = (props) => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState();
+  const [displayFieldError, setDisplayFieldError] = useState(false);
+  const [flashMessage, setFlashMessage] = useState(null);
+
+  useEffect(() => {
+    if (flashMessage) {
+      setTimeout(() => {
+        setFlashMessage(null);
+      }, 3000);
+    }
+  }, [flashMessage]);
 
   const userId = useSelector((state) => state.auth.userId);
 
@@ -77,16 +88,10 @@ const UpdateMobileNumberScreen = (props) => {
     [dispatchFormState]
   );
 
-  useEffect(() => {
-    if (error) {
-      Alert.alert("An Error Occurred!", error, [{ text: "Okay" }]);
-    }
-  }, [error]);
-
   const submitHandler = async () => {
-    // console.log('request otp')
-    setError(null);
-    setIsLoading(true);
+    setDisplayFieldError(true)
+    if (formState.formIsValid){
+      setIsLoading(true);
     try {
       const response = await fetch(
         "http://192.168.1.190:5000/api/auth/requestOTP",
@@ -104,14 +109,15 @@ const UpdateMobileNumberScreen = (props) => {
 
       if (!response.ok) {
         setIsLoading(false);
-        setError(await response.json());
+        setFlashMessage("Something went wrong while updating your mobile number"); 
       } else {
         setIsLoading(false);
         props.navigation.navigate("AccountOTP", { changeMobileNumber: true, mobileNumber: formState.inputValues.mobileNumber });
       }
     } catch (err) {
       setIsLoading(false);
-      setError(err.message);
+      setFlashMessage("Something went wrong while updating your mobile number"); 
+    }
     }
   };
 
@@ -125,6 +131,7 @@ const UpdateMobileNumberScreen = (props) => {
           keyboardType="number-pad"
           required
           numbers
+          displayError={displayFieldError}
           minLength={8}
           maxLength={8}
           errorText="Please enter a valid mobile number."
@@ -140,6 +147,7 @@ const UpdateMobileNumberScreen = (props) => {
           disabled={!formState.formIsValid}
         />
       </Content>
+      {flashMessage && <FlashMessage text={flashMessage} type={"error"}/>}
     </Screen>
   );
 };

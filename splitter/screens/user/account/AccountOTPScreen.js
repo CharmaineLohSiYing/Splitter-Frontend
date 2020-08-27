@@ -80,7 +80,7 @@ const AccountOTPScreen = (props) => {
 
   useEffect(() => {
     if (error) {
-      Alert.alert("An Error Occurred!", error, [{ text: "Okay" }]);
+      Alert.alert("", error, [{ text: "Okay" }]);
     }
   }, [error]);
 
@@ -90,7 +90,7 @@ const AccountOTPScreen = (props) => {
     try {
       await dispatch(authActions.updateMobileNumber(formState.inputValues.otp));
       setIsLoading(false);
-      props.navigation.navigate("Settings");
+      props.navigation.navigate("Settings", {editMobileNumberSuccess: true});
     } catch (err) {
       setIsLoading(false);
       setError(err.message);
