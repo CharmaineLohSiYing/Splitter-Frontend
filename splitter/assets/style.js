@@ -52,5 +52,10 @@ export default StyleSheet.create({
     backgroundColor: Colors.blue3,
     alignItems: "center",
     borderRadius: 15,
+  },
+  centered:{
+    flex: 1,
+    alignItems:'center',
+    justifyContent:'center'
   }
 });

@@ -17,6 +17,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useSelector, useDispatch } from "react-redux";
 import { matchUsersWithContacts } from "../../utils/initialiseContacts";
 import Screen from "../../components/UI/Screen";
+import PlaceholderImage from "../../components/PlaceholderImage"
 
 import BillItemDisplay from "../../components/BillItemDisplay";
 import * as authActions from "../../store/actions/auth";
@@ -95,15 +96,11 @@ const BillsScreen = (props) => {
     });
   }, [dispatch, loadUserBills]);
 
+
   if (error) {
     return (
-      <View style={styles.centered}>
-        <Text>An error occurred!</Text>
-        <Button
-          title="Try again"
-          onPress={loadUserBills}
-          color={Colors.blue1}
-        />
+      <View style={GlobalStyles.centered}>
+        <PlaceholderImage imageName={require("../../assets/pictures/no-data.png")} mainText="Oh no, something went wrong!" actionText={"Try again"} onPress={loadUserBills} error/>
       </View>
     );
   }
@@ -124,13 +121,7 @@ const BillsScreen = (props) => {
           { justifyContent: "center", alignItems: "center" },
         ]}
       >
-        <View style={styles.noBillsContainer}>
-          <Text>You have no bills yet</Text>
-
-          <TouchableOpacity style={styles.noBillsAdd} onPress={addBillHandler}>
-            <Text style={styles.noBillsAddText}>Create one</Text>
-          </TouchableOpacity>
-        </View>
+          <PlaceholderImage imageName={require("../../assets/pictures/no-bills.png")} mainText="You have no bills yet." actionText={"Create one"} onPress={addBillHandler}/>
       </View>
     );
   }

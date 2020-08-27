@@ -16,6 +16,7 @@ import {
 } from "react-native";
 import Colors from "../../../constants/Colors";
 
+import PlaceholderImage from "../../../components/PlaceholderImage";
 import IndividualOrders from "../../../components/IndividualOrders";
 import * as billActions from "../../../store/actions/bill";
 import Header from "../../../components/AddOrdersSubSectionHeader";
@@ -29,6 +30,7 @@ import InputRight from "../../../components/UI/InputRight";
 import Screen from "../../../components/UI/Screen";
 import FlatListLineSeparator from "../../../components/UI/FlatListLineSeparator";
 import FlashMessage from "../../../components/FlashMessage";
+import splittingBillImage from "../../../assets/pictures/splitting-bill.png"
 
 import { useSelector, useDispatch } from "react-redux";
 
@@ -99,7 +101,6 @@ const AddPayersScreen = (props) => {
         }
         // console.log("after dispatch");
         props.navigation.navigate("Bills", { createBillSuccess: true });
-        setIsLoading(false);
       } catch (err) {
         setIsLoading(false);
         if (isEdit) {
@@ -152,8 +153,8 @@ const AddPayersScreen = (props) => {
 
   if (isLoading) {
     return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color={Colors.blue1} />
+      <View style={{flex: 1, alignItems:'center', justifyContent:'center'}}>
+        <PlaceholderImage imageName={splittingBillImage}  mainText="Splitting the bill..."/>
       </View>
     );
   }

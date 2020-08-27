@@ -5,12 +5,15 @@ import * as authActions from "../store/actions/auth";
 import { Ionicons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import BillIcon from "../assets/custom/bill";
+import SettingsIcon from "../assets/custom/settings"
+import LoanIcon from "../assets/custom/loan"
 
 import {
   createDrawerNavigator,
   DrawerItemList,
 } from "@react-navigation/drawer";
-import { Platform, SafeAreaView, Button, View, StyleSheet } from "react-native";
+import { Platform, SafeAreaView, Button, View, StyleSheet, Image } from "react-native";
 import {
   Item,
   HeaderButtons,
@@ -222,18 +225,14 @@ export const SplitterNavigator = () => {
     <TabNavigator.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
-          let iconName;
 
           if (route.name === "Track Loans") {
-            iconName = "md-cash";
+            return <LoanIcon size={size} color={color}/>
           } else if (route.name === "My Bills") {
-            iconName = "ios-list-box";
+            return <BillIcon size={size} color={color}/>
           } else if (route.name === "Settings") {
-            iconName = "md-settings";
+            return <SettingsIcon size={size} color={color}/>
           } 
-
-          // You can return any component that you like here!
-          return <Ionicons name={iconName} size={size} color={color} />;
         }
       })}
       tabBarOptions={{

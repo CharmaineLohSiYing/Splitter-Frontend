@@ -21,6 +21,7 @@ import Screen from "../../components/UI/Screen";
 import Content from "../../components/UI/Content";
 import GlobalStyles from "../../assets/style";
 import FlashMessage from "../../components/FlashMessage";
+import PlaceholderImage from "../../components/PlaceholderImage";
 
 import BillItemDisplay from "../../components/BillItemDisplay";
 import * as authActions from "../../store/actions/auth";
@@ -213,35 +214,9 @@ const ViewContactLoansScreen = (props) => {
     loadLoans();
   }
 
-  if (error) {
+  const HeaderName = () => {
     return (
-      <View style={styles.centered}>
-        <Text>An error occurred!</Text>
-        <Button title="Try again" onPress={loadLoans} color={Colors.blue1} />
-      </View>
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color={Colors.blue1} />
-      </View>
-    );
-  }
-
-  if (!isLoading && Object.keys(loans) === 0) {
-    return (
-      <View style={styles.centered}>
-        <Text>No loans found</Text>
-      </View>
-    );
-  }
-
-  return (
-    <Screen>
-      <Content style={{ flex: 0 }}>
-        <View style={styles.headerContainer}>
+      <View style={styles.headerContainer}>
           <Avatar />
           <Text
             style={{ fontWeight: "bold", fontStyle: "italic", fontSize: 18 }}
@@ -249,59 +224,13 @@ const ViewContactLoansScreen = (props) => {
             {matchedName}
           </Text>
         </View>
-        <View
-          style={[
-            styles.netDebt,
-            { backgroundColor: debt > 0 ? Colors.red2 : Colors.blue3 },
-          ]}
-        >
-          {debt < 0 && (
-            <Text>
-              {matchedName} owes you ${-debt.toFixed(2)}
-            </Text>
-          )}
-          {debt > 0 && (
-            <Text>
-              You owe {matchedName} ${debt.toFixed(2)}
-            </Text>
-          )}
-          {debt === 0 && <Text>No debt</Text>}
-        </View>
-        <View style={styles.headerButtons}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => setCreateNewLoan(true)}
-          >
-            <Text style={{ color: Colors.blue1 }}>Create New Loan</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => setCreateNewTransaction(true)}
-          >
-            <Text style={{ color: Colors.blue1 }}>Transfer $</Text>
-          </TouchableOpacity>
-        </View>
-      </Content>
-      <FlatList
-        style={{ ...GlobalStyles.flatlist, flex: 1, marginTop: 20 }}
-        onRefresh={loadLoans}
-        refreshing={isRefreshing}
-        keyExtractor={(item, index) => index.toString()}
-        // data={loans.slice(0, 3)}
-        data={loans}
-        renderItem={({ item }) =>
-          LoanDisplay(
-            item.date,
-            item.amount,
-            matchedName,
-            item.from,
-            item.payer,
-            item.isCancelled,
-            item.bill
-          )
-        }
-      />
-      {createNewLoan && (
+    )
+  }
+
+  const ModalsAndAlerts = () => {
+    return (
+      <>
+        {createNewLoan && (
         <LoanModal
           matchedName={matchedName}
           friendUserId={friendUserId}
@@ -330,9 +259,109 @@ const ViewContactLoansScreen = (props) => {
       {(successMessage || errorMessage) && (
         <FlashMessage
           text={successMessage ? successMessage : errorMessage}
-          type="success"
+          type={successMessage ? "success" : "error"}
         />
       )}
+      </>
+    )
+  }
+
+  const HeaderButtons = () => {
+    return (
+      <View style={styles.headerButtons}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => setCreateNewLoan(true)}
+      >
+        <Text style={{ color: Colors.blue1 }}>Create New Loan</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => setCreateNewTransaction(true)}
+      >
+        <Text style={{ color: Colors.blue1 }}>Transfer $</Text>
+      </TouchableOpacity>
+    </View>
+    )
+  }
+
+  if (error) {
+    return (
+      <View style={styles.centered}>
+        <Text>An error occurred!</Text>
+        <Button title="Try again" onPress={loadLoans} color={Colors.blue1} />
+      </View>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <View style={GlobalStyles.centered}>
+        <ActivityIndicator size="large" color={Colors.blue1} />
+      </View>
+    );
+  }
+
+  if (!isLoading && Object.keys(loans).length === 0) {
+    return (
+      <Screen>
+        <Content>
+          <HeaderName/>
+          <HeaderButtons/>
+          <View style={GlobalStyles.centered}>
+          <PlaceholderImage imageName={require("../../assets/pictures/no-loans.png")} mainText={"No transactions with " + matchedName + ", yet!"} />
+          </View>
+        </Content>
+        <ModalsAndAlerts/>
+      </Screen>
+      
+    );
+  }
+
+  return (
+    <Screen>
+      <Content style={{ flex: 0 }}>
+        <HeaderName/>
+        <View
+          style={[
+            styles.netDebt,
+            { backgroundColor: debt > 0 ? Colors.red2 : Colors.blue3 },
+          ]}
+        >
+          {debt < 0 && (
+            <Text>
+              {matchedName} owes you ${-debt.toFixed(2)}
+            </Text>
+          )}
+          {debt > 0 && (
+            <Text>
+              You owe {matchedName} ${debt.toFixed(2)}
+            </Text>
+          )}
+          {debt === 0 && <Text>Cool, nobody owes nobody!</Text>}
+        </View>
+        <HeaderButtons/>
+      </Content>
+      <FlatList
+        style={{ ...GlobalStyles.flatlist, flex: 1, marginTop: 20 }}
+        onRefresh={loadLoans}
+        refreshing={isRefreshing}
+        keyExtractor={(item, index) => index.toString()}
+        // data={loans.slice(0, 3)}
+        data={loans}
+        renderItem={({ item }) =>
+          LoanDisplay(
+            item.date,
+            item.amount,
+            matchedName,
+            item.from,
+            item.payer,
+            item.isCancelled,
+            item.bill
+          )
+        }
+      />
+      <ModalsAndAlerts/>
     </Screen>
   );
 };

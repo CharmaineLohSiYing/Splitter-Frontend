@@ -34,6 +34,7 @@
     "react-native-searchable-list": "^1.1.3",
     "react-native-shadow": "^1.2.2",
     "react-native-svg": "11.0.1",
+    "react-native-vector-icons": "^7.0.0",
     "react-native-web": "~0.11.7",
     "react-navigation-header-buttons": "^4.0.2",
     "react-redux": "^7.2.0",

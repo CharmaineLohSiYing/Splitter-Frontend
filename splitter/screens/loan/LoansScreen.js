@@ -12,6 +12,7 @@ import {
   Alert,
   TextInput,
   SectionList,
+  Image,
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import Colors from "../../constants/Colors";
@@ -24,6 +25,8 @@ import * as authActions from "../../store/actions/auth";
 import * as loanActions from "../../store/actions/loan";
 import { matchUsersWithContacts } from "../../utils/initialiseContacts";
 import SearchBar from "../../components/UI/SearchBar";
+import noLoansImage from "../../assets/pictures/no-loans.png";
+import PlaceholderImage from "../../components/PlaceholderImage"
 
 const LoansScreen = (props) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -84,9 +87,8 @@ const LoansScreen = (props) => {
 
   if (error) {
     return (
-      <View style={styles.centered}>
-        <Text>An error occurred!</Text>
-        <Button title="Try again" onPress={loadLoans} color={Colors.blue1} />
+      <View style={GlobalStyles.centered}>
+        <PlaceholderImage imageName={require("../../assets/pictures/no-data.png")} mainText="Oh no, something went wrong!" actionText={"Try again"} onPress={loadLoans} error/>
       </View>
     );
   }
@@ -111,8 +113,8 @@ const LoansScreen = (props) => {
     setQuery(text);
   };
 
-  return (
-    <Screen>
+  const FloatingButton = () => {
+    return (
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={() => {
@@ -122,10 +124,30 @@ const LoansScreen = (props) => {
       >
         <Ionicons name="md-add" size={24} color="white" />
       </TouchableOpacity>
+    );
+  };
 
-      <SearchBar handleSearch={handleSearch} query={query} style={{marginTop: 20}}/>
+  if (
+    Object.keys(borrowedFrom).length === 0 &&
+    Object.keys(loanedTo).length === 0
+  ) {
+    return (
+      <Screen style={{ justifyContent: "center" }}>
+        <PlaceholderImage imageName={require("../../assets/pictures/no-loans.png")} mainText="No transactions or loans, yet!" actionText={"Create one"} onPress={() => {props.navigation.navigate("ContactsList")}}/>
+      </Screen>
+    );
+  }
+
+  return (
+    <Screen>
+      <FloatingButton />
+      <SearchBar
+        handleSearch={handleSearch}
+        query={query}
+        style={{ marginTop: 20 }}
+      />
       <SectionList
-        contentContainerStyle={{paddingTop: 10}}
+        contentContainerStyle={{ paddingTop: 10 }}
         style={GlobalStyles.flatlist}
         onRefresh={loadLoans}
         refreshing={isRefreshing}

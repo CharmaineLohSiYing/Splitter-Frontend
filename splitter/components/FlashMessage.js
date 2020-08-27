@@ -43,7 +43,8 @@ const styles = StyleSheet.create({
     margin: 10,
     alignItems:'center',
     justifyContent:'center',
-    elevation: 1
+    elevation: 1,
+    zIndex: 2
   },
   
 });
